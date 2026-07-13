@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 import NotificationDrawer from './components/NotificationDrawer';
 import LoginScreen from './components/LoginScreen';
+import LicenseGuard from './components/LicenseGuard';
 
 // Pages
 import ExecutiveDashboard from './pages/ExecutiveDashboard';
@@ -27,36 +28,42 @@ const App = () => {
   const { isAuthenticated } = useContext(AuditContext);
 
   if (!isAuthenticated) {
-    return <LoginScreen />;
+    return (
+      <LicenseGuard>
+        <LoginScreen />
+      </LicenseGuard>
+    );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
-      <CbnDmoMacroTicker />
-      <div className="app-container" style={{ flex: 1 }}>
-        <Sidebar />
-        <div className="main-content">
-          <Topbar />
-        <NotificationDrawer />
-        <Routes>
-          <Route path="/" element={<ExecutiveDashboard />} />
-          <Route path="/master-data" element={<MasterData />} />
-          <Route path="/annual-plan" element={<AnnualAuditPlan />} />
-          <Route path="/risk-scoring" element={<RiskBasedPlanning />} />
-          <Route path="/engagements" element={<AuditEngagement />} />
-          <Route path="/programs" element={<AuditPrograms />} />
-          <Route path="/working-papers" element={<WorkingPapers />} />
-          <Route path="/findings" element={<FindingsManagement />} />
-          <Route path="/action-tracker" element={<ActionTracking />} />
-          <Route path="/controls" element={<InternalControls />} />
-          <Route path="/compliance-regulatory" element={<ComplianceAndRegulatory />} />
-          <Route path="/fraud-continuous" element={<FraudAndContinuous />} />
-          <Route path="/reports-committee" element={<ReportsAndCommittee />} />
-          <Route path="/erm-sync" element={<ErmSyncPage />} />
-        </Routes>
+    <LicenseGuard>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
+        <CbnDmoMacroTicker />
+        <div className="app-container" style={{ flex: 1 }}>
+          <Sidebar />
+          <div className="main-content">
+            <Topbar />
+            <NotificationDrawer />
+            <Routes>
+              <Route path="/" element={<ExecutiveDashboard />} />
+              <Route path="/master-data" element={<MasterData />} />
+              <Route path="/annual-plan" element={<AnnualAuditPlan />} />
+              <Route path="/risk-scoring" element={<RiskBasedPlanning />} />
+              <Route path="/engagements" element={<AuditEngagement />} />
+              <Route path="/programs" element={<AuditPrograms />} />
+              <Route path="/working-papers" element={<WorkingPapers />} />
+              <Route path="/findings" element={<FindingsManagement />} />
+              <Route path="/action-tracker" element={<ActionTracking />} />
+              <Route path="/controls" element={<InternalControls />} />
+              <Route path="/compliance-regulatory" element={<ComplianceAndRegulatory />} />
+              <Route path="/fraud-continuous" element={<FraudAndContinuous />} />
+              <Route path="/reports-committee" element={<ReportsAndCommittee />} />
+              <Route path="/erm-sync" element={<ErmSyncPage />} />
+            </Routes>
+          </div>
+        </div>
       </div>
-    </div>
-    </div>
+    </LicenseGuard>
   );
 };
 
