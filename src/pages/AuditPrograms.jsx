@@ -32,7 +32,7 @@ const AuditPrograms = () => {
       ref: procRef.toUpperCase(),
       step: procStep,
       sampleSize: procSample,
-      assignedTo: 'Ibrahim Al-Hassan',
+      assignedTo: 'Lead Reviewer',
       status: 'In Progress',
       riskLink: `${selectedProgram.name} Core Risk`
     };

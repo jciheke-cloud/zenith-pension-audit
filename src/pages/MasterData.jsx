@@ -20,7 +20,7 @@ const MasterData = () => {
   const [procName, setProcName] = useState('');
   const [procBu, setProcBu] = useState('Operations');
   const [procCode, setProcCode] = useState('');
-  const [procLead, setProcLead] = useState('Tunde Bakare (Senior Auditor)');
+  const [procLead, setProcLead] = useState('Lead Senior Auditor');
   const [procFreq, setProcFreq] = useState('Quarterly');
 
   const filteredBus = businessUnits.filter(bu => 
@@ -270,7 +270,7 @@ const MasterData = () => {
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Head of Department</label>
-                <input type="text" required placeholder="e.g. Ibrahim Al-Hassan" value={newBuHead} onChange={e => setNewBuHead(e.target.value)} className="form-input" />
+                <input type="text" required placeholder="e.g. Lead Reviewer" value={newBuHead} onChange={e => setNewBuHead(e.target.value)} className="form-input" />
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Inherent Risk Level</label>

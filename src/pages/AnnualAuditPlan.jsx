@@ -17,7 +17,7 @@ const AnnualAuditPlan = () => {
   const [riskRating, setRiskRating] = useState('High');
   const [frequency, setFrequency] = useState('Quarterly');
   const [estimatedHours, setEstimatedHours] = useState(300);
-  const [leadAuditor, setLeadAuditor] = useState('Tunde Bakare');
+  const [leadAuditor, setLeadAuditor] = useState('Senior Auditor');
   const [plannedStartDate, setPlannedStartDate] = useState('2026-08-01');
   const [plannedEndDate, setPlannedEndDate] = useState('2026-09-30');
   const [budget, setBudget] = useState(15.0);
@@ -48,7 +48,7 @@ const AnnualAuditPlan = () => {
       frequency,
       estimatedHours: parseInt(estimatedHours, 10),
       leadAuditor,
-      teamMembers: ['Solomon Adeleke', 'Blessing Williams'],
+      teamMembers: ['Senior IT Auditor', 'QA Auditor'],
       plannedStartDate,
       plannedEndDate,
       budget: parseFloat(budget),

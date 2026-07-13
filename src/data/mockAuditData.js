@@ -2,18 +2,18 @@
 // RiskINTEGRA Audit™ - Integrated with RiskINTEGRA ERM Ecosystem
 
 export const INITIAL_BUSINESS_UNITS = [
-  { id: 'bu-1', name: 'Operations', head: 'Adeoluwa Ogunleye', code: 'OPS', staffCount: 42, riskLevel: 'High', coveragePct: 92 },
-  { id: 'bu-2', name: 'Treasury', head: 'Chinedu Eze', code: 'TRS', staffCount: 18, riskLevel: 'High', coveragePct: 95 },
-  { id: 'bu-3', name: 'Custody Operations', head: 'Zainab Balogun', code: 'CUS', staffCount: 56, riskLevel: 'Critical', coveragePct: 100 },
-  { id: 'bu-4', name: 'Investment Settlement', head: 'Folake Alabi', code: 'INV', staffCount: 24, riskLevel: 'High', coveragePct: 94 },
-  { id: 'bu-5', name: 'Finance', head: 'Mustapha Ibrahim', code: 'FIN', staffCount: 30, riskLevel: 'Medium', coveragePct: 88 },
-  { id: 'bu-6', name: 'ICT', head: 'Babatunde Davies', code: 'ICT', staffCount: 35, riskLevel: 'Critical', coveragePct: 96 },
-  { id: 'bu-7', name: 'Information Security', head: 'Ngozi Okonjo', code: 'SEC', staffCount: 15, riskLevel: 'Critical', coveragePct: 100 },
-  { id: 'bu-8', name: 'Compliance', head: 'Oluwaseun Ademi', code: 'CMP', staffCount: 20, riskLevel: 'Medium', coveragePct: 90 },
-  { id: 'bu-9', name: 'Risk Management', head: 'Chika Anyanwu', code: 'RSK', staffCount: 16, riskLevel: 'Medium', coveragePct: 92 },
-  { id: 'bu-10', name: 'Human Resources', head: 'Kemi Adebayo', code: 'HRD', staffCount: 18, riskLevel: 'Low', coveragePct: 82 },
-  { id: 'bu-11', name: 'Legal', head: 'Emeka Nwosu', code: 'LEG', staffCount: 12, riskLevel: 'Medium', coveragePct: 85 },
-  { id: 'bu-12', name: 'Procurement', head: 'Yusuf Sani', code: 'PRC', staffCount: 14, riskLevel: 'Medium', coveragePct: 80 }
+  { id: 'bu-1', name: 'Operations', head: 'Head of Operations', code: 'OPS', staffCount: 42, riskLevel: 'High', coveragePct: 92 },
+  { id: 'bu-2', name: 'Treasury', head: 'Head of Treasury', code: 'TRS', staffCount: 18, riskLevel: 'High', coveragePct: 95 },
+  { id: 'bu-3', name: 'Custody Operations', head: 'Head of Custody Operations', code: 'CUS', staffCount: 56, riskLevel: 'Critical', coveragePct: 100 },
+  { id: 'bu-4', name: 'Investment Settlement', head: 'Head of Investment Settlement', code: 'INV', staffCount: 24, riskLevel: 'High', coveragePct: 94 },
+  { id: 'bu-5', name: 'Finance', head: 'Chief Financial Officer', code: 'FIN', staffCount: 30, riskLevel: 'Medium', coveragePct: 88 },
+  { id: 'bu-6', name: 'ICT', head: 'Head of ICT & Systems', code: 'ICT', staffCount: 35, riskLevel: 'Critical', coveragePct: 96 },
+  { id: 'bu-7', name: 'Information Security', head: 'Chief Information Security Officer', code: 'SEC', staffCount: 15, riskLevel: 'Critical', coveragePct: 100 },
+  { id: 'bu-8', name: 'Compliance', head: 'Chief Compliance Officer', code: 'CMP', staffCount: 20, riskLevel: 'Medium', coveragePct: 90 },
+  { id: 'bu-9', name: 'Risk Management', head: 'Head of Risk Management', code: 'RSK', staffCount: 16, riskLevel: 'Medium', coveragePct: 92 },
+  { id: 'bu-10', name: 'Human Resources', head: 'Head of Human Resources', code: 'HRD', staffCount: 18, riskLevel: 'Low', coveragePct: 82 },
+  { id: 'bu-11', name: 'Legal', head: 'Head of Legal & Governance', code: 'LEG', staffCount: 12, riskLevel: 'Medium', coveragePct: 85 },
+  { id: 'bu-12', name: 'Procurement', head: 'Head of Procurement', code: 'PRC', staffCount: 14, riskLevel: 'Medium', coveragePct: 80 }
 ];
 
 export const INITIAL_AUDIT_UNIVERSE = [
@@ -30,7 +30,7 @@ export const INITIAL_AUDIT_UNIVERSE = [
     itDependency: 8,
     lastAudited: '2025-11-15',
     frequency: 'Quarterly',
-    leadAuditor: 'Tunde Bakare (Senior Auditor)'
+    leadAuditor: 'Lead Senior Auditor'
   },
   {
     id: 'au-102',
@@ -45,7 +45,7 @@ export const INITIAL_AUDIT_UNIVERSE = [
     itDependency: 9,
     lastAudited: '2025-12-10',
     frequency: 'Monthly',
-    leadAuditor: 'Grace Okafor (Audit Manager)'
+    leadAuditor: 'Audit Manager'
   },
   {
     id: 'au-103',
@@ -60,7 +60,7 @@ export const INITIAL_AUDIT_UNIVERSE = [
     itDependency: 9,
     lastAudited: '2026-01-20',
     frequency: 'Monthly',
-    leadAuditor: 'Grace Okafor (Audit Manager)'
+    leadAuditor: 'Audit Manager'
   },
   {
     id: 'au-104',
@@ -75,7 +75,7 @@ export const INITIAL_AUDIT_UNIVERSE = [
     itDependency: 8,
     lastAudited: '2025-10-05',
     frequency: 'Quarterly',
-    leadAuditor: 'Solomon Adeleke (Senior Auditor)'
+    leadAuditor: 'Senior IT Auditor'
   },
   {
     id: 'au-105',
@@ -90,7 +90,7 @@ export const INITIAL_AUDIT_UNIVERSE = [
     itDependency: 7,
     lastAudited: '2025-08-14',
     frequency: 'Semi-Annually',
-    leadAuditor: 'Solomon Adeleke (Senior Auditor)'
+    leadAuditor: 'Senior IT Auditor'
   },
   {
     id: 'au-106',
@@ -105,7 +105,7 @@ export const INITIAL_AUDIT_UNIVERSE = [
     itDependency: 9,
     lastAudited: '2025-09-22',
     frequency: 'Quarterly',
-    leadAuditor: 'Tunde Bakare (Senior Auditor)'
+    leadAuditor: 'Lead Senior Auditor'
   },
   {
     id: 'au-107',
@@ -120,7 +120,7 @@ export const INITIAL_AUDIT_UNIVERSE = [
     itDependency: 10,
     lastAudited: '2026-02-01',
     frequency: 'Quarterly',
-    leadAuditor: 'Chidi Nnamdi (IT Audit Lead)'
+    leadAuditor: 'Senior Risk Analyst (IT Audit Lead)'
   },
   {
     id: 'au-108',
@@ -135,7 +135,7 @@ export const INITIAL_AUDIT_UNIVERSE = [
     itDependency: 6,
     lastAudited: '2025-07-11',
     frequency: 'Annually',
-    leadAuditor: 'Blessing Williams (Auditor)'
+    leadAuditor: 'QA Auditor'
   },
   {
     id: 'au-109',
@@ -150,7 +150,7 @@ export const INITIAL_AUDIT_UNIVERSE = [
     itDependency: 10,
     lastAudited: '2025-11-28',
     frequency: 'Annually',
-    leadAuditor: 'Chidi Nnamdi (IT Audit Lead)'
+    leadAuditor: 'Senior Risk Analyst (IT Audit Lead)'
   },
   {
     id: 'au-110',
@@ -165,7 +165,7 @@ export const INITIAL_AUDIT_UNIVERSE = [
     itDependency: 7,
     lastAudited: '2025-12-18',
     frequency: 'Quarterly',
-    leadAuditor: 'Grace Okafor (Audit Manager)'
+    leadAuditor: 'Audit Manager'
   },
   {
     id: 'au-111',
@@ -180,7 +180,7 @@ export const INITIAL_AUDIT_UNIVERSE = [
     itDependency: 5,
     lastAudited: '2025-06-19',
     frequency: 'Annually',
-    leadAuditor: 'Blessing Williams (Auditor)'
+    leadAuditor: 'QA Auditor'
   },
   {
     id: 'au-112',
@@ -195,7 +195,7 @@ export const INITIAL_AUDIT_UNIVERSE = [
     itDependency: 8,
     lastAudited: '2026-01-15',
     frequency: 'Quarterly',
-    leadAuditor: 'Tunde Bakare (Senior Auditor)'
+    leadAuditor: 'Lead Senior Auditor'
   }
 ];
 
@@ -208,8 +208,8 @@ export const INITIAL_ANNUAL_AUDIT_PLANS = [
     frequency: 'Quarterly',
     estimatedHours: 320,
     actualHours: 310,
-    leadAuditor: 'Tunde Bakare',
-    teamMembers: ['Blessing Williams', 'Samuel Ojo'],
+    leadAuditor: 'Senior Auditor',
+    teamMembers: ['QA Auditor', 'Staff Auditor'],
     plannedStartDate: '2026-01-10',
     plannedEndDate: '2026-02-15',
     budget: 14.5, // ₦ Millions
@@ -225,8 +225,8 @@ export const INITIAL_ANNUAL_AUDIT_PLANS = [
     frequency: 'Monthly',
     estimatedHours: 450,
     actualHours: 465,
-    leadAuditor: 'Grace Okafor',
-    teamMembers: ['Solomon Adeleke', 'Fatima Bello'],
+    leadAuditor: 'Audit Manager',
+    teamMembers: ['Senior IT Auditor', 'Field Auditor'],
     plannedStartDate: '2026-01-25',
     plannedEndDate: '2026-03-05',
     budget: 22.0,
@@ -242,8 +242,8 @@ export const INITIAL_ANNUAL_AUDIT_PLANS = [
     frequency: 'Quarterly',
     estimatedHours: 380,
     actualHours: 290,
-    leadAuditor: 'Chidi Nnamdi',
-    teamMembers: ['Ibrahim Sani', 'Grace Okafor'],
+    leadAuditor: 'Senior Risk Analyst',
+    teamMembers: ['IT Auditor', 'Audit Manager'],
     plannedStartDate: '2026-03-01',
     plannedEndDate: '2026-04-30',
     budget: 18.5,
@@ -259,8 +259,8 @@ export const INITIAL_ANNUAL_AUDIT_PLANS = [
     frequency: 'Quarterly',
     estimatedHours: 280,
     actualHours: 150,
-    leadAuditor: 'Solomon Adeleke',
-    teamMembers: ['Blessing Williams'],
+    leadAuditor: 'Senior IT Auditor',
+    teamMembers: ['QA Auditor'],
     plannedStartDate: '2026-03-15',
     plannedEndDate: '2026-05-10',
     budget: 12.0,
@@ -276,8 +276,8 @@ export const INITIAL_ANNUAL_AUDIT_PLANS = [
     frequency: 'Quarterly',
     estimatedHours: 260,
     actualHours: 0,
-    leadAuditor: 'Grace Okafor',
-    teamMembers: ['Tunde Bakare'],
+    leadAuditor: 'Audit Manager',
+    teamMembers: ['Senior Auditor'],
     plannedStartDate: '2026-05-15',
     plannedEndDate: '2026-06-30',
     budget: 11.5,
@@ -293,8 +293,8 @@ export const INITIAL_ANNUAL_AUDIT_PLANS = [
     frequency: 'Quarterly',
     estimatedHours: 220,
     actualHours: 0,
-    leadAuditor: 'Tunde Bakare',
-    teamMembers: ['Fatima Bello'],
+    leadAuditor: 'Senior Auditor',
+    teamMembers: ['Field Auditor'],
     plannedStartDate: '2026-06-01',
     plannedEndDate: '2026-07-15',
     budget: 9.8,
@@ -310,8 +310,8 @@ export const INITIAL_ANNUAL_AUDIT_PLANS = [
     frequency: 'Semi-Annually',
     estimatedHours: 350,
     actualHours: 0,
-    leadAuditor: 'Chidi Nnamdi',
-    teamMembers: ['Ibrahim Sani'],
+    leadAuditor: 'Senior Risk Analyst',
+    teamMembers: ['IT Auditor'],
     plannedStartDate: '2026-07-01',
     plannedEndDate: '2026-08-20',
     budget: 16.0,
@@ -327,8 +327,8 @@ export const INITIAL_ANNUAL_AUDIT_PLANS = [
     frequency: 'Annually',
     estimatedHours: 180,
     actualHours: 0,
-    leadAuditor: 'Blessing Williams',
-    teamMembers: ['Samuel Ojo'],
+    leadAuditor: 'QA Auditor',
+    teamMembers: ['Staff Auditor'],
     plannedStartDate: '2026-08-05',
     plannedEndDate: '2026-09-10',
     budget: 7.5,
@@ -344,8 +344,8 @@ export const INITIAL_ANNUAL_AUDIT_PLANS = [
     frequency: 'Annually',
     estimatedHours: 300,
     actualHours: 0,
-    leadAuditor: 'Chidi Nnamdi',
-    teamMembers: ['Solomon Adeleke', 'Grace Okafor'],
+    leadAuditor: 'Senior Risk Analyst',
+    teamMembers: ['Senior IT Auditor', 'Audit Manager'],
     plannedStartDate: '2026-09-15',
     plannedEndDate: '2026-10-31',
     budget: 14.0,
@@ -361,8 +361,8 @@ export const INITIAL_ANNUAL_AUDIT_PLANS = [
     frequency: 'Quarterly',
     estimatedHours: 400,
     actualHours: 0,
-    leadAuditor: 'Grace Okafor',
-    teamMembers: ['Tunde Bakare', 'Fatima Bello'],
+    leadAuditor: 'Audit Manager',
+    teamMembers: ['Senior Auditor', 'Field Auditor'],
     plannedStartDate: '2026-10-01',
     plannedEndDate: '2026-11-15',
     budget: 19.0,
@@ -416,7 +416,7 @@ export const INITIAL_WORKING_PAPERS = [
     findingId: 'FND-2026-003',
     controlId: 'CTL-OPS-012',
     riskId: 'RSK-OPS-004',
-    owner: 'Tunde Bakare',
+    owner: 'Senior Auditor',
     fileType: 'Excel',
     fileName: 'Benefit_Payment_Sample_Q1_2026_Tested.xlsx',
     fileSize: '4.2 MB',
@@ -432,7 +432,7 @@ export const INITIAL_WORKING_PAPERS = [
     findingId: 'FND-2026-001',
     controlId: 'CTL-CUS-001',
     riskId: 'RSK-CUS-001',
-    owner: 'Grace Okafor',
+    owner: 'Audit Manager',
     fileType: 'PDF',
     fileName: 'CSCS_CBN_Reconciliation_Variance_Report_Feb2026.pdf',
     fileSize: '8.7 MB',
@@ -448,7 +448,7 @@ export const INITIAL_WORKING_PAPERS = [
     findingId: 'FND-2026-002',
     controlId: 'CTL-SEC-008',
     riskId: 'RSK-SEC-002',
-    owner: 'Chidi Nnamdi',
+    owner: 'Senior Risk Analyst',
     fileType: 'Word',
     fileName: 'DBA_Privilege_Audit_Matrix_March2026.docx',
     fileSize: '1.9 MB',
@@ -464,7 +464,7 @@ export const INITIAL_WORKING_PAPERS = [
     findingId: 'FND-2026-004',
     controlId: 'CTL-INV-005',
     riskId: 'RSK-INV-003',
-    owner: 'Solomon Adeleke',
+    owner: 'Senior IT Auditor',
     fileType: 'Excel',
     fileName: 'Settlement_SLA_Exceptions_Q1_2026.xlsx',
     fileSize: '3.1 MB',
@@ -491,7 +491,7 @@ export const INITIAL_FINDINGS = [
     priority: 'High',
     recommendation: 'Implement an automated weekend SWIFT MT564/MT568 parsing daemon with auto-retry logic and mandate auto-escalation SMS/Email alerts to the Chief Audit Executive and Head of Custody if variance persists beyond 2 hours.',
     managementResponse: 'Agreed. ICT and Custody Operations will upgrade the SWIFT messaging interface to build an auto-retry queue and configure instant SMS alerts for any unposted corporate action above ₦5 Million.',
-    owner: 'Zainab Balogun (Head, Custody Operations)',
+    owner: 'Head of Custody Operations',
     targetDate: '2026-08-30',
     status: 'Open',
     evidence: 'CSCS_CBN_Reconciliation_Variance_Report_Feb2026.pdf',
@@ -516,7 +516,7 @@ export const INITIAL_FINDINGS = [
     priority: 'High',
     recommendation: 'Enforce automated identity lifecycle provisioning via CyberArk/SailPoint linked directly to contract expiration dates. Conduct immediate manual revocation and forensic log review of the 2 accounts.',
     managementResponse: 'The two vendor accounts were disabled immediately during audit fieldwork. Procurement and ICT have initiated procurement of an enterprise Identity & Access Management (IAM) bridge.',
-    owner: 'Ngozi Okonjo (Head, Info Security)',
+    owner: 'Chief Information Security Officer (Head, Info Security)',
     targetDate: '2026-07-31',
     status: 'In Progress',
     evidence: 'DBA_Privilege_Audit_Matrix_March2026.docx',
@@ -541,7 +541,7 @@ export const INITIAL_FINDINGS = [
     priority: 'Medium',
     recommendation: 'Configure the core banking application to strictly forbid single-user NIBSS bypasses. Require dual Maker-Checker digital approval and mandatory attachment of physical bank confirmation letter for any override above ₦2 Million.',
     managementResponse: 'System parameters have been updated to block single-user bypass. Operations staff have undergone retraining on PenCom AML compliance.',
-    owner: 'Adeoluwa Ogunleye (Head, Operations)',
+    owner: 'Head of Operations',
     targetDate: '2026-06-15',
     status: 'Awaiting Validation',
     evidence: 'Benefit_Payment_Sample_Q1_2026_Tested.xlsx',
@@ -566,7 +566,7 @@ export const INITIAL_FINDINGS = [
     priority: 'Medium',
     recommendation: 'Complete the STP API onboarding for all top-5 contracted PFAs to eliminate manual email ticket transcription.',
     managementResponse: 'API integration with 3 PFAs completed; final 2 PFAs scheduled for Q3 deployment.',
-    owner: 'Folake Alabi (Head, Investment Settlement)',
+    owner: 'Head of Investment Settlement (Head, Investment Settlement)',
     targetDate: '2026-09-30',
     status: 'In Progress',
     evidence: 'Settlement_SLA_Exceptions_Q1_2026.xlsx',
@@ -591,7 +591,7 @@ export const INITIAL_FINDINGS = [
     priority: 'Medium',
     recommendation: 'Automate journal voucher attachment enforcement in the ERP system so no manual journal can be committed without an uploaded PDF mandate.',
     managementResponse: 'Agreed. ERP validation script deployed on May 1st enforcing mandatory document attachment.',
-    owner: 'Mustapha Ibrahim (Head, Finance)',
+    owner: 'Chief Financial Officer',
     targetDate: '2026-05-30',
     status: 'Closed',
     evidence: 'MJV_Audit_Trail_Verification_May2026.pdf',
@@ -613,7 +613,7 @@ export const INITIAL_INTERNAL_CONTROLS = [
     operatingEffectiveness: 'Ineffective',
     frequency: 'Daily',
     automation: 'Automated',
-    owner: 'Zainab Balogun',
+    owner: 'Head of Custody Operations',
     evidence: 'Daily Reconciliation Logs & Variance Dashboard',
     residualRiskScore: 72,
     notes: 'Engine identifies variance accurately but lacks auto-escalation when weekend SWIFT MT564 messages drop.'
@@ -628,7 +628,7 @@ export const INITIAL_INTERNAL_CONTROLS = [
     operatingEffectiveness: 'Ineffective',
     frequency: 'Monthly',
     automation: 'Manual',
-    owner: 'Ngozi Okonjo',
+    owner: 'Chief Information Security Officer',
     evidence: 'Monthly Active Directory & Oracle User Dump Sign-offs',
     residualRiskScore: 70,
     notes: 'Manual email notification process from HR/Procurement causes significant lag in deprovisioning external DBA accounts.'
@@ -643,7 +643,7 @@ export const INITIAL_INTERNAL_CONTROLS = [
     operatingEffectiveness: 'Effective',
     frequency: 'Per Transaction',
     automation: 'Automated',
-    owner: 'Adeoluwa Ogunleye',
+    owner: 'Head of Operations',
     evidence: 'NIMC Biometric Match Log & NIBSS Inquiry API Logs',
     residualRiskScore: 48,
     notes: 'Operating effectiveness restored following system configuration blocking single-user emergency bypass.'
@@ -658,7 +658,7 @@ export const INITIAL_INTERNAL_CONTROLS = [
     operatingEffectiveness: 'Ineffective',
     frequency: 'Continuous',
     automation: 'Hybrid',
-    owner: 'Folake Alabi',
+    owner: 'Head of Investment Settlement',
     evidence: 'CSCS/FMDQ Trade Confirmation Timestamps vs PFA Mandates',
     residualRiskScore: 49,
     notes: 'STP operational for 3 PFAs; remaining PFAs require manual email ticket transcription during peak hours.'
@@ -673,7 +673,7 @@ export const INITIAL_INTERNAL_CONTROLS = [
     operatingEffectiveness: 'Effective',
     frequency: 'Continuous',
     automation: 'Automated',
-    owner: 'Mustapha Ibrahim',
+    owner: 'Chief Financial Officer',
     evidence: 'ERP Journal Attachment Log & CFO Digital Sign-off Register',
     residualRiskScore: 36,
     notes: 'Fully effective following May deployment of mandatory document upload validation script.'
@@ -769,7 +769,7 @@ export const INITIAL_FRAUD_CASES = [
     status: 'Closed - Substantiated & Prevented',
     financialExposure: 45.2, // ₦ Millions
     recoveredAmount: 45.2, // Fully protected/prevented
-    leadInvestigator: 'Chika Anyanwu (Risk & Fraud Unit)',
+    leadInvestigator: 'Head of Risk Management (Risk & Fraud Unit)',
     evidence: ['Cloned_NIMC_Slip_Forensic_Analysis.pdf', 'CCTV_Reception_Footage_Feb14.mp4', 'Operations_System_Alert_Log.xlsx'],
     timeline: [
       { date: '2026-02-14 10:15 AM', event: 'Suspect presented documentation at Operations desk for lumpsum withdrawal.' },
@@ -788,7 +788,7 @@ export const INITIAL_FRAUD_CASES = [
     status: 'Under Investigation',
     financialExposure: 3.94,
     recoveredAmount: 0,
-    leadInvestigator: 'Blessing Williams (Auditor)',
+    leadInvestigator: 'QA Auditor',
     evidence: ['Invoices_ApexNet_April2026.pdf', 'Procurement_Approval_Timestamp_Log.xlsx'],
     timeline: [
       { date: '2026-04-05 08:30 AM', event: 'Continuous Auditing Exception Bot #07 (Split-Transaction Detection) flagged 4 invoices below ₦1M limit.' },
@@ -800,10 +800,10 @@ export const INITIAL_FRAUD_CASES = [
 
 export const INITIAL_CONTINUOUS_EXCEPTIONS = [
   { id: 'EX-001', ruleName: 'Dormant RSA Account Disbursement Attempt (>36mo inactive)', department: 'Operations', severity: 'Critical', timestamp: '2026-07-13 11:14 AM', details: 'RSA ID: PEN-88492019 - Lumpsum request of ₦12.4M initiated on dormant account.', status: 'Flagged & Blocked', assignedTo: 'Fraud Unit' },
-  { id: 'EX-002', ruleName: 'Late Custody Trade Settlement (>24hr SLA Breach)', department: 'Investment Settlement', severity: 'High', timestamp: '2026-07-13 10:45 AM', details: 'FGN Bond Trade Ref #TB-99201 - Settlement confirmation pending 26 hours past trade date.', status: 'Under Investigation', assignedTo: 'Solomon Adeleke' },
-  { id: 'EX-003', ruleName: 'Manual Journal Override on Revenue Accrual Account', department: 'Finance', severity: 'Medium', timestamp: '2026-07-13 09:20 AM', details: 'Journal Voucher #MJV-9918 posted by user M.Ibrahim without digital PDF mandate attachment.', status: 'Open Exception', assignedTo: 'Tunde Bakare' },
-  { id: 'EX-004', ruleName: 'Segregation of Duties (SoD) Violation - Maker & Checker Same IP', department: 'Operations', severity: 'Critical', timestamp: '2026-07-12 04:15 PM', details: 'Terminal IP 10.14.22.105 executed Maker (User: S.Ojo) and Checker (User: A.Ogunleye) within 45 seconds.', status: 'Escalated to CAE', assignedTo: 'Chidi Nnamdi' },
-  { id: 'EX-005', ruleName: 'Failed Daily Cash Pool Reconciliation Variance > ₦5M', department: 'Custody Operations', severity: 'High', timestamp: '2026-07-12 08:05 AM', details: 'Reconciliation Engine reported ₦8.2M temporary sweep mismatch on PFA Sweep Pool #04.', status: 'Resolved - Corporate Action Posted', assignedTo: 'Grace Okafor' }
+  { id: 'EX-002', ruleName: 'Late Custody Trade Settlement (>24hr SLA Breach)', department: 'Investment Settlement', severity: 'High', timestamp: '2026-07-13 10:45 AM', details: 'FGN Bond Trade Ref #TB-99201 - Settlement confirmation pending 26 hours past trade date.', status: 'Under Investigation', assignedTo: 'Senior IT Auditor' },
+  { id: 'EX-003', ruleName: 'Manual Journal Override on Revenue Accrual Account', department: 'Finance', severity: 'Medium', timestamp: '2026-07-13 09:20 AM', details: 'Journal Voucher #MJV-9918 posted by user CFO without digital PDF mandate attachment.', status: 'Open Exception', assignedTo: 'Senior Auditor' },
+  { id: 'EX-004', ruleName: 'Segregation of Duties (SoD) Violation - Maker & Checker Same IP', department: 'Operations', severity: 'Critical', timestamp: '2026-07-12 04:15 PM', details: 'Terminal IP 10.14.22.105 executed Maker (User: Maker User) and Checker (User: Checker User) within 45 seconds.', status: 'Escalated to CAE', assignedTo: 'Senior Risk Analyst' },
+  { id: 'EX-005', ruleName: 'Failed Daily Cash Pool Reconciliation Variance > ₦5M', department: 'Custody Operations', severity: 'High', timestamp: '2026-07-12 08:05 AM', details: 'Reconciliation Engine reported ₦8.2M temporary sweep mismatch on PFA Sweep Pool #04.', status: 'Resolved - Corporate Action Posted', assignedTo: 'Audit Manager' }
 ];
 
 export const ROLES_LIST = [
@@ -819,27 +819,27 @@ export const ROLES_LIST = [
 export const MOCK_USERS = [
   {
     id: 'user-cae',
-    name: 'Tunde Bakare',
+    name: 'Chief Audit Executive (CAE)',
     email: 'cae@zenithcustodian.com',
     roleId: 'cae',
     title: 'Chief Audit Executive (CAE)',
     department: 'Internal Audit & Governance',
-    avatar: 'TB',
+    avatar: 'CA',
     status: 'Online'
   },
   {
     id: 'user-manager',
-    name: 'Grace Okafor',
+    name: 'Audit Manager',
     email: 'manager@zenithcustodian.com',
     roleId: 'manager',
     title: 'Audit Manager',
     department: 'Internal Audit - Operations & Custody',
-    avatar: 'GO',
+    avatar: 'AM',
     status: 'Online'
   },
   {
     id: 'user-senior',
-    name: 'Solomon Adeleke',
+    name: 'Senior Auditor',
     email: 'senior@zenithcustodian.com',
     roleId: 'senior',
     title: 'Senior Auditor',
@@ -849,42 +849,42 @@ export const MOCK_USERS = [
   },
   {
     id: 'user-qa',
-    name: 'Blessing Williams',
+    name: 'Quality Assurance Reviewer',
     email: 'qa@zenithcustodian.com',
     roleId: 'qa',
     title: 'Quality Assurance Reviewer',
     department: 'Audit Methodology & QA',
-    avatar: 'BW',
+    avatar: 'QA',
     status: 'Online'
   },
   {
     id: 'user-owner',
-    name: 'Zainab Balogun',
+    name: 'Department Head / Process Owner',
     email: 'owner@zenithcustodian.com',
     roleId: 'owner',
     title: 'Department Head / Process Owner',
     department: 'Custody Operations Department',
-    avatar: 'ZB',
+    avatar: 'DH',
     status: 'Online'
   },
   {
     id: 'user-erm',
-    name: 'Adeoluwa Ogunleye',
+    name: 'Risk & Compliance Manager',
     email: 'erm@zenithcustodian.com',
     roleId: 'erm',
     title: 'Risk & Compliance Manager',
     department: 'Enterprise Risk Management (ERM)',
-    avatar: 'AO',
+    avatar: 'RM',
     status: 'Online'
   },
   {
     id: 'user-committee',
-    name: 'Alhaji Mustapha Ibrahim',
+    name: 'Audit Committee Member / Board',
     email: 'committee@zenithcustodian.com',
     roleId: 'committee',
     title: 'Audit Committee Chairman / Board',
     department: 'Board Audit & Risk Committee',
-    avatar: 'MI',
+    avatar: 'BC',
     status: 'Online'
   }
 ];

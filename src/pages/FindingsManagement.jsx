@@ -22,7 +22,7 @@ const FindingsManagement = () => {
   const [likelihood, setLikelihood] = useState(8);
   const [impact, setImpact] = useState(9);
   const [mgmtResponse, setMgmtResponse] = useState('Management agrees with observation. Automated sweep patch scheduled for deployment.');
-  const [actionOwner, setActionOwner] = useState('Dr. Ngozi Okafor (Head, Custody)');
+  const [actionOwner, setActionOwner] = useState('Head of Custody Operations');
   const [targetDate, setTargetDate] = useState('2026-08-30');
 
   const residualCalc = likelihood * impact; // out of 100

@@ -113,7 +113,7 @@ const Topbar = () => {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#ffe4e6', lineHeight: 1.1 }}>
-              {currentUser?.name || 'Tunde Bakare'}
+              {currentUser?.name || 'Chief Audit Executive (CAE)'}
             </span>
             <span style={{ fontSize: '0.68rem', color: '#fda4af', fontWeight: 600 }}>
               {currentRole?.name}

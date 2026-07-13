@@ -15,7 +15,7 @@ const AuditEngagement = () => {
   // Review Notes State
   const [reviewNotes, setReviewNotes] = useState([
     { id: 'rn-1', author: 'Chief Audit Executive (CAE)', text: 'Verify that all PenCom Section 5.2 custody asset confirmation certificates are cross-checked against CBN RTGS statements.', status: 'Cleared', date: '2026-07-10' },
-    { id: 'rn-2', author: 'Ibrahim Al-Hassan (Lead Reviewer)', text: 'Procedure 3 in custody reconciliation requires deeper sample testing—expand sample size from 25 to 50 transactions.', status: 'Open', date: '2026-07-12' }
+    { id: 'rn-2', author: 'Lead Reviewer', text: 'Procedure 3 in custody reconciliation requires deeper sample testing—expand sample size from 25 to 50 transactions.', status: 'Open', date: '2026-07-12' }
   ]);
   const [newNoteText, setNewNoteText] = useState('');
 
@@ -97,7 +97,7 @@ const AuditEngagement = () => {
             <h2 style={{ margin: '0 0 0.4rem', fontSize: '1.35rem', fontWeight: 800 }}>{selectedPlan.auditName}</h2>
             <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
               <span>Lead Auditor: <strong style={{ color: 'white' }}>{selectedPlan.leadAuditor}</strong></span>
-              <span>Team: <strong style={{ color: 'white' }}>{(selectedPlan.teamMembers || ['Solomon Adeleke', 'Blessing Williams']).join(', ')}</strong></span>
+              <span>Team: <strong style={{ color: 'white' }}>{(selectedPlan.teamMembers || ['Senior IT Auditor', 'QA Auditor']).join(', ')}</strong></span>
               <span>Timeline: <strong style={{ color: 'white' }}>{selectedPlan.plannedStartDate} to {selectedPlan.plannedEndDate}</strong></span>
             </div>
           </div>
@@ -166,7 +166,7 @@ const AuditEngagement = () => {
                 <span style={{ fontSize: '0.86rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Assigned Engagement Team:</span>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   <span className="badge-chip-purple">Lead: {selectedPlan.leadAuditor}</span>
-                  {(selectedPlan.teamMembers || ['Solomon Adeleke', 'Blessing Williams']).map((m, i) => (
+                  {(selectedPlan.teamMembers || ['Senior IT Auditor', 'QA Auditor']).map((m, i) => (
                     <span key={i} className="badge-chip" style={{ background: 'rgba(255,255,255,0.06)' }}>Auditor: {m}</span>
                   ))}
                 </div>

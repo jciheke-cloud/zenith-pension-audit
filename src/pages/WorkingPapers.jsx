@@ -12,7 +12,7 @@ const WorkingPapers = () => {
   const [title, setTitle] = useState('');
   const [fileType, setFileType] = useState('Excel Workbook (.xlsx)');
   const [linkedAudit, setLinkedAudit] = useState(auditPlans[0]?.auditName || 'Q3 Custody Fee Sweep Reconciliation');
-  const [uploadedBy, setUploadedBy] = useState('Tunde Bakare (Senior Auditor)');
+  const [uploadedBy, setUploadedBy] = useState('Lead Senior Auditor');
 
   const filteredPapers = workingPapers.filter(wp => {
     const matchesSearch = wp.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
