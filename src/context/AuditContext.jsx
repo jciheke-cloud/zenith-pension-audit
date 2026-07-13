@@ -16,7 +16,7 @@ import {
 export const AuditContext = createContext();
 
 export const AuditProvider = ({ children }) => {
-  const [clientProfile, setClientProfile] = useState('Zenith Pension Custodian Limited');
+  const [clientProfile, setClientProfile] = useState('Zenith Pension Custodian Limited (ZPC)');
   const [currency, setCurrency] = useState('NGN');
   const [currentRole, setCurrentRole] = useState(ROLES_LIST[0]); // Chief Audit Executive by default
   

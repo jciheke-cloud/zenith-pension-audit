@@ -19,13 +19,16 @@ import ComplianceAndRegulatory from './pages/ComplianceAndRegulatory';
 import FraudAndContinuous from './pages/FraudAndContinuous';
 import ReportsAndCommittee from './pages/ReportsAndCommittee';
 import ErmSyncPage from './pages/ErmSyncPage';
+import CbnDmoMacroTicker from './components/CbnDmoMacroTicker';
 
 const App = () => {
   return (
-    <div className="app-container">
-      <Sidebar />
-      <div className="main-content">
-        <Topbar />
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
+      <CbnDmoMacroTicker />
+      <div className="app-container" style={{ flex: 1 }}>
+        <Sidebar />
+        <div className="main-content">
+          <Topbar />
         <NotificationDrawer />
         <Routes>
           <Route path="/" element={<ExecutiveDashboard />} />
@@ -44,6 +47,7 @@ const App = () => {
           <Route path="/erm-sync" element={<ErmSyncPage />} />
         </Routes>
       </div>
+    </div>
     </div>
   );
 };
