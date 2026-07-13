@@ -9,7 +9,14 @@ const AppSwitcherDropdown = () => {
   
   // Dynamic Netlify/AWS URL state (checks localStorage first, then env variable, then default)
   const [ermUrl, setErmUrl] = useState(() => {
-    return localStorage.getItem('ZPC_ERM_URL_OVERRIDE') || import.meta.env.VITE_ERM_APP_URL || 'http://localhost:5173';
+    const fromStorage = localStorage.getItem('ZPC_ERM_URL_OVERRIDE');
+    if (fromStorage) return fromStorage;
+    if (window.location.hostname.includes('netlify.app')) {
+      return import.meta.env.VITE_ERM_APP_URL && !import.meta.env.VITE_ERM_APP_URL.includes('localhost')
+        ? import.meta.env.VITE_ERM_APP_URL
+        : 'https://zpc-erm-demo.netlify.app';
+    }
+    return import.meta.env.VITE_ERM_APP_URL || 'http://localhost:5173';
   });
   const [inputUrl, setInputUrl] = useState(ermUrl);
   const [savedSuccess, setSavedSuccess] = useState(false);
