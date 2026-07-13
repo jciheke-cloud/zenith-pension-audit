@@ -22,6 +22,35 @@ export const AuditProvider = ({ children }) => {
   const [currentRole, setCurrentRole] = useState(ROLES_LIST[0]); // Chief Audit Executive by default
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(MOCK_USERS[0]);
+
+  // Intercept Cross-App SSO URL parameters on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ssoRole = params.get('sso_role');
+    const ssoToken = params.get('sso_token');
+    const source = params.get('source');
+
+    if (ssoRole && (ssoToken === 'riskintegra_auth_bridge' || ssoRole)) {
+      const foundUser = MOCK_USERS.find(u => u.roleId.toLowerCase() === ssoRole.toLowerCase()) || MOCK_USERS[0];
+      const roleObj = ROLES_LIST.find(r => r.id === foundUser.roleId) || ROLES_LIST[0];
+      
+      setCurrentUser(foundUser);
+      setCurrentRole(roleObj);
+      setIsAuthenticated(true);
+
+      // Clean address bar so token doesn't stay visible
+      if (window.history.replaceState) {
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+
+      addNotification(
+        'SSO Gateway Active',
+        `Authenticated automatically from ${source ? source.toUpperCase() : 'ERM'} Suite under ${foundUser.title}.`,
+        'success'
+      );
+    }
+  }, []);
   
   const [businessUnits, setBusinessUnits] = useState(INITIAL_BUSINESS_UNITS);
   const [auditUniverse, setAuditUniverse] = useState(INITIAL_AUDIT_UNIVERSE);
