@@ -1,0 +1,83 @@
+/* App specific layout utilities */
+.page-container {
+  padding: 2rem 2.5rem;
+  max-width: 1780px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .page-container {
+    padding: 1.25rem;
+  }
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.module-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: white;
+}
+
+.module-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+/* Custom Progress Bar */
+.progress-container {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  height: 8px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.5s ease;
+}
+
+.progress-fill.red { background: linear-gradient(90deg, #C81E1E, #EF4444); }
+.progress-fill.emerald { background: linear-gradient(90deg, #059669, #10B981); }
+.progress-fill.amber { background: linear-gradient(90deg, #D97706, #F59E0B); }
+.progress-fill.blue { background: linear-gradient(90deg, #2563EB, #3B82F6); }
