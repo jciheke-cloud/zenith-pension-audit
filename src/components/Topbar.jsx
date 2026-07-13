@@ -42,55 +42,22 @@ const Topbar = () => {
       zIndex: 40,
       backdropFilter: 'blur(20px)'
     }}>
-      {/* Left side: Client Profile & Brand Badge */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-        <span style={{ fontWeight: 800, fontSize: '1.15rem', background: 'linear-gradient(90deg, #ffe4e6 0%, #fda4af 60%, #C81E1E 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          🛡️ Zenith Pension Custodian™
-        </span>
-        <span style={{ color: 'var(--text-muted)' }}>|</span>
-        {editingProfile ? (
-          <form onSubmit={handleSaveProfile} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <input
-              type="text"
-              value={profileInput}
-              onChange={e => setProfileInput(e.target.value)}
-              autoFocus
-              style={{
-                background: '#1E293B',
-                border: '1px solid rgba(200, 30, 30, 0.45)',
-                color: 'white',
-                padding: '0.35rem 0.65rem',
-                borderRadius: '0.4rem',
-                fontSize: '0.85rem',
-                width: '300px'
-              }}
-            />
-            <button type="submit" className="btn-primary" style={{ padding: '0.35rem 0.65rem' }}>✓</button>
-          </form>
-        ) : (
-          <div
-            onClick={() => setEditingProfile(true)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-            title="Click to customize Client/Bank Name"
-          >
-            <span style={{ color: 'var(--text-main)', fontWeight: 700, fontSize: '1.05rem', letterSpacing: '-0.2px' }}>
-              {clientProfile}
-            </span>
-            <span style={{ fontSize: '0.75rem', color: '#fda4af' }}>✏️</span>
-          </div>
-        )}
-        <span className="badge badge-success" style={{ background: 'rgba(225, 29, 72, 0.2)', border: '1px solid rgba(200, 30, 30, 0.35)', color: '#fda4af' }}>License: PENCOM/PFC/004</span>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.35)', padding: '0.35rem 0.75rem', borderRadius: '0.5rem', fontSize: '0.75rem', fontWeight: 700, color: '#34d399' }}>
-          <Shield size={14} />
-          <span>RiskINTEGRA ERM Sync: ACTIVE</span>
-        </div>
+      {/* Left side: Clean Institutional Brand Header */}
+      <div>
+        <h2 style={{
+          fontSize: '1.85rem',
+          fontWeight: 800,
+          margin: 0,
+          letterSpacing: '-0.5px',
+          background: 'linear-gradient(90deg, #ffe4e6 0%, #fda4af 60%, #C81E1E 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.6rem'
+        }}>
+          {clientProfile || 'Zenith Pension Custodian Limited (ZPC)'}
+        </h2>
       </div>
 
       {/* Right side controls */}
