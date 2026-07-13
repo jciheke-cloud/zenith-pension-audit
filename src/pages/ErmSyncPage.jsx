@@ -84,7 +84,7 @@ const ErmSyncPage = () => {
       </div>
 
       {/* 3 Pillar Mapping Grid */}
-      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '2rem' }}>
+      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
         <div className="glass-card" style={{ padding: '1.5rem', borderTop: '4px solid #3B82F6' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.8rem' }}>
             <Database size={24} color="#3B82F6" />

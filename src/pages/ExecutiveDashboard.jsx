@@ -117,7 +117,7 @@ const ExecutiveDashboard = () => {
       )}
 
       {/* 10 Executive KPIs Grid */}
-      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(5, 1fr)', gap: '1rem', marginBottom: '1.75rem' }}>
+      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginBottom: '1.75rem' }}>
         <div className="glass-card" style={{ padding: '1.25rem' }}>
           <span className="card-title-sm">Annual Plan Completion</span>
           <span className="card-metric" style={{ color: planCompletionPct >= 50 ? '#10B981' : '#F59E0B' }}>
@@ -176,7 +176,7 @@ const ExecutiveDashboard = () => {
       </div>
 
       {/* Second Row KPIs */}
-      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
         <div className="glass-card flex-between" style={{ padding: '1.25rem' }}>
           <div>
             <span className="card-title-sm">Average Audit Rating</span>

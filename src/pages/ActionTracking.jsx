@@ -34,7 +34,7 @@ const ActionTracking = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(5, 1fr)', gap: '1rem', marginBottom: '1.75rem' }}>
+      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginBottom: '1.75rem' }}>
         <div className="glass-card" style={{ padding: '1.2rem', cursor: 'pointer', border: activeTab === 'All' ? '1px solid #C81E1E' : '1px solid var(--border-color)' }} onClick={() => setActiveTab('All')}>
           <span className="card-title-sm">Total Logged CAPs</span>
           <span className="card-metric" style={{ fontSize: '1.8rem' }}>{findings.length}</span>

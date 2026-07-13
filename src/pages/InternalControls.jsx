@@ -62,7 +62,7 @@ const InternalControls = () => {
       </div>
 
       {/* KPI Row */}
-      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '1.75rem' }}>
+      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginBottom: '1.75rem' }}>
         <div className="glass-card" style={{ padding: '1.25rem' }}>
           <span className="card-title-sm">Total Evaluated Controls</span>
           <span className="card-metric" style={{ fontSize: '1.8rem' }}>{controls.length}</span>

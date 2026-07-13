@@ -414,11 +414,21 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
 }
 
-.content-area {
+.content-area, .main-content {
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - 70px);
   width: 100%;
+  flex: 1;
+  min-width: 0;
+  max-width: calc(100vw - 275px);
+  overflow-x: hidden;
+}
+
+@media (max-width: 1024px) {
+  .content-area, .main-content {
+    max-width: 100vw;
+  }
 }
 
 .glass-panel {
