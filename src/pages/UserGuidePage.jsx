@@ -8,10 +8,10 @@ const UserGuidePage = () => {
   const sections = [
     { id: 'overview', label: '📖 Executive Overview', icon: BookOpen },
     { id: 'rbac', label: '🔐 Roles & RBAC Security', icon: Key },
-    { id: 'modules', label: '📊 14 Audit Modules Breakdown', icon: Layers },
-    { id: 'sso', label: '🔄 Bi-Directional SSO & App Switcher', icon: Share2 },
-    { id: 'compliance', label: '⚖️ PENCOM & CBN Compliance', icon: ShieldCheck },
-    { id: 'cloud', label: '☁️ Netlify & AWS Deployment', icon: ExternalLink },
+    { id: 'modules', label: '📊 14 Audit Modules', icon: Layers },
+    { id: 'sso', label: '🔄 SSO & App Switcher', icon: Share2 },
+    { id: 'compliance', label: '⚖️ PENCOM & CBN Regs', icon: ShieldCheck },
+    { id: 'cloud', label: '☁️ Netlify & AWS Setup', icon: ExternalLink },
     { id: 'faq', label: '❓ Troubleshooting & FAQs', icon: HelpCircle }
   ];
 
@@ -65,9 +65,6 @@ const UserGuidePage = () => {
           <h1 style={{ fontSize: '2rem', fontWeight: 900, margin: '0 0 0.5rem', background: 'linear-gradient(90deg, #FFFFFF 0%, #FECACA 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             RiskINTEGRA Internal Audit Suite™ — User Guide
           </h1>
-          <p style={{ margin: 0, color: '#CBD5E1', fontSize: '0.95rem', maxWidth: '750px', lineHeight: 1.6 }}>
-            The official executive operational manual for Zenith Pension Custodian Limited (ZPC). Learn how to navigate the 14 continuous auditing modules, switch roles, and bridge directly into Enterprise Risk Management (ERM).
-          </p>
         </div>
         <div style={{ textAlign: 'right' }}>
           <div style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', padding: '0.8rem 1.2rem', borderRadius: '0.6rem', display: 'inline-block' }}>
@@ -78,7 +75,7 @@ const UserGuidePage = () => {
       </div>
 
       {/* Main Layout Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '2rem', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(270px, 300px) 1fr', gap: '2rem', alignItems: 'start' }}>
         {/* Navigation Sidebar Tabs */}
         <div style={{
           background: '#0B1120',
@@ -91,7 +88,7 @@ const UserGuidePage = () => {
           <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0.5rem 0.8rem', marginBottom: '0.5rem' }}>
             Table of Contents
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
             {sections.map(sec => {
               const Icon = sec.icon;
               const active = activeTab === sec.id;
@@ -103,23 +100,27 @@ const UserGuidePage = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    padding: '0.75rem 0.85rem',
+                    gap: '0.5rem',
+                    padding: '0.75rem 0.9rem',
                     borderRadius: '0.6rem',
                     background: active ? 'linear-gradient(135deg, #C81E1E 0%, #991B1B 100%)' : 'transparent',
                     color: active ? 'white' : '#CBD5E1',
                     border: 'none',
                     cursor: 'pointer',
                     fontWeight: active ? 700 : 500,
-                    fontSize: '0.85rem',
+                    fontSize: '0.86rem',
                     textAlign: 'left',
+                    lineHeight: 1.35,
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
                     transition: 'all 0.2s'
                   }}
                 >
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                    <Icon size={16} />
-                    <span>{sec.label.split(' ')[1]} {sec.label.split(' ')[2] || ''}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flex: 1 }}>
+                    <Icon size={16} style={{ flexShrink: 0 }} />
+                    <span style={{ flex: 1 }}>{sec.label}</span>
                   </span>
-                  {active && <ChevronRight size={14} />}
+                  {active && <ChevronRight size={15} style={{ flexShrink: 0 }} />}
                 </button>
               );
             })}
