@@ -10,7 +10,6 @@ const UserGuidePage = () => {
     { id: 'rbac', label: '🔐 Roles & RBAC Security', icon: Key },
     { id: 'modules', label: '📊 14 Audit Modules', icon: Layers },
     { id: 'tools_guide', label: '🛠️ Interactive Tools Guide', icon: Wrench },
-    { id: 'sso', label: '🔄 SSO & App Switcher', icon: Share2 },
     { id: 'compliance', label: '⚖️ PENCOM & CBN Regs', icon: ShieldCheck },
     { id: 'switcher_guide', label: '🔀 Switching Between Apps', icon: ExternalLink },
     { id: 'faq', label: '❓ Troubleshooting & FAQs', icon: HelpCircle }
@@ -456,36 +455,6 @@ const UserGuidePage = () => {
                 </div>
 
               </div>
-            </div>
-          )}
-
-          {/* TAB 4: BI-DIRECTIONAL SSO & SWITCHER */}
-          {activeTab === 'sso' && (
-            <div>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fda4af', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem', marginTop: 0 }}>
-                🔄 Bi-Directional SSO & Ecosystem App Switcher
-              </h2>
-              <p style={{ lineHeight: 1.8, fontSize: '0.95rem', color: '#E2E8F0' }}>
-                Zenith Pension Custodian operates two interconnected corporate governance suites: <strong>RiskINTEGRA ERM</strong> (`localhost:5173` or Netlify) and <strong>RiskINTEGRA Internal Audit</strong> (`localhost:5174` or Netlify).
-              </p>
-              
-              <div style={{ background: 'linear-gradient(135deg, rgba(30, 58, 138, 0.2) 0%, rgba(15, 23, 42, 0.8) 100%)', border: '1px solid #3B82F6', padding: '1.5rem', borderRadius: '0.85rem', margin: '1.5rem 0' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#60A5FA', marginTop: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Share2 size={18} /> How to Switch Apps with One Click
-                </h3>
-                <ol style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: 1.8, fontSize: '0.88rem', color: '#CBD5E1' }}>
-                  <li>Look at the right side of your Topbar, next to the <strong>Currency Switcher (💱 NGN)</strong>.</li>
-                  <li>Click the <strong>`Apps ⠿`</strong> grid button to expand the <strong>RiskINTEGRA Ecosystem Suite™</strong> menu.</li>
-                  <li>Click on <strong>"Launch ERM with active role ➔"</strong>.</li>
-                  <li>The system will automatically redirect you to the ERM app while attaching an encrypted SSO Boarding Pass (`?sso_role=cae&sso_token=riskintegra_auth_bridge`).</li>
-                  <li>The ERM app instantly intercepts this pass, logs you in automatically without asking for credentials, and cleans up your address bar!</li>
-                </ol>
-              </div>
-
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'white' }}>Connecting Across Netlify & Cloud Domains</h3>
-              <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6 }}>
-                If you upload your two apps to Netlify under custom links (e.g. `zpc-audit-demo.netlify.app`), you do not need to rewrite code or configure environment variables! Simply click **`Apps ⠿`** ➔ Click **`⚙️ Set Link`** at the top right of the menu ➔ Paste your ERM Netlify URL once and click **Link**. The bridge is immediately saved in your browser!
-              </p>
             </div>
           )}
 

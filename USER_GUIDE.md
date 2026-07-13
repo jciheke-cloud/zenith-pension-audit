@@ -139,24 +139,7 @@ RiskINTEGRA Internal Audit™ equips audit teams with specialized, interactive c
 
 ---
 
-## 5. Using the Unified App Switcher & Bi-Directional SSO
-
-To ensure a seamless executive experience across both corporate governance applications (**Internal Audit** and **ERM**), the platform includes the **RiskINTEGRA Ecosystem Gateway™**:
-
-### Launching the App Switcher
-1. Look at the top utility bar (next to the **Currency Selector 💱** and **Live CBN Feeds**).
-2. Click the **`Apps ⠿`** button to open the ecosystem grid.
-3. You will see both institutional suites:
-   * **RiskINTEGRA ERM Suite** (Risk Register, KRIs, PenCom Capital Engine).
-   * **RiskINTEGRA Internal Audit** (Your current application).
-
-### Bi-Directional Single Sign-On (SSO)
-* When you click **"Launch ERM with active role ➔"** inside the Audit app, the system opens your ERM application while automatically passing your exact security credentials via a cryptographic URL gateway (`?sso_role=cae&sso_token=riskintegra_auth_bridge`).
-* The destination app instantly intercepts the token, logs you into the exact same executive tier, and cleans up the address bar automatically!
-
----
-
-## 6. How to Switch Between RiskINTEGRA Applications
+## 5. How to Switch Between RiskINTEGRA Applications
 
 Zenith Pension Custodian (ZPC) operates two twin institutional governance platforms: the **RiskINTEGRA ERM Suite** and the **RiskINTEGRA Internal Audit Suite**. You can switch between both applications anytime without re-entering your login credentials.
 
@@ -171,7 +154,7 @@ If your partner application is hosted on a shared web link or cloud address (suc
 
 ---
 
-## 7. Intellectual Property & Domain Protection (`LicenseGuard`)
+## 6. Intellectual Property & Domain Protection (`LicenseGuard`)
 
 Both frontend and backend operations are protected by **`LicenseGuard.jsx`**:
 * **Domain Whitelisting**: Ensures code only executes on authorized institutional domains (`*.zenithcustodian.com`, `localhost`, `*.netlify.app`).
@@ -181,7 +164,7 @@ Both frontend and backend operations are protected by **`LicenseGuard.jsx`**:
 
 ---
 
-## 8. Support & Operations Helpdesk
+## 7. Support & Operations Helpdesk
 
 For technical assistance, license key renewals, or custom regulatory reporting template requests, contact:
 * **Licensing Operations**: `licensing@zenithcustodian.com`
