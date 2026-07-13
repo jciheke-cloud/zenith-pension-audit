@@ -69,7 +69,7 @@ const ExecutiveDashboard = () => {
       {/* Header */}
       <div className="module-header">
         <div>
-          <h1 className="module-title">Chief Audit Executive (CAE) Executive Dashboard</h1>
+          <h1 className="module-title">Executive Dashboard</h1>
           <p className="module-subtitle">
             Real-time oversight of the Zenith Pension Custodian internal audit lifecycle, regulatory readiness, and 10×10 risk findings.
           </p>
