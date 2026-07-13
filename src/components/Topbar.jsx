@@ -9,8 +9,8 @@ const Topbar = () => {
     currency,
     toggleCurrency,
     currentRole,
-    switchRole,
-    rolesList,
+    currentUser,
+    logout,
     notifications,
     setDrawerOpen
   } = useContext(AuditContext);
@@ -86,29 +86,57 @@ const Topbar = () => {
           <span style={{ color: '#fda4af', fontWeight: 800 }}>{currency}</span>
         </button>
 
-        {/* Multi-Role Switcher */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255, 255, 255, 0.04)', border: '1px solid var(--border-color)', padding: '0.3rem 0.7rem', borderRadius: '0.5rem' }}>
-          <UserCheck size={16} color="#fda4af" />
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>Role:</span>
-          <select
-            value={currentRole?.id}
-            onChange={e => switchRole(e.target.value)}
+        {/* Logged-In Executive Profile Pill */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.65rem',
+          background: 'rgba(255, 255, 255, 0.04)',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          padding: '0.35rem 0.8rem',
+          borderRadius: '2rem'
+        }}>
+          <div style={{
+            width: '28px',
+            height: '28px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #C81E1E, #9f1239)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontWeight: 800,
+            fontSize: '0.75rem',
+            boxShadow: '0 0 8px rgba(200, 30, 30, 0.5)'
+          }}>
+            {currentUser?.avatar || currentRole?.name?.substring(0, 2).toUpperCase()}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#ffe4e6', lineHeight: 1.1 }}>
+              {currentUser?.name || 'Tunde Bakare'}
+            </span>
+            <span style={{ fontSize: '0.68rem', color: '#fda4af', fontWeight: 600 }}>
+              {currentRole?.name}
+            </span>
+          </div>
+          <button
+            onClick={logout}
             style={{
-              background: 'transparent',
-              color: 'white',
-              border: 'none',
-              fontSize: '0.82rem',
+              marginLeft: '0.4rem',
+              background: 'rgba(200, 30, 30, 0.2)',
+              border: '1px solid rgba(200, 30, 30, 0.45)',
+              color: '#fda4af',
+              padding: '0.22rem 0.6rem',
+              borderRadius: '0.45rem',
+              fontSize: '0.72rem',
               fontWeight: 700,
               cursor: 'pointer',
-              outline: 'none'
+              transition: 'all 0.2s'
             }}
+            title="Sign out to switch mock executive role"
           >
-            {rolesList.map(r => (
-              <option key={r.id} value={r.id} style={{ background: '#0F172A', color: 'white' }}>
-                {r.name}
-              </option>
-            ))}
-          </select>
+            Sign Out
+          </button>
         </div>
 
         {/* Notification Bell */}

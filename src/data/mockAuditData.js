@@ -815,3 +815,76 @@ export const ROLES_LIST = [
   { id: 'erm', name: 'Risk & Compliance Manager', badge: 'Risk Ecosystem', access: 'View ERM Sync, KRI Linkage, Regulatory Review' },
   { id: 'committee', name: 'Audit Committee Member / Board', badge: 'Board Portal', access: 'Read Board Packs, Approve Annual Plan & Closures' }
 ];
+
+export const MOCK_USERS = [
+  {
+    id: 'user-cae',
+    name: 'Tunde Bakare',
+    email: 'cae@zenithcustodian.com',
+    roleId: 'cae',
+    title: 'Chief Audit Executive (CAE)',
+    department: 'Internal Audit & Governance',
+    avatar: 'TB',
+    status: 'Online'
+  },
+  {
+    id: 'user-manager',
+    name: 'Grace Okafor',
+    email: 'manager@zenithcustodian.com',
+    roleId: 'manager',
+    title: 'Audit Manager',
+    department: 'Internal Audit - Operations & Custody',
+    avatar: 'GO',
+    status: 'Online'
+  },
+  {
+    id: 'user-senior',
+    name: 'Solomon Adeleke',
+    email: 'senior@zenithcustodian.com',
+    roleId: 'senior',
+    title: 'Senior Auditor',
+    department: 'Internal Audit - IT & Systems',
+    avatar: 'SA',
+    status: 'Online'
+  },
+  {
+    id: 'user-qa',
+    name: 'Blessing Williams',
+    email: 'qa@zenithcustodian.com',
+    roleId: 'qa',
+    title: 'Quality Assurance Reviewer',
+    department: 'Audit Methodology & QA',
+    avatar: 'BW',
+    status: 'Online'
+  },
+  {
+    id: 'user-owner',
+    name: 'Zainab Balogun',
+    email: 'owner@zenithcustodian.com',
+    roleId: 'owner',
+    title: 'Department Head / Process Owner',
+    department: 'Custody Operations Department',
+    avatar: 'ZB',
+    status: 'Online'
+  },
+  {
+    id: 'user-erm',
+    name: 'Adeoluwa Ogunleye',
+    email: 'erm@zenithcustodian.com',
+    roleId: 'erm',
+    title: 'Risk & Compliance Manager',
+    department: 'Enterprise Risk Management (ERM)',
+    avatar: 'AO',
+    status: 'Online'
+  },
+  {
+    id: 'user-committee',
+    name: 'Alhaji Mustapha Ibrahim',
+    email: 'committee@zenithcustodian.com',
+    roleId: 'committee',
+    title: 'Audit Committee Chairman / Board',
+    department: 'Board Audit & Risk Committee',
+    avatar: 'MI',
+    status: 'Online'
+  }
+];

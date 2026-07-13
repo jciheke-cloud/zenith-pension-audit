@@ -10,7 +10,8 @@ import {
   INITIAL_REGULATORY_REVIEWS,
   INITIAL_FRAUD_CASES,
   INITIAL_CONTINUOUS_EXCEPTIONS,
-  ROLES_LIST
+  ROLES_LIST,
+  MOCK_USERS
 } from '../data/mockAuditData';
 
 export const AuditContext = createContext();
@@ -19,6 +20,8 @@ export const AuditProvider = ({ children }) => {
   const [clientProfile, setClientProfile] = useState('Zenith Pension Custodian Limited (ZPC)');
   const [currency, setCurrency] = useState('NGN');
   const [currentRole, setCurrentRole] = useState(ROLES_LIST[0]); // Chief Audit Executive by default
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(MOCK_USERS[0]);
   
   const [businessUnits, setBusinessUnits] = useState(INITIAL_BUSINESS_UNITS);
   const [auditUniverse, setAuditUniverse] = useState(INITIAL_AUDIT_UNIVERSE);
@@ -61,6 +64,20 @@ export const AuditProvider = ({ children }) => {
   const switchRole = (roleId) => {
     const found = ROLES_LIST.find(r => r.id === roleId) || ROLES_LIST[0];
     setCurrentRole(found);
+  };
+
+  // Mock account login
+  const loginWithMockAccount = (user) => {
+    setCurrentUser(user);
+    const role = ROLES_LIST.find(r => r.id === user.roleId) || ROLES_LIST[0];
+    setCurrentRole(role);
+    setIsAuthenticated(true);
+    addNotification('Authentication Successful', `Welcome back, ${user.name} (${role.name}). Active session initialized.`, 'success');
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    addNotification('Session Closed', `Logged out of ${currentUser?.name || currentRole.name}'s mock account.`, 'info');
   };
 
   // Add notification helper
@@ -205,6 +222,13 @@ export const AuditProvider = ({ children }) => {
         currentRole,
         switchRole,
         rolesList: ROLES_LIST,
+        isAuthenticated,
+        setIsAuthenticated,
+        currentUser,
+        setCurrentUser,
+        loginWithMockAccount,
+        logout,
+        mockUsersList: MOCK_USERS,
         businessUnits,
         addBusinessUnit,
         auditUniverse,

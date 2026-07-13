@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { AuditContext } from './context/AuditContext';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 import NotificationDrawer from './components/NotificationDrawer';
+import LoginScreen from './components/LoginScreen';
 
 // Pages
 import ExecutiveDashboard from './pages/ExecutiveDashboard';
@@ -22,6 +24,12 @@ import ErmSyncPage from './pages/ErmSyncPage';
 import CbnDmoMacroTicker from './components/CbnDmoMacroTicker';
 
 const App = () => {
+  const { isAuthenticated } = useContext(AuditContext);
+
+  if (!isAuthenticated) {
+    return <LoginScreen />;
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
       <CbnDmoMacroTicker />
