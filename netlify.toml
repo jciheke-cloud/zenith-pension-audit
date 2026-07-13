@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  VITE_ERM_APP_URL = "https://zpc-erm-demo.netlify.app"
+  VITE_AUDIT_APP_URL = "https://zpc-audit-demo.netlify.app"
+
+# Single Page Application (SPA) Routing Rule
+# Prevents 404 errors when refreshing pages or receiving SSO URL parameters (?sso_role=cae)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
