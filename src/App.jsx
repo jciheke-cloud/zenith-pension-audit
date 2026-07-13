@@ -22,6 +22,7 @@ import ComplianceAndRegulatory from './pages/ComplianceAndRegulatory';
 import FraudAndContinuous from './pages/FraudAndContinuous';
 import ReportsAndCommittee from './pages/ReportsAndCommittee';
 import ErmSyncPage from './pages/ErmSyncPage';
+import UserGuidePage from './pages/UserGuidePage';
 import CbnDmoMacroTicker from './components/CbnDmoMacroTicker';
 
 const App = () => {
@@ -59,6 +60,7 @@ const App = () => {
               <Route path="/fraud-continuous" element={<FraudAndContinuous />} />
               <Route path="/reports-committee" element={<ReportsAndCommittee />} />
               <Route path="/erm-sync" element={<ErmSyncPage />} />
+              <Route path="/user-guide" element={<UserGuidePage />} />
             </Routes>
           </div>
         </div>

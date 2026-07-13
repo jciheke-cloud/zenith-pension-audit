@@ -14,7 +14,8 @@ import {
   Scale,
   Eye,
   FileCheck,
-  Share2
+  Share2,
+  BookOpen
 } from 'lucide-react';
 import { AuditContext } from '../context/AuditContext';
 
@@ -109,11 +110,15 @@ const Sidebar = () => {
         </NavLink>
 
         <div style={{ margin: '1.1rem 0 0.3rem', padding: '0 1rem', fontSize: '0.66rem', fontWeight: 800, color: '#94a3b8', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-          ECOSYSTEM INTEGRATION
+          ECOSYSTEM & HELP
         </div>
         <NavLink to="/erm-sync" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <Share2 />
           <span style={{ color: '#fda4af', fontWeight: 800 }}>ERM Sync Bridge™</span>
+        </NavLink>
+        <NavLink to="/user-guide" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <BookOpen />
+          <span style={{ color: '#38BDF8', fontWeight: 700 }}>User Guide & Manual</span>
         </NavLink>
       </nav>
 
