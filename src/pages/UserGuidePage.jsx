@@ -11,7 +11,7 @@ const UserGuidePage = () => {
     { id: 'modules', label: '📊 14 Audit Modules', icon: Layers },
     { id: 'sso', label: '🔄 SSO & App Switcher', icon: Share2 },
     { id: 'compliance', label: '⚖️ PENCOM & CBN Regs', icon: ShieldCheck },
-    { id: 'cloud', label: '☁️ Netlify & AWS Setup', icon: ExternalLink },
+    { id: 'switcher_guide', label: '🔀 Switching Between Apps', icon: ExternalLink },
     { id: 'faq', label: '❓ Troubleshooting & FAQs', icon: HelpCircle }
   ];
 
@@ -340,33 +340,47 @@ const UserGuidePage = () => {
             </div>
           )}
 
-          {/* TAB 6: CLOUD & NETLIFY */}
-          {activeTab === 'cloud' && (
+          {/* TAB 6: SWITCHING BETWEEN APPS */}
+          {activeTab === 'switcher_guide' && (
             <div>
               <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fda4af', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem', marginTop: 0 }}>
-                ☁️ Netlify & AWS Deployment Architecture
+                🔀 How to Switch Between RiskINTEGRA Applications
               </h2>
-              <p style={{ lineHeight: 1.7, fontSize: '0.92rem', color: '#CBD5E1' }}>
-                Both RiskINTEGRA suites have been built with a modern Single Page Application (SPA) structure using Vite and React, making them ready for instant deployment to Netlify or Amazon Web Services (AWS CloudFront/S3).
+              <p style={{ lineHeight: 1.7, fontSize: '0.94rem', color: '#CBD5E1' }}>
+                Zenith Pension Custodian (ZPC) operates two twin institutional governance platforms: the <strong>RiskINTEGRA ERM Suite</strong> and the <strong>RiskINTEGRA Internal Audit Suite</strong>. You can switch between both applications anytime without re-entering your login credentials.
               </p>
 
-              <div style={{ background: '#0F172A', border: '1px solid #334155', padding: '1.25rem', borderRadius: '0.75rem', fontFamily: 'monospace', fontSize: '0.82rem', color: '#38BDF8', margin: '1.25rem 0' }}>
-                <div># Pre-configured Netlify Configuration inside repository (/netlify.toml)</div>
-                <div>[build]</div>
-                <div>&nbsp;&nbsp;command = "npm run build"</div>
-                <div>&nbsp;&nbsp;publish = "dist"</div>
-                <br />
-                <div># SPA Redirect Rule (Prevents 404 errors when opening SSO URLs)</div>
-                <div>[[redirects]]</div>
-                <div>&nbsp;&nbsp;from = "/*"</div>
-                <div>&nbsp;&nbsp;to = "/index.html"</div>
-                <div>&nbsp;&nbsp;status = 200</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1.5rem' }}>
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '0.85rem', padding: '1.25rem' }}>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#60A5FA', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ background: '#2563EB', color: 'white', borderRadius: '50%', width: '24px', height: '24px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>1</span>
+                    <span>Locate the Ecosystem App Switcher</span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6 }}>
+                    In the top-right utility bar of your screen (right next to the <strong>💱 Currency Selector</strong> and live CBN ticker), click the <strong>`Apps ⠿`</strong> grid icon. This opens the RiskINTEGRA ecosystem drop-down menu.
+                  </p>
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '0.85rem', padding: '1.25rem' }}>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#34D399', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ background: '#059669', color: 'white', borderRadius: '50%', width: '24px', height: '24px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>2</span>
+                    <span>Click 'Launch ERM with active role ➔'</span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6 }}>
+                    Select the partner application. The switcher automatically grabs your active executive profile (`cae`, `senior`, `lead`, or `auditor`), generates a secure single sign-on token (`sso_token=riskintegra_auth_bridge`), and transitions you instantly to the exact same role on the partner application!
+                  </p>
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '0.85rem', padding: '1.25rem' }}>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#FBBF24', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ background: '#D97706', color: 'white', borderRadius: '50%', width: '24px', height: '24px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>3</span>
+                    <span>Customizing Your Target Link (Optional)</span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6 }}>
+                    If your partner application is hosted on a shared web link or cloud address (such as `https://zpc-erm-demo.netlify.app`), click the small <strong>`⚙️ Set Link`</strong> button at the top-right inside the `Apps ⠿` menu, paste the URL once into the box, and click <strong>Link ✓</strong>. The app remembers this address across your sessions.
+                  </p>
+                </div>
               </div>
-
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>Domain Intellectual Property Protection</h3>
-              <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6 }}>
-                To safeguard Zenith Pension Custodian's proprietary continuous auditing algorithms, every build is wrapped in **`LicenseGuard.jsx`**. If unauthorized actors copy or deploy our frontend bundle to an unapproved web address outside your organization, execution stops immediately until the institutional enterprise key (`RISKINTEGRA-ZPC-2026-ENTERPRISE-PROD`) is entered.
-              </p>
             </div>
           )}
 
@@ -378,15 +392,6 @@ const UserGuidePage = () => {
               </h2>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem', marginTop: '1.5rem' }}>
-                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.2rem', borderRadius: '0.75rem', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <div style={{ fontWeight: 800, color: 'white', fontSize: '0.95rem', marginBottom: '0.4rem' }}>
-                    Q: Why does the App Switcher redirect to `localhost:5173` instead of my Netlify ERM app?
-                  </div>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: '#94A3B8', lineHeight: 1.6 }}>
-                    <strong>A:</strong> By default, if no custom link is saved, the app assumes you are testing on your local computer (`localhost:5173`). To fix this on Netlify: Click the **`Apps ⠿`** button ➔ Click **`⚙️ Set Link`** ➔ Paste your Netlify ERM URL (e.g. `https://zpc-erm.netlify.app`) and click **Link**.
-                  </p>
-                </div>
-
                 <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.2rem', borderRadius: '0.75rem', border: '1px solid rgba(255,255,255,0.08)' }}>
                   <div style={{ fontWeight: 800, color: 'white', fontSize: '0.95rem', marginBottom: '0.4rem' }}>
                     Q: How do I switch reporting currency from NGN (₦) to USD ($) across charts?

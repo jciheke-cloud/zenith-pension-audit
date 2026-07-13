@@ -118,26 +118,18 @@ To ensure a seamless executive experience across both corporate governance appli
 
 ---
 
-## 5. Deployment & Cloud Linking Guide (Netlify & AWS)
+## 5. How to Switch Between RiskINTEGRA Applications
 
-If you are sharing this application with colleagues or migrating to cloud infrastructure (`Netlify` or `AWS`), here is how to connect the two apps across different web domains:
+Zenith Pension Custodian (ZPC) operates two twin institutional governance platforms: the **RiskINTEGRA ERM Suite** and the **RiskINTEGRA Internal Audit Suite**. You can switch between both applications anytime without re-entering your login credentials.
 
-### Method 1: Interactive UI Setting (No Code Needed!)
-1. Open your live application in your browser (`https://your-audit-app.netlify.app`).
-2. Click the **`Apps ⠿`** button at the top.
-3. Click the **`⚙️ Set Link`** button at the top-right of the dropdown.
-4. Paste your live partner URL (e.g., `https://your-erm-app.netlify.app`) into the box and click **Link**.
-5. *The app saves this connection permanently in your browser memory!*
+### Step 1: Locate the Ecosystem App Switcher
+In the top-right utility bar of your screen (right next to the **💱 Currency Selector** and live CBN ticker), click the **`Apps ⠿`** grid icon. This opens the RiskINTEGRA ecosystem drop-down menu.
 
-### Method 2: Environment Variables (`.env` or Netlify Dashboard)
-When deploying via CI/CD pipelines, set the following environment variables in your build configuration:
-```env
-# Inside Audit App Netlify Settings:
-VITE_ERM_APP_URL=https://your-erm-app.netlify.app
+### Step 2: Click 'Launch ERM with active role ➔'
+Select the partner application. The switcher automatically grabs your active executive profile (`cae`, `senior`, `lead`, or `auditor`), generates a secure single sign-on token (`sso_token=riskintegra_auth_bridge`), and transitions you instantly to the exact same role on the partner application!
 
-# Inside ERM App Netlify Settings:
-VITE_AUDIT_APP_URL=https://your-audit-app.netlify.app
-```
+### Step 3: Customizing Your Target Link (Optional)
+If your partner application is hosted on a shared web link or cloud address (such as `https://zpc-erm-demo.netlify.app`), click the small **`⚙️ Set Link`** button at the top-right inside the `Apps ⠿` menu, paste the URL once into the box, and click **Link ✓**. The app remembers this address across your sessions.
 
 ---
 
