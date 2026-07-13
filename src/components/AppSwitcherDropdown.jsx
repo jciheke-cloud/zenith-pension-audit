@@ -1,10 +1,19 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { AuditContext } from '../context/AuditContext';
-import { LayoutGrid, Shield, ClipboardCheck, ArrowUpRight, CheckCircle2, Lock } from 'lucide-react';
+import { LayoutGrid, Shield, ClipboardCheck, Lock, Settings, Check, Globe } from 'lucide-react';
 
 const AppSwitcherDropdown = () => {
   const { currentUser, currentRole } = useContext(AuditContext);
   const [isOpen, setIsOpen] = useState(false);
+  const [showConfig, setShowConfig] = useState(false);
+  
+  // Dynamic Netlify/AWS URL state (checks localStorage first, then env variable, then default)
+  const [ermUrl, setErmUrl] = useState(() => {
+    return localStorage.getItem('ZPC_ERM_URL_OVERRIDE') || import.meta.env.VITE_ERM_APP_URL || 'http://localhost:5173';
+  });
+  const [inputUrl, setInputUrl] = useState(ermUrl);
+  const [savedSuccess, setSavedSuccess] = useState(false);
+
   const dropdownRef = useRef(null);
 
   // Close when clicking outside
@@ -12,24 +21,40 @@ const AppSwitcherDropdown = () => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
+        setShowConfig(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleSaveUrl = (e) => {
+    e.preventDefault();
+    let clean = inputUrl.trim();
+    if (clean.endsWith('/')) clean = clean.slice(0, -1);
+    setErmUrl(clean);
+    localStorage.setItem('ZPC_ERM_URL_OVERRIDE', clean);
+    setSavedSuccess(true);
+    setTimeout(() => setSavedSuccess(false), 2500);
+  };
+
   const handleSwitchToErm = () => {
-    const ermUrl = import.meta.env.VITE_ERM_APP_URL || 'http://localhost:5173';
+    const targetBase = ermUrl || 'http://localhost:5173';
     const roleId = currentUser?.roleId || currentRole?.id || 'cae';
-    const target = `${ermUrl}/?sso_role=${encodeURIComponent(roleId)}&sso_token=riskintegra_auth_bridge&source=audit`;
+    const target = `${targetBase}/?sso_role=${encodeURIComponent(roleId)}&sso_token=riskintegra_auth_bridge&source=audit`;
     window.location.href = target;
   };
+
+  const isNetlify = window.location.hostname.includes('netlify.app') || ermUrl.includes('netlify.app');
 
   return (
     <div style={{ position: 'relative' }} ref={dropdownRef}>
       {/* Trigger Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          setIsOpen(!isOpen);
+          if (isOpen) setShowConfig(false);
+        }}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -57,12 +82,12 @@ const AppSwitcherDropdown = () => {
           position: 'absolute',
           top: 'calc(100% + 10px)',
           right: 0,
-          width: '360px',
+          width: '380px',
           background: '#0B1120',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
+          border: '1px solid rgba(255, 255, 255, 0.18)',
           borderRadius: '1rem',
-          padding: '1rem',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7)',
+          padding: '1.1rem',
+          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.85)',
           zIndex: 9999,
           backdropFilter: 'blur(24px)'
         }}>
@@ -78,18 +103,99 @@ const AppSwitcherDropdown = () => {
             <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               RiskINTEGRA Ecosystem Suite™
             </span>
-            <span style={{
-              fontSize: '0.65rem',
-              background: 'rgba(16, 185, 129, 0.15)',
-              color: '#34d399',
-              padding: '0.15rem 0.5rem',
-              borderRadius: '9999px',
-              border: '1px solid rgba(16, 185, 129, 0.35)',
-              fontWeight: 800
-            }}>
-              SSO ACTIVE
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {isNetlify && (
+                <span style={{
+                  fontSize: '0.62rem',
+                  background: 'rgba(59, 130, 246, 0.15)',
+                  color: '#60A5FA',
+                  padding: '0.12rem 0.45rem',
+                  borderRadius: '9999px',
+                  border: '1px solid rgba(59, 130, 246, 0.35)',
+                  fontWeight: 800,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '3px'
+                }}>
+                  <Globe size={10} /> NETLIFY BRIDGE
+                </span>
+              )}
+              <button
+                onClick={() => setShowConfig(!showConfig)}
+                style={{
+                  background: showConfig ? 'rgba(200, 30, 30, 0.2)' : 'rgba(255, 255, 255, 0.06)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  color: showConfig ? '#fda4af' : '#CBD5E1',
+                  padding: '0.2rem 0.45rem',
+                  borderRadius: '0.35rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                  fontSize: '0.68rem',
+                  fontWeight: 700
+                }}
+                title="Configure Netlify / AWS Companion App URL"
+              >
+                <Settings size={12} />
+                <span>{showConfig ? 'Close' : 'Set Link'}</span>
+              </button>
+            </div>
           </div>
+
+          {/* Interactive Netlify / AWS URL Configuration Section */}
+          {showConfig && (
+            <form onSubmit={handleSaveUrl} style={{
+              background: 'rgba(15, 23, 42, 0.9)',
+              padding: '0.85rem',
+              borderRadius: '0.65rem',
+              border: '1px solid rgba(59, 130, 246, 0.35)',
+              marginBottom: '0.85rem'
+            }}>
+              <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#60A5FA', marginBottom: '0.4rem' }}>
+                🔗 PASTE NETLIFY / AWS ERM APP URL HERE:
+              </label>
+              <div style={{ display: 'flex', gap: '0.4rem' }}>
+                <input
+                  type="text"
+                  value={inputUrl}
+                  onChange={(e) => setInputUrl(e.target.value)}
+                  placeholder="e.g. https://zpc-erm-demo.netlify.app"
+                  style={{
+                    flex: 1,
+                    padding: '0.4rem 0.6rem',
+                    background: '#090d16',
+                    border: '1px solid #334155',
+                    borderRadius: '0.35rem',
+                    color: 'white',
+                    fontSize: '0.75rem'
+                  }}
+                />
+                <button
+                  type="submit"
+                  style={{
+                    background: savedSuccess ? '#10B981' : '#3B82F6',
+                    color: 'white',
+                    border: 'none',
+                    padding: '0.4rem 0.7rem',
+                    borderRadius: '0.35rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    fontSize: '0.72rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.25rem'
+                  }}
+                >
+                  {savedSuccess ? <Check size={12} /> : null}
+                  <span>{savedSuccess ? 'Saved!' : 'Link'}</span>
+                </button>
+              </div>
+              <p style={{ margin: '0.45rem 0 0', fontSize: '0.66rem', color: '#94A3B8', lineHeight: 1.3 }}>
+                When sharing on Netlify, paste your live ERM app URL here once so the bridge switches across domains seamlessly!
+              </p>
+            </form>
+          )}
 
           {/* App List */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
@@ -196,12 +302,17 @@ const AppSwitcherDropdown = () => {
             borderTop: '1px solid rgba(255, 255, 255, 0.08)',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.5rem',
+            justifyContent: 'space-between',
             fontSize: '0.68rem',
             color: '#64748B'
           }}>
-            <Lock size={12} color="#34d399" />
-            <span>Bi-directional SSO Gateway via URL Session Token</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Lock size={12} color="#34d399" />
+              <span>Bi-directional SSO Gateway</span>
+            </div>
+            <span style={{ color: '#94A3B8', fontSize: '0.65rem', fontStyle: 'italic' }}>
+              Target: {ermUrl.replace('http://', '').replace('https://', '').split('/')[0]}
+            </span>
           </div>
         </div>
       )}
