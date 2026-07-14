@@ -1,8 +1,10 @@
 import React, { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuditContext } from '../context/AuditContext';
 import { Database, Plus, Search, Layers, ShieldCheck, Filter } from 'lucide-react';
 
 const MasterData = () => {
+  const navigate = useNavigate();
   const { businessUnits, addBusinessUnit, auditUniverse, setAuditUniverse, addNotification } = useContext(AuditContext);
   const [activeTab, setActiveTab] = useState('bus'); // 'bus' or 'universe'
   const [searchTerm, setSearchTerm] = useState('');
@@ -88,6 +90,9 @@ const MasterData = () => {
           </p>
         </div>
         <div className="header-actions">
+          <button onClick={() => navigate('/erm-sync')} className="btn-secondary" style={{ borderColor: '#10B981', color: '#6ee7b7' }} title="Download templates and batch import CSV universe records">
+            <span>📦 Templates & Bulk CSV Upload</span>
+          </button>
           {activeTab === 'bus' ? (
             <button onClick={() => setIsBuModalOpen(true)} className="btn-primary">
               <Plus size={16} />
@@ -103,20 +108,30 @@ const MasterData = () => {
       </div>
 
       {/* Tab Navigation */}
-      <div className="nav-tab-container">
+      <div className="nav-tab-container" style={{ flexWrap: 'wrap' }}>
         <button
           onClick={() => { setActiveTab('bus'); setSearchTerm(''); }}
           className={`nav-tab-btn ${activeTab === 'bus' ? 'active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+          title={`Click to manage ZPC organizational structure (${businessUnits.length} Business Units registered).`}
         >
           <Database size={16} />
-          <span>Business Units ({businessUnits.length})</span>
+          <span style={{ fontWeight: 600 }}>Business Units</span>
+          <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
+            {businessUnits.length} Units
+          </span>
         </button>
         <button
           onClick={() => { setActiveTab('universe'); setSearchTerm(''); }}
           className={`nav-tab-btn ${activeTab === 'universe' ? 'active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+          title={`Click to manage the auditable processes matrix (${auditUniverse.length} processes registered across all departments).`}
         >
           <Layers size={16} />
-          <span>Audit Universe Processes ({auditUniverse.length})</span>
+          <span style={{ fontWeight: 600 }}>Audit Universe Processes</span>
+          <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
+            {auditUniverse.length} Processes
+          </span>
         </button>
       </div>
 

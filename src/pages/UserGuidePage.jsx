@@ -454,6 +454,46 @@ const UserGuidePage = () => {
                   </div>
                 </div>
 
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '0.85rem', padding: '1.3rem' }}>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#F8FAFC', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                    <span style={{ background: '#10B981', color: 'white', padding: '0.3rem', borderRadius: '6px', display: 'inline-flex' }}><Wrench size={18} /></span>
+                    <span>8. Enterprise Templates & Bulk CSV Ingestion Hub (ErmSyncPage - Module 14)</span>
+                  </div>
+                  <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6 }}>
+                    A comprehensive data onboarding engine that eliminates tedious manual data entry by enabling one-click download of institutional CSV/Excel templates and batch ingestion of hundreds of audit items.
+                  </p>
+                  <div style={{ fontSize: '0.84rem', color: '#CBD5E1' }}>
+                    <strong>Available Templates:</strong><br />
+                    • <strong>Audit Findings Matrix Template (`.csv`):</strong> Formatted 10×10 observations with criteria, likelihood, impact, and root cause fields.<br />
+                    • <strong>Auditable Universe Template (`.csv`):</strong> Master Data structure mapping process names, business units, frequency, and risk scores.<br />
+                    • <strong>Annual Audit Plans Template (`.csv`):</strong> Engagement schedules with budgeted hours, timelines, and team lead assignments.<br />
+                    <strong>How to use:</strong> Click <strong>`📦 Templates & Bulk CSV Upload`</strong> from the top bar of Master Data, Findings, or Audit Plan pages. Download your template, populate your spreadsheet, and paste/drag into the Batch Ingestion Engine to instantly load records into application state!
+                  </div>
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '0.85rem', padding: '1.3rem' }}>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#F8FAFC', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                    <span style={{ background: '#E11D48', color: 'white', padding: '0.3rem', borderRadius: '6px', display: 'inline-flex' }}><Wrench size={18} /></span>
+                    <span>9. Purge Mock Data & Live ERM Sync Bridge (Module 14)</span>
+                  </div>
+                  <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6 }}>
+                    Two dedicated operational lifecycle utilities that transition the app from demonstration mode (`Mock Data`) to live institutional execution (`Ready for User Inputs`).
+                  </p>
+                  <div style={{ fontSize: '0.84rem', color: '#CBD5E1' }}>
+                    • <strong>🗑️ Purge Mock Data (Ready for User Input):</strong> Clears all hardcoded sample data across all 8 modules (findings, plans, universe, working papers, etc.) and initializes clean, empty structures stored directly in `localStorage` (`ZPC_AUDIT_STATE_*`).<br />
+                    • <strong>🔗 Sync Data Directly From ERM:</strong> Connects bi-directionally to the <em>RiskINTEGRA ERM Suite</em> across ports or sockets (`ZPC_ERM_RISK_REGISTER`), automatically populating the Audit Universe and creating high-priority audit findings for any enterprise risk scoring ≥60!
+                  </div>
+                </div>
+
+                <div style={{ background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '0.85rem', padding: '1.3rem' }}>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#60A5FA', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                    <span>💡 Navigation Clarity & Interactive Tooltip Badging System</span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.88rem', color: '#E2E8F0', lineHeight: 1.6 }}>
+                    Every navigation tab and action button across all 14 modules features intuitive <strong>Count Badges (`badge-chip`)</strong> and comprehensive <strong>Hover Tooltips (`title="..."`)</strong>. Instead of confusing cramped text like `(3 Steps)` or trailing numbers `(2)`, each button displays its full phase or module title alongside a clean, structured item counter badge (`3 Test Procedures`, `8 Units`). Hovering over any button reveals a detailed tooltip explaining the exact underlying operational function!
+                  </p>
+                </div>
+
               </div>
             </div>
           )}
@@ -532,7 +572,7 @@ const UserGuidePage = () => {
                     <span>Customizing Your Target Link (Optional)</span>
                   </div>
                   <p style={{ margin: 0, fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6 }}>
-                    If your partner application is hosted on a shared web link or cloud address (such as `https://zpc-erm-demo.netlify.app`), click the small <strong>`⚙️ Set Link`</strong> button at the top-right inside the `Apps ⠿` menu, paste the URL once into the box, and click <strong>Link ✓</strong>. The app remembers this address across your sessions.
+                    If your partner application is hosted on a shared web link or cloud address (such as `https://zpc-erm.zenithcustodian.com`), click the small <strong>`⚙️ Set Link`</strong> button at the top-right inside the `Apps ⠿` menu, paste the URL once into the box, and click <strong>Link ✓</strong>. The app remembers this address across your sessions.
                   </p>
                 </div>
               </div>

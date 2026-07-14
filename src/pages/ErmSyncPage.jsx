@@ -3,7 +3,7 @@ import { AuditContext } from '../context/AuditContext';
 import { Share2, RefreshCw, ShieldCheck, CheckCircle, Database, Layers, ArrowRight, AlertOctagon } from 'lucide-react';
 
 const ErmSyncPage = () => {
-  const { auditUniverse, findings, addNotification } = useContext(AuditContext);
+  const { auditUniverse, findings, clearAllMockData, syncFromErmSuite, bulkUploadRecords, addNotification } = useContext(AuditContext);
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState('2 minutes ago');
   const [syncHistory, setSyncHistory] = useState([
@@ -12,38 +12,104 @@ const ErmSyncPage = () => {
     { id: 'sh-3', event: 'CAP Remediation Status Pull from ERM Action Owners', status: 'Success', itemsCount: 12, time: '1 hour ago' }
   ]);
 
+  const [csvInput, setCsvInput] = useState('');
+  const [uploadType, setUploadType] = useState('findings');
+
   const handleForceSync = () => {
     setIsSyncing(true);
     setTimeout(() => {
       setIsSyncing(false);
       const nowStr = new Date().toLocaleTimeString();
       setLastSyncTime('Just now');
+      syncFromErmSuite && syncFromErmSuite();
       setSyncHistory(prev => [
-        { id: `sh-${Date.now()}`, event: 'Bi-Directional Full Ecosystem Payload Exchange', status: 'Success', itemsCount: auditUniverse.length + findings.length, time: `Today at ${nowStr}` },
+        { id: `sh-${Date.now()}`, event: 'Direct Live ERM -> Audit Risk & Universe Ingestion', status: 'Success', itemsCount: auditUniverse.length + findings.length, time: `Today at ${nowStr}` },
         ...prev
       ]);
-      addNotification('Ecosystem Synchronized', 'All audit findings, 10×10 residual scores, and master data successfully synchronized with RiskINTEGRA ERM.', 'success');
-    }, 1200);
+    }, 1000);
+  };
+
+  const handleClearMockData = () => {
+    if (window.confirm('⚠️ Are you sure you want to purge all demo/mock transactional records? This gets RiskINTEGRA Audit ready for live user input and direct ERM data sync.')) {
+      clearAllMockData && clearAllMockData();
+    }
+  };
+
+  const handleDownloadTemplate = (type) => {
+    let content = '';
+    let filename = '';
+    if (type === 'findings') {
+      content = 'findingNumber,businessUnit,observation,criteria,rootCause,likelihood,impact,status\nFND-2026-101,Settlements & Corporate Actions,Unreconciled Dividend Sweep Variance,PENCOM Section 63 Guidelines,System timeout during clearing,7,8,Open\nFND-2026-102,Contribution Reconciliation Dept,24h Employer Contribution Schedule Delay,SLA Breach Prevention Circular,Portal schedule ingestion lag,6,8,Open';
+      filename = 'RiskINTEGRA_Audit_Findings_Template.csv';
+    } else if (type === 'universe') {
+      content = 'unitId,department,processName,inherentRisk,financialExposure,regulatoryImpact\nUNIV-101,Treasury & Markets,Money Market Placement & Haircut Controls,8,9,8\nUNIV-102,IT & Cybersecurity,Core Banking & Custody DB Failover,9,8,9';
+      filename = 'RiskINTEGRA_Audit_Universe_Template.csv';
+    } else {
+      content = 'id,auditName,department,plannedHours,status\nPLAN-2026-01,Annual Custody Operations Review,Pension Operations,320,Approved\nPLAN-2026-02,RMAS Cybersecurity Penetration Test,IT & Cybersecurity,240,Approved';
+      filename = 'RiskINTEGRA_Annual_Plans_Template.csv';
+    }
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleProcessCsv = (e) => {
+    e.preventDefault();
+    if (!csvInput.trim()) return;
+    const lines = csvInput.trim().split('\n');
+    if (lines.length < 2) {
+      alert('Please provide at least one header row and one data row in CSV format.');
+      return;
+    }
+    const headers = lines[0].split(',').map(h => h.trim());
+    const parsedRecords = [];
+    for (let i = 1; i < lines.length; i++) {
+      const vals = lines[i].split(',').map(v => v.trim());
+      if (vals.length === headers.length) {
+        const obj = {};
+        headers.forEach((h, idx) => { obj[h] = vals[idx]; });
+        parsedRecords.push(obj);
+      }
+    }
+    if (parsedRecords.length > 0) {
+      bulkUploadRecords && bulkUploadRecords(uploadType, parsedRecords);
+      setCsvInput('');
+    } else {
+      alert('Could not parse valid CSV records. Please check format against the template.');
+    }
   };
 
   return (
     <div className="page-container">
       <div className="module-header">
         <div>
-          <h1 className="module-title">RiskINTEGRA ERM Sync Bridge™</h1>
+          <h1 className="module-title">RiskINTEGRA ERM Sync Bridge & Data Hub™</h1>
           <p className="module-subtitle">
-            Seamless bi-directional data exchange connecting the Internal Audit Management Application with the Enterprise Risk Management (ERM) suite.
+            Direct bi-directional data ingestion from RiskINTEGRA ERM, bulk CSV/Excel upload hub, and production readiness manager.
           </p>
         </div>
-        <div className="header-actions">
+        <div className="header-actions" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <button
+            onClick={handleClearMockData}
+            className="btn-secondary"
+            style={{ padding: '0.6rem 1.1rem', fontSize: '0.85rem', borderColor: '#EF4444', color: '#fda4af' }}
+            title="Purge demo items and prepare for live institutional input"
+          >
+            <span>🗑️ Purge Mock Data (Ready for User Input)</span>
+          </button>
           <button
             onClick={handleForceSync}
             disabled={isSyncing}
             className="btn-primary"
-            style={{ padding: '0.6rem 1.25rem', fontSize: '0.9rem' }}
+            style={{ padding: '0.6rem 1.25rem', fontSize: '0.9rem', background: 'linear-gradient(135deg, #10B981, #059669)' }}
           >
             <RefreshCw size={18} className={isSyncing ? 'animate-spin' : ''} />
-            <span>{isSyncing ? 'Exchanging Data Payloads...' : 'Force ERM Synchronization Now'}</span>
+            <span>{isSyncing ? 'Ingesting Live ERM Data...' : 'Sync Data Directly From ERM'}</span>
           </button>
         </div>
       </div>
@@ -154,6 +220,86 @@ const ErmSyncPage = () => {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Enterprise Bulk CSV/Excel Upload & Templates Hub */}
+      <div className="glass-card" style={{ marginTop: '2rem', borderTop: '4px solid #10B981' }}>
+        <div className="section-header-bar">
+          <div>
+            <h3 className="section-title">📦 Enterprise Bulk Data Ingestion & Templates Hub</h3>
+            <p className="section-subtitle">
+              Download standard PENCOM/IIA CSV/Excel templates to populate hundreds of audit findings, auditable universe items, or annual audit plans without manual single entry.
+            </p>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+          <button onClick={() => handleDownloadTemplate('findings')} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.85rem 1.1rem', justifyContent: 'center' }}>
+            <span>📄 Download Findings Template (.csv)</span>
+          </button>
+          <button onClick={() => handleDownloadTemplate('universe')} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.85rem 1.1rem', justifyContent: 'center' }}>
+            <span>🏛️ Download Universe Template (.csv)</span>
+          </button>
+          <button onClick={() => handleDownloadTemplate('plans')} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.85rem 1.1rem', justifyContent: 'center' }}>
+            <span>📋 Download Audit Plans Template (.csv)</span>
+          </button>
+        </div>
+
+        <form onSubmit={handleProcessCsv} style={{ background: 'rgba(15, 23, 42, 0.7)', padding: '1.25rem', borderRadius: '0.75rem', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+          <div className="flex-between" style={{ marginBottom: '0.75rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#38bdf8' }}>
+              ⚡ PASTE CSV BATCH DATA TO UPLOAD:
+            </label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Target Entity:</span>
+              <select
+                value={uploadType}
+                onChange={(e) => setUploadType(e.target.value)}
+                style={{ padding: '0.35rem 0.6rem', background: '#090d16', color: 'white', border: '1px solid #334155', borderRadius: '0.35rem', fontSize: '0.8rem', fontWeight: 700 }}
+              >
+                <option value="findings">Audit Findings (10×10 Matrix)</option>
+                <option value="universe">Auditable Universe (Master Data)</option>
+                <option value="plans">Annual Audit Plans</option>
+              </select>
+            </div>
+          </div>
+          <textarea
+            value={csvInput}
+            onChange={(e) => setCsvInput(e.target.value)}
+            placeholder={`Paste your CSV rows here. Make sure row 1 matches the template header exactly:\ne.g. findingNumber,businessUnit,observation,criteria,rootCause,likelihood,impact,status`}
+            rows={5}
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              background: '#040711',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '0.5rem',
+              color: 'white',
+              fontFamily: 'monospace',
+              fontSize: '0.8rem',
+              lineHeight: 1.5,
+              resize: 'vertical',
+              marginBottom: '0.85rem'
+            }}
+          />
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+            <button
+              type="button"
+              onClick={() => setCsvInput('')}
+              className="btn-secondary"
+              style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }}
+            >
+              Clear Text
+            </button>
+            <button
+              type="submit"
+              className="btn-primary"
+              style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem', background: 'linear-gradient(135deg, #38bdf8, #0284c7)' }}
+            >
+              🚀 Process & Upload Batch Records
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -4,11 +4,12 @@ import { Sliders, RefreshCw, CheckCircle, ShieldAlert, AlertTriangle, Layers, Ar
 import { useNavigate } from 'react-router-dom';
 
 const RiskBasedPlanning = () => {
-  const { auditUniverse, scoringWeights, setScoringWeights, calculateOverallScore, getAuditPriorityLabel, addNotification } = useContext(AuditContext);
+  const { auditUniverse, scoringWeights, setScoringWeights, updateScoringWeights, calculateOverallScore, getAuditPriorityLabel, addNotification } = useContext(AuditContext);
   const navigate = useNavigate();
 
   const [tempWeights, setTempWeights] = useState({ ...scoringWeights });
   const [filterPriority, setFilterPriority] = useState('All');
+  const [bannerMessage, setBannerMessage] = useState(null);
 
   const totalWeight = tempWeights.inherentRisk + tempWeights.financialExposure + tempWeights.regulatoryImpact +
                       tempWeights.previousFindings + tempWeights.fraudExposure + tempWeights.itDependency;
@@ -16,6 +17,7 @@ const RiskBasedPlanning = () => {
   const handleWeightChange = (factor, value) => {
     const val = parseInt(value, 10) || 0;
     setTempWeights(prev => ({ ...prev, [factor]: val }));
+    setBannerMessage(null);
   };
 
   const applyWeights = () => {
@@ -23,7 +25,9 @@ const RiskBasedPlanning = () => {
       alert('Total weights must sum strictly to 100% before applying.');
       return;
     }
-    setScoringWeights(tempWeights);
+    const saver = updateScoringWeights || setScoringWeights;
+    saver(tempWeights);
+    setBannerMessage({ type: 'success', text: '✅ Risk Scoring Model Updated! Auditable universe priorities recalculated and saved to enterprise profile.' });
     addNotification('Risk Scoring Model Updated', 'Auditable universe priorities recalculated using new factor weights.', 'success');
   };
 
@@ -37,13 +41,15 @@ const RiskBasedPlanning = () => {
       itDependency: 10
     };
     setTempWeights(defaults);
-    setScoringWeights(defaults);
+    const saver = updateScoringWeights || setScoringWeights;
+    saver(defaults);
+    setBannerMessage({ type: 'info', text: '🔄 Weights Reset to IIA / PenCom Statutory Defaults (100% total).' });
     addNotification('Weights Reset', 'Risk-Based Planning weights reset to IIA / PenCom statutory defaults.', 'info');
   };
 
-  // Sort and filter universe by calculated score descending
+  // Sort and filter universe by calculated score descending (using live tempWeights preview!)
   const scoredUniverse = auditUniverse.map(u => {
-    const score = calculateOverallScore(u);
+    const score = calculateOverallScore(u, tempWeights);
     const priority = getAuditPriorityLabel(score);
     return { ...u, calculatedScore: score, priority };
   }).sort((a, b) => b.calculatedScore - a.calculatedScore);
@@ -73,6 +79,25 @@ const RiskBasedPlanning = () => {
           </button>
         </div>
       </div>
+
+      {bannerMessage && (
+        <div style={{
+          padding: '1rem 1.25rem',
+          borderRadius: '0.75rem',
+          marginBottom: '1.5rem',
+          background: bannerMessage.type === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(56, 189, 248, 0.15)',
+          border: `1px solid ${bannerMessage.type === 'success' ? '#10b981' : '#38bdf8'}`,
+          color: bannerMessage.type === 'success' ? '#6ee7b7' : '#7dd3fc',
+          fontWeight: 700,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          fontSize: '0.9rem',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+        }}>
+          <span>{bannerMessage.text}</span>
+        </div>
+      )}
 
       {/* Interactive Weight Sliders Panel */}
       <div className="glass-card" style={{ marginBottom: '2rem' }}>

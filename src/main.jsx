@@ -6,9 +6,11 @@ import './App.css';
 import App from './App.jsx';
 import { AuditProvider } from './context/AuditContext';
 
+const basename = window.location.pathname.includes('/audit-portal') ? '/audit-portal' : undefined;
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <AuditProvider>
         <App />
       </AuditProvider>

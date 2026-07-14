@@ -86,10 +86,15 @@ const ComplianceAndRegulatory = () => {
       </div>
 
       {/* Filter Tabs */}
-      <div className="nav-tab-container">
+      <div className="nav-tab-container" style={{ flexWrap: 'wrap' }}>
         {['All', 'PenCom', 'CBN', 'Statutory / External Audit'].map(t => (
-          <button key={t} onClick={() => setActiveTab(t)} className={`nav-tab-btn ${activeTab === t ? 'active' : ''}`}>
-            <span>{t === 'All' ? 'All Regulatory Bodies' : t}</span>
+          <button
+            key={t}
+            onClick={() => setActiveTab(t)}
+            className={`nav-tab-btn ${activeTab === t ? 'active' : ''}`}
+            title={`Filter regulatory examination findings by authority: ${t === 'All' ? 'All Regulatory Bodies (PenCom, CBN, External Audit)' : t}.`}
+          >
+            <span style={{ fontWeight: 600 }}>{t === 'All' ? 'All Regulatory Bodies' : t}</span>
           </button>
         ))}
       </div>

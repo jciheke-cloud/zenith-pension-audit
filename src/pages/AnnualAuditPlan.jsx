@@ -84,6 +84,9 @@ const AnnualAuditPlan = () => {
           </p>
         </div>
         <div className="header-actions">
+          <button onClick={() => navigate('/erm-sync')} className="btn-secondary" style={{ borderColor: '#10B981', color: '#6ee7b7' }} title="Download templates and batch import CSV annual engagements">
+            <span>📦 Templates & Bulk CSV Upload</span>
+          </button>
           <button onClick={() => navigate('/risk-scoring')} className="btn-secondary">
             <Sliders size={16} />
             <span>Risk-Based Prioritization Engine</span>

@@ -80,10 +80,14 @@ const AuditPrograms = () => {
             key={prog.id}
             onClick={() => { setSelectedProgramId(prog.id); setSearchTerm(''); }}
             className={`nav-tab-btn ${selectedProgramId === prog.id ? 'active' : ''}`}
-            style={{ padding: '0.65rem 1.1rem' }}
+            style={{ padding: '0.65rem 1.1rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+            title={`Click to load testing procedures for ${prog.name}. Contains ${prog.procedures?.length || 0} specific verification steps.`}
           >
             <FileText size={16} />
-            <span>{prog.name} ({prog.procedures?.length || 0} Steps)</span>
+            <span style={{ fontWeight: 600 }}>{prog.name}</span>
+            <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
+              {prog.procedures?.length || 0} Test Procedures
+            </span>
           </button>
         ))}
       </div>
@@ -149,9 +153,9 @@ const AuditPrograms = () => {
             <tbody>
               {filteredProcedures.map(proc => (
                 <tr key={proc.id}>
-                  <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{proc.ref}</td>
+                  <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{proc.ref || proc.id || 'PROC-01'}</td>
                   <td style={{ fontWeight: 600, maxWidth: '460px', lineHeight: '1.5' }}>{proc.step}</td>
-                  <td className="tabular-nums" style={{ fontWeight: 700 }}>{proc.sampleSize}</td>
+                  <td className="tabular-nums" style={{ fontWeight: 700 }}>{proc.sampleSize || '30 Samples (100% Target)'}</td>
                   <td><span className="badge-chip" style={{ background: 'rgba(255,255,255,0.06)' }}>{proc.riskLink || 'Custody Compliance Risk'}</span></td>
                   <td>
                     {proc.status === 'Passed' && <span className="badge-success">Passed</span>}

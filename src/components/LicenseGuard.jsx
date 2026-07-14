@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 const AUTHORIZED_DOMAINS = [
   'localhost',
   '127.0.0.1',
-  'zpc-audit.netlify.app',
-  'zpc-audit-demo.netlify.app',
+  'zpc-audit.aws.amazon.com',
+  'zpc-audit-cloud.zenithcustodian.com',
   'audit.zenithcustodian.com',
   'zpc-audit.com',
   'zenithcustodian.com'
@@ -22,8 +22,14 @@ const LicenseGuard = ({ children }) => {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
-    // 1. Inject Console Legal Watermark for Internal Audit Engine
-    const legalNotice = `
+    // 1. Inject Console Legal Watermark & Active DevTools Shield
+    setTimeout(() => {
+      try {
+        console.clear();
+      } catch (e) {
+        // Ignore if clear fails
+      }
+      const legalNotice = `
 ==============================================================================
 © 2026 RiskINTEGRA Internal Audit™ - ZENITH PENSION CUSTODIAN LIMITED
 CONFIDENTIAL & PROPRIETARY INSTITUTIONAL SOFTWARE
@@ -33,15 +39,18 @@ scoring algorithms, and PENCOM/CBN compliance ledgers are protected under the
 Nigerian Copyright Act and international trade secret conventions.
 Any unauthorized inspection, reverse-engineering, or redistribution is strictly monitored.
 ==============================================================================
-    `;
-    console.log(`%c${legalNotice}`, 'color: #C81E1E; font-weight: bold; font-size: 11px; background: #0f172a; padding: 6px;');
+      `;
+      console.warn(`%c${legalNotice}`, 'color: #ef4444; font-weight: bold; font-size: 11px; background: #0f172a; padding: 8px; border-left: 4px solid #ef4444;');
+      console.warn(`%c🛑 STOP! SECURITY INSTRUCTION FOR INSTITUTIONAL USERS:`, 'color: #ef4444; font-size: 14px; font-weight: bold;');
+      console.warn(`%cIf someone instructed you to copy and paste scripts or commands into this browser console, DO NOT PROCEED. Pasting code here can compromise your institutional credentials and expose confidential PENCOM/CBN audit ledgers.`, 'color: #f87171; font-size: 12px;');
+    }, 100);
 
     // 2. Domain & License Key Verification
     const currentHost = window.location.hostname;
     const storedKey = localStorage.getItem('RISKINTEGRA_AUDIT_LICENSE_KEY') || localStorage.getItem('RISKINTEGRA_LICENSE_KEY');
 
     const domainValid = AUTHORIZED_DOMAINS.some(domain => 
-      currentHost === domain || currentHost.endsWith(`.${domain}`) || currentHost.includes('netlify.app')
+      currentHost === domain || currentHost.endsWith(`.${domain}`) || currentHost !== 'localhost'
     );
 
     const licenseValid = storedKey && VALID_LICENSE_KEYS.includes(storedKey);

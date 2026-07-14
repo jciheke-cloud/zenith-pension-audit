@@ -157,6 +157,9 @@ const FindingsManagement = () => {
           </p>
         </div>
         <div className="header-actions">
+          <button onClick={() => navigate('/erm-sync')} className="btn-secondary" style={{ borderColor: '#10B981', color: '#6ee7b7' }} title="Download templates and batch import CSV observations">
+            <span>📦 Templates & Bulk CSV Upload</span>
+          </button>
           <button onClick={() => navigate('/action-tracker')} className="btn-secondary">
             <span>View CAP Tracker ({findings.filter(f => f.status !== 'Closed').length} Open) ➔</span>
           </button>
@@ -168,14 +171,27 @@ const FindingsManagement = () => {
       </div>
 
       {/* View Switcher Pills */}
-      <div className="nav-tab-container">
-        <button onClick={() => setActiveView('matrix')} className={`nav-tab-btn ${activeView === 'matrix' ? 'active' : ''}`}>
+      <div className="nav-tab-container" style={{ flexWrap: 'wrap' }}>
+        <button
+          onClick={() => setActiveView('matrix')}
+          className={`nav-tab-btn ${activeView === 'matrix' ? 'active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+          title="Switch to the 10×10 Likelihood vs. Impact visual heatmap grid and institutional rating simulator."
+        >
           <Sliders size={16} />
-          <span>10×10 Heat Map Matrix & Audit Rating Simulator</span>
+          <span style={{ fontWeight: 600 }}>10×10 Heat Map Matrix Simulator</span>
         </button>
-        <button onClick={() => setActiveView('list')} className={`nav-tab-btn ${activeView === 'list' ? 'active' : ''}`}>
+        <button
+          onClick={() => setActiveView('list')}
+          className={`nav-tab-btn ${activeView === 'list' ? 'active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+          title={`Switch to the detailed tabular findings ledger. Shows all ${findings.length} logged observations including ${repeatCount} repeat findings.`}
+        >
           <AlertOctagon size={16} />
-          <span>All Audit Findings Register ({findings.length} Total / {repeatCount} Repeat)</span>
+          <span style={{ fontWeight: 600 }}>Audit Findings Register</span>
+          <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
+            {findings.length} Total / {repeatCount} Repeat
+          </span>
         </button>
       </div>
 

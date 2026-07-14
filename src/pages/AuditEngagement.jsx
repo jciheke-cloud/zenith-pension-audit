@@ -115,18 +115,42 @@ const AuditEngagement = () => {
       </div>
 
       {/* Engagement Stage Navigation Tabs */}
-      <div className="nav-tab-container">
-        <button onClick={() => setActiveTab('planning')} className={`nav-tab-btn ${activeTab === 'planning' ? 'active' : ''}`}>
+      <div className="nav-tab-container" style={{ flexWrap: 'wrap' }}>
+        <button
+          onClick={() => setActiveTab('planning')}
+          className={`nav-tab-btn ${activeTab === 'planning' ? 'active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+          title="Phase 1: Review pre-engagement scope, audit criteria, statutory mandates, and assigned audit team members."
+        >
           <Briefcase size={16} />
-          <span>Stage 1: Planning & Scope Definition</span>
+          <span style={{ fontWeight: 600 }}>Planning & Scope Definition</span>
+          <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
+            Phase 1
+          </span>
         </button>
-        <button onClick={() => setActiveTab('execution')} className={`nav-tab-btn ${activeTab === 'execution' ? 'active' : ''}`}>
+        <button
+          onClick={() => setActiveTab('execution')}
+          className={`nav-tab-btn ${activeTab === 'execution' ? 'active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+          title={`Phase 2: Execute step-by-step testing procedures, verify sampling evidence, and record audit observations (${auditPrograms[0]?.procedures?.length || 4} testing procedures available).`}
+        >
           <CheckSquare size={16} />
-          <span>Stage 2: Fieldwork Execution & Program Testing ({auditPrograms[0]?.procedures?.length || 4} Procedures)</span>
+          <span style={{ fontWeight: 600 }}>Fieldwork Execution & Program Testing</span>
+          <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
+            {auditPrograms[0]?.procedures?.length || 4} Test Procedures
+          </span>
         </button>
-        <button onClick={() => setActiveTab('qa_review')} className={`nav-tab-btn ${activeTab === 'qa_review' ? 'active' : ''}`}>
+        <button
+          onClick={() => setActiveTab('qa_review')}
+          className={`nav-tab-btn ${activeTab === 'qa_review' ? 'active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+          title={`Phase 3: Review supervisor quality assurance notes, sign-offs, and corrective action recommendations (${reviewNotes.length} notes logged).`}
+        >
           <ShieldCheck size={16} />
-          <span>Stage 3: Supervisor Review Notes & Quality Assurance ({reviewNotes.length})</span>
+          <span style={{ fontWeight: 600 }}>Supervisor QA & Review Notes</span>
+          <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
+            {reviewNotes.length} Review Notes
+          </span>
         </button>
       </div>
 

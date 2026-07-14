@@ -7,14 +7,12 @@ const AppSwitcherDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
   
-  // Dynamic Netlify/AWS URL state (checks localStorage first, then env variable, then default)
+  // Dynamic Companion App URL state (checks localStorage first, then env variable, then default)
   const [ermUrl, setErmUrl] = useState(() => {
     const fromStorage = localStorage.getItem('ZPC_ERM_URL_OVERRIDE');
     if (fromStorage) return fromStorage;
-    if (window.location.hostname.includes('netlify.app')) {
-      return import.meta.env.VITE_ERM_APP_URL && !import.meta.env.VITE_ERM_APP_URL.includes('localhost')
-        ? import.meta.env.VITE_ERM_APP_URL
-        : 'https://zpc-erm-demo.netlify.app';
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      return window.location.origin;
     }
     return import.meta.env.VITE_ERM_APP_URL || 'http://localhost:5173';
   });
@@ -52,7 +50,7 @@ const AppSwitcherDropdown = () => {
     window.location.href = target;
   };
 
-  const isNetlify = window.location.hostname.includes('netlify.app') || ermUrl.includes('netlify.app');
+  const isRemote = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
 
   return (
     <div style={{ position: 'relative' }} ref={dropdownRef}>
@@ -65,22 +63,23 @@ const AppSwitcherDropdown = () => {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.45rem',
-          background: isOpen ? 'rgba(200, 30, 30, 0.25)' : 'rgba(255, 255, 255, 0.05)',
-          border: isOpen ? '1px solid #C81E1E' : '1px solid rgba(255, 255, 255, 0.14)',
-          color: isOpen ? '#fda4af' : '#E2E8F0',
-          padding: '0.45rem 0.8rem',
-          borderRadius: '0.5rem',
+          gap: '0.5rem',
+          background: isOpen ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' : 'linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%)',
+          border: '1px solid #60A5FA',
+          color: '#FFFFFF',
+          padding: '0.48rem 0.95rem',
+          borderRadius: '0.55rem',
           cursor: 'pointer',
-          fontWeight: 700,
-          fontSize: '0.82rem',
+          fontWeight: 800,
+          fontSize: '0.84rem',
           transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-          boxShadow: isOpen ? '0 0 12px rgba(200, 30, 30, 0.4)' : 'none'
+          boxShadow: isOpen ? '0 0 16px rgba(59, 130, 246, 0.7)' : '0 4px 14px rgba(59, 130, 246, 0.45)',
+          letterSpacing: '0.02em'
         }}
         title="Switch RiskINTEGRA Corporate Governance Applications"
       >
-        <LayoutGrid size={16} />
-        <span>Apps</span>
+        <LayoutGrid size={17} />
+        <span>Switch App 🔀</span>
       </button>
 
       {/* Dropdown Menu */}
@@ -111,7 +110,7 @@ const AppSwitcherDropdown = () => {
               RiskINTEGRA Ecosystem Suite™
             </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              {isNetlify && (
+              {isRemote && (
                 <span style={{
                   fontSize: '0.62rem',
                   background: 'rgba(59, 130, 246, 0.15)',
@@ -124,7 +123,7 @@ const AppSwitcherDropdown = () => {
                   alignItems: 'center',
                   gap: '3px'
                 }}>
-                  <Globe size={10} /> NETLIFY BRIDGE
+                  <Globe size={10} /> CLOUD BRIDGE
                 </span>
               )}
               <button
@@ -142,7 +141,7 @@ const AppSwitcherDropdown = () => {
                   fontSize: '0.68rem',
                   fontWeight: 700
                 }}
-                title="Configure Netlify / AWS Companion App URL"
+                title="Configure Companion ERM App URL"
               >
                 <Settings size={12} />
                 <span>{showConfig ? 'Close' : 'Set Link'}</span>
@@ -150,7 +149,7 @@ const AppSwitcherDropdown = () => {
             </div>
           </div>
 
-          {/* Interactive Netlify / AWS URL Configuration Section */}
+          {/* Interactive Companion App URL Configuration Section */}
           {showConfig && (
             <form onSubmit={handleSaveUrl} style={{
               background: 'rgba(15, 23, 42, 0.9)',
@@ -160,14 +159,14 @@ const AppSwitcherDropdown = () => {
               marginBottom: '0.85rem'
             }}>
               <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#60A5FA', marginBottom: '0.4rem' }}>
-                🔗 PASTE NETLIFY / AWS ERM APP URL HERE:
+                🔗 PASTE COMPANION ERM APP URL HERE:
               </label>
               <div style={{ display: 'flex', gap: '0.4rem' }}>
                 <input
                   type="text"
                   value={inputUrl}
                   onChange={(e) => setInputUrl(e.target.value)}
-                  placeholder="e.g. https://zpc-erm-demo.netlify.app"
+                  placeholder="e.g. https://zpc-erm.zenithcustodian.com"
                   style={{
                     flex: 1,
                     padding: '0.4rem 0.6rem',
@@ -199,7 +198,7 @@ const AppSwitcherDropdown = () => {
                 </button>
               </div>
               <p style={{ margin: '0.45rem 0 0', fontSize: '0.66rem', color: '#94A3B8', lineHeight: 1.3 }}>
-                When sharing on Netlify, paste your live ERM app URL here once so the bridge switches across domains seamlessly!
+                When accessing across remote servers or cloud environments, paste your live ERM app URL here once so the bridge switches across domains seamlessly!
               </p>
             </form>
           )}
@@ -247,16 +246,39 @@ const AppSwitcherDropdown = () => {
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: '0.9rem', fontWeight: 800, color: 'white' }}>
-                    RiskINTEGRA ERM
+                    RiskINTEGRA ERM Suite
                   </span>
-                  <ArrowRightIcon />
+                  <span style={{ fontSize: '0.65rem', background: 'rgba(59, 130, 246, 0.2)', border: '1px solid #3B82F6', color: '#60A5FA', padding: '0.12rem 0.45rem', borderRadius: '4px', fontWeight: 800 }}>
+                    PARTNER APP
+                  </span>
                 </div>
-                <p style={{ margin: '3px 0 0', fontSize: '0.72rem', color: '#94A3B8', lineHeight: 1.3 }}>
+                <p style={{ margin: '3px 0 8px', fontSize: '0.72rem', color: '#94A3B8', lineHeight: 1.3 }}>
                   Enterprise Risk Register, KRIs, Loss Ledger & PenCom Capital Engine.
                 </p>
-                <div style={{ marginTop: '6px', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.68rem', color: '#60A5FA', fontWeight: 700 }}>
-                  <span>Launch ERM with active role ➔</span>
-                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSwitchToErm();
+                  }}
+                  style={{
+                    background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                    color: 'white',
+                    border: '1px solid #60A5FA',
+                    padding: '0.42rem 0.85rem',
+                    borderRadius: '0.45rem',
+                    fontWeight: 800,
+                    fontSize: '0.74rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    boxShadow: '0 3px 10px rgba(37, 99, 235, 0.4)'
+                  }}
+                >
+                  <span>Launch ERM Suite (Active Role)</span>
+                  <span>➔</span>
+                </button>
               </div>
             </div>
 

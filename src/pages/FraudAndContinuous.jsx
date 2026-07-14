@@ -90,14 +90,30 @@ const FraudAndContinuous = () => {
       </div>
 
       {/* Tabs */}
-      <div className="nav-tab-container">
-        <button onClick={() => setActiveTab('continuous')} className={`nav-tab-btn ${activeTab === 'continuous' ? 'active' : ''}`}>
+      <div className="nav-tab-container" style={{ flexWrap: 'wrap' }}>
+        <button
+          onClick={() => setActiveTab('continuous')}
+          className={`nav-tab-btn ${activeTab === 'continuous' ? 'active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+          title={`Click to monitor automated real-time transaction anomalies (` + continuousExceptions.filter(e => e.status !== 'Cleared / Verified Normal').length + ` active exception alerts).`}
+        >
           <Eye size={16} />
-          <span>Continuous Auditing Exception Feed ({continuousExceptions.filter(e => e.status !== 'Cleared / Verified Normal').length} Active Alerts)</span>
+          <span style={{ fontWeight: 600 }}>Continuous Auditing Exception Feed</span>
+          <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
+            {continuousExceptions.filter(e => e.status !== 'Cleared / Verified Normal').length} Active Alerts
+          </span>
         </button>
-        <button onClick={() => setActiveTab('fraud')} className={`nav-tab-btn ${activeTab === 'fraud' ? 'active' : ''}`}>
+        <button
+          onClick={() => setActiveTab('fraud')}
+          className={`nav-tab-btn ${activeTab === 'fraud' ? 'active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+          title={`Click to review confidential forensic investigations and whistleblowing cases (${fraudCases.length} open/closed cases).`}
+        >
           <ShieldAlert size={16} />
-          <span>Forensic Fraud Investigation Cases ({fraudCases.length} Cases)</span>
+          <span style={{ fontWeight: 600 }}>Forensic Fraud Investigations</span>
+          <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
+            {fraudCases.length} Cases
+          </span>
         </button>
       </div>
 

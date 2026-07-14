@@ -150,14 +150,14 @@ In the top-right utility bar of your screen (right next to the **💱 Currency S
 Select the partner application. The switcher automatically grabs your active executive profile (`cae`, `senior`, `lead`, or `auditor`), generates a secure single sign-on token (`sso_token=riskintegra_auth_bridge`), and transitions you instantly to the exact same role on the partner application!
 
 ### Step 3: Customizing Your Target Link (Optional)
-If your partner application is hosted on a shared web link or cloud address (such as `https://zpc-erm-demo.netlify.app`), click the small **`⚙️ Set Link`** button at the top-right inside the `Apps ⠿` menu, paste the URL once into the box, and click **Link ✓**. The app remembers this address across your sessions.
+If your partner application is hosted on a shared web link or cloud address (such as `https://zpc-erm.zenithcustodian.com`), click the small **`⚙️ Set Link`** button at the top-right inside the `Apps ⠿` menu, paste the URL once into the box, and click **Link ✓**. The app remembers this address across your sessions.
 
 ---
 
 ## 6. Intellectual Property & Domain Protection (`LicenseGuard`)
 
 Both frontend and backend operations are protected by **`LicenseGuard.jsx`**:
-* **Domain Whitelisting**: Ensures code only executes on authorized institutional domains (`*.zenithcustodian.com`, `localhost`, `*.netlify.app`).
+* **Domain Whitelisting**: Ensures code only executes on authorized institutional domains (`*.zenithcustodian.com`, `localhost`, `*.aws.amazon.com`).
 * **Console Legal Watermark**: Warns against unauthorized inspection or reverse-engineering under the Nigerian Copyright Act.
 * **Cryptographic Override**: If triggered on an unauthorized domain, requires the institutional key:
   `RISKINTEGRA-ZPC-2026-ENTERPRISE-PROD`

@@ -42,14 +42,24 @@ const ReportsAndCommittee = () => {
       </div>
 
       {/* Tabs */}
-      <div className="nav-tab-container">
-        <button onClick={() => setActiveTab('generator')} className={`nav-tab-btn ${activeTab === 'generator' ? 'active' : ''}`}>
+      <div className="nav-tab-container" style={{ flexWrap: 'wrap' }}>
+        <button
+          onClick={() => setActiveTab('generator')}
+          className={`nav-tab-btn ${activeTab === 'generator' ? 'active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+          title="Compile formal executive audit report packs, rating summaries, and management letters."
+        >
           <FileText size={16} />
-          <span>Automated Audit Report Generator</span>
+          <span style={{ fontWeight: 600 }}>Automated Audit Report Generator</span>
         </button>
-        <button onClick={() => setActiveTab('portal')} className={`nav-tab-btn ${activeTab === 'portal' ? 'active' : ''}`}>
+        <button
+          onClick={() => setActiveTab('portal')}
+          className={`nav-tab-btn ${activeTab === 'portal' ? 'active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+          title="Access high-level Board Audit Committee (BAC) oversight metrics, quarterly packs, and resolution tracking."
+        >
           <FileCheck size={16} />
-          <span>Board Audit Committee Oversight Portal</span>
+          <span style={{ fontWeight: 600 }}>Board Audit Committee Portal</span>
         </button>
       </div>
 

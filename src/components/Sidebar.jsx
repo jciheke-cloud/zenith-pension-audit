@@ -122,11 +122,22 @@ const Sidebar = () => {
         </NavLink>
       </nav>
 
-      <div className="sidebar-footer">
+      <div className="sidebar-footer" style={{
+        fontSize: '0.75rem',
+        lineHeight: '1.5',
+        padding: '16px 20px',
+        fontWeight: '700',
+        color: '#E2E8F0',
+        textAlign: 'center',
+        flexShrink: 0,
+        borderTop: '1px solid rgba(255,255,255,0.05)',
+        background: 'rgba(0,0,0,0.2)'
+      }}>
         <div style={{ marginBottom: '0.3rem', fontWeight: 700, color: '#E2E8F0' }}>
           Active Role: {currentRole?.badge || 'Chief Audit Executive'}
         </div>
-        <span>Zenith Pension Custodian Ltd v3.1</span>
+        RiskINTEGRA Internal Audit™<br />
+        <span style={{ fontSize: '0.7rem', fontWeight: '600', color: '#94a3b8' }}>© 2026 NayandJoeRiskTechConsulting</span>
       </div>
     </aside>
   );

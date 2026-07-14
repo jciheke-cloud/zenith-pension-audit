@@ -62,6 +62,21 @@ const App = () => {
               <Route path="/erm-sync" element={<ErmSyncPage />} />
               <Route path="/user-guide" element={<UserGuidePage />} />
             </Routes>
+            <footer style={{
+              textAlign: 'center',
+              padding: '1.5rem 1rem 0.5rem',
+              borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+              marginTop: '2.5rem',
+              fontSize: '0.78rem',
+              color: '#94a3b8'
+            }}>
+              <div style={{ fontWeight: 700, color: '#E2E8F0', letterSpacing: '0.02em' }}>
+                RiskINTEGRA Internal Audit™ - © 2026 NayandJoeRiskTechConsulting • Licensed exclusively to Zenith Pension Custodian Limited
+              </div>
+              <div style={{ marginTop: '0.25rem', fontSize: '0.72rem', color: '#64748b' }}>
+                Confidential Proprietary Software under Nigerian Copyright Act & Trade Secrets Law • PENCOM Section 63 & IIA Standards
+              </div>
+            </footer>
           </div>
         </div>
       </div>

@@ -67,12 +67,25 @@ const ActionTracking = () => {
       </div>
 
       {/* Tabs */}
-      <div className="nav-tab-container">
-        {['All', 'Open', 'In Progress', 'Awaiting Validation', 'Closed', 'Overdue'].map(t => (
-          <button key={t} onClick={() => setActiveTab(t)} className={`nav-tab-btn ${activeTab === t ? 'active' : ''}`}>
-            <span>{t === 'All' ? 'All Actions' : t} ({t === 'All' ? findings.length : t === 'Open' ? openCount : t === 'In Progress' ? inProgCount : t === 'Awaiting Validation' ? awaitingCount : t === 'Closed' ? closedCount : overdueCount})</span>
-          </button>
-        ))}
+      <div className="nav-tab-container" style={{ flexWrap: 'wrap' }}>
+        {['All', 'Open', 'In Progress', 'Awaiting Validation', 'Closed', 'Overdue'].map(t => {
+          const count = t === 'All' ? findings.length : t === 'Open' ? openCount : t === 'In Progress' ? inProgCount : t === 'Awaiting Validation' ? awaitingCount : t === 'Closed' ? closedCount : overdueCount;
+          const label = t === 'All' ? 'All Actions' : t;
+          return (
+            <button
+              key={t}
+              onClick={() => setActiveTab(t)}
+              className={`nav-tab-btn ${activeTab === t ? 'active' : ''}`}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              title={`Filter Corrective Action Plans by status: ${label} (${count} actions).`}
+            >
+              <span style={{ fontWeight: 600 }}>{label}</span>
+              <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.45rem', borderRadius: '12px' }}>
+                {count}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* CAP Table */}
