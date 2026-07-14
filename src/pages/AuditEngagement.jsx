@@ -229,14 +229,15 @@ const AuditEngagement = () => {
               <tbody>
                 {(auditPrograms[0]?.procedures || []).map(proc => (
                   <tr key={proc.id}>
-                    <td className="tabular-nums" style={{ fontWeight: 800, color: '#3B82F6' }}>{proc.ref}</td>
-                    <td style={{ fontWeight: 600, maxWidth: '420px' }}>{proc.step}</td>
-                    <td className="tabular-nums">{proc.sampleSize}</td>
-                    <td style={{ fontSize: '0.84rem' }}>{proc.assignedTo}</td>
+                    <td className="tabular-nums" style={{ fontWeight: 800, color: '#3B82F6' }}>{proc.ref || proc.id || 'PROC-01'}</td>
+                    <td style={{ fontWeight: 600, maxWidth: '420px' }}>{proc.step || proc.description || 'Substantive verification and control testing step'}</td>
+                    <td className="tabular-nums">{proc.sampleSize || '25 Samples'}</td>
+                    <td style={{ fontSize: '0.84rem' }}>{proc.assignedTo || proc.owner || 'Senior Field Auditor'}</td>
                     <td>
                       {proc.status === 'Passed' && <span className="badge-success">Passed / Satisfactory</span>}
                       {proc.status === 'Failed' && <span className="badge-danger">Failed / Exception</span>}
                       {proc.status === 'In Progress' && <span className="badge-info">In Progress</span>}
+                      {(!proc.status || (proc.status !== 'Passed' && proc.status !== 'Failed' && proc.status !== 'In Progress')) && <span className="badge-warning">{proc.status || 'Pending Test'}</span>}
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: '0.4rem' }}>

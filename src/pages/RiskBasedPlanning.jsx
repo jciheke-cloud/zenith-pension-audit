@@ -282,33 +282,46 @@ const RiskBasedPlanning = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredUniverse.map((unit, idx) => (
-                <tr key={unit.id}>
-                  <td className="tabular-nums" style={{ fontWeight: 800, color: 'var(--text-muted)' }}>#{idx + 1}</td>
-                  <td className="tabular-nums" style={{ fontWeight: 800, color: '#3B82F6' }}>{unit.code}</td>
-                  <td style={{ fontWeight: 700, maxWidth: '240px' }}>{unit.processName}</td>
-                  <td><span className="badge-chip" style={{ background: 'rgba(255,255,255,0.06)' }}>{unit.businessUnit}</span></td>
-                  <td className="tabular-nums" style={{ color: unit.inherentRisk >= 8 ? '#EF4444' : 'white' }}>{unit.inherentRisk}/10</td>
-                  <td className="tabular-nums" style={{ color: unit.financialExposure >= 8 ? '#F59E0B' : 'white' }}>{unit.financialExposure}/10</td>
-                  <td className="tabular-nums" style={{ color: unit.regulatoryImpact >= 8 ? '#EF4444' : 'white' }}>{unit.regulatoryImpact}/10</td>
-                  <td className="tabular-nums">{unit.previousFindings}/10</td>
-                  <td className="tabular-nums">{unit.fraudExposure}/10</td>
-                  <td className="tabular-nums">{unit.itDependency}/10</td>
-                  <td className="tabular-nums" style={{ fontSize: '1.05rem', fontWeight: 800, color: unit.priority === 'High' ? '#EF4444' : unit.priority === 'Medium' ? '#F59E0B' : '#10B981' }}>
-                    {unit.calculatedScore} / 10
-                  </td>
-                  <td>
-                    {unit.priority === 'High' && <span className="badge-danger">🔴 HIGH</span>}
-                    {unit.priority === 'Medium' && <span className="badge-warning">🟡 MEDIUM</span>}
-                    {unit.priority === 'Low' && <span className="badge-success">🟢 LOW</span>}
-                  </td>
-                  <td>
-                    <button onClick={() => navigate('/annual-plan')} className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}>
-                      Schedule Plan ➔
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {filteredUniverse.map((unit, idx) => {
+                const norm = (val, def) => {
+                  const v = val !== undefined ? val : def;
+                  return v > 10 ? Math.round((v / 100) * 10) : v;
+                };
+                const inh = norm(unit.inherentRisk, 8);
+                const fin = norm(unit.financialExposure, 7);
+                const reg = norm(unit.regulatoryImpact, 8);
+                const prv = norm(unit.previousFindings, 4);
+                const frd = norm(unit.fraudExposure, 5);
+                const itd = norm(unit.itDependency, 6);
+                const prio = unit.priority || (unit.calculatedScore >= 7.5 ? 'High' : unit.calculatedScore >= 5.5 ? 'Medium' : 'Low');
+                return (
+                  <tr key={unit.id}>
+                    <td className="tabular-nums" style={{ fontWeight: 800, color: 'var(--text-muted)' }}>#{idx + 1}</td>
+                    <td className="tabular-nums" style={{ fontWeight: 800, color: '#3B82F6' }}>{unit.code || unit.id || 'PROC-01'}</td>
+                    <td style={{ fontWeight: 700, maxWidth: '240px' }}>{unit.processName || unit.title || 'Core Auditable Unit Review'}</td>
+                    <td><span className="badge-chip" style={{ background: 'rgba(255,255,255,0.06)' }}>{unit.businessUnit || unit.department || 'Custody & Operations'}</span></td>
+                    <td className="tabular-nums" style={{ color: inh >= 8 ? '#EF4444' : 'white' }}>{inh}/10</td>
+                    <td className="tabular-nums" style={{ color: fin >= 8 ? '#F59E0B' : 'white' }}>{fin}/10</td>
+                    <td className="tabular-nums" style={{ color: reg >= 8 ? '#EF4444' : 'white' }}>{reg}/10</td>
+                    <td className="tabular-nums">{prv}/10</td>
+                    <td className="tabular-nums">{frd}/10</td>
+                    <td className="tabular-nums">{itd}/10</td>
+                    <td className="tabular-nums" style={{ fontSize: '1.05rem', fontWeight: 800, color: prio === 'High' ? '#EF4444' : prio === 'Medium' ? '#F59E0B' : '#10B981' }}>
+                      {unit.calculatedScore !== undefined ? unit.calculatedScore : 7.8} / 10
+                    </td>
+                    <td>
+                      {prio === 'High' && <span className="badge-danger">🔴 HIGH</span>}
+                      {prio === 'Medium' && <span className="badge-warning">🟡 MEDIUM</span>}
+                      {(!prio || prio === 'Low') && <span className="badge-success">🟢 {prio || 'LOW'}</span>}
+                    </td>
+                    <td>
+                      <button onClick={() => navigate('/annual-plan')} className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}>
+                        Schedule Plan ➔
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

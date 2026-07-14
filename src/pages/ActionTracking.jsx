@@ -113,24 +113,25 @@ const ActionTracking = () => {
             </thead>
             <tbody>
               {filteredCAPs.map(cap => (
-                <tr key={cap.findingNumber}>
-                  <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{cap.findingNumber}</td>
-                  <td style={{ fontWeight: 700, maxWidth: '280px' }}>{cap.observation}</td>
+                <tr key={cap.findingNumber || cap.id}>
+                  <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{cap.findingNumber || cap.id || 'FND-001'}</td>
+                  <td style={{ fontWeight: 700, maxWidth: '280px' }}>{cap.observation || cap.title || 'Substantive Control Verification'}</td>
                   <td>
                     {cap.priority === 'Critical' && <span className="badge-danger">Critical</span>}
                     {cap.priority === 'High' && <span className="badge-warning">High</span>}
                     {cap.priority === 'Medium' && <span className="badge-info">Medium</span>}
-                    {cap.priority === 'Low' && <span className="badge-success">Low</span>}
+                    {(!cap.priority || cap.priority === 'Low') && <span className="badge-success">{cap.priority || 'Low'}</span>}
                   </td>
-                  <td style={{ fontSize: '0.84rem' }}>{cap.actionOwner}</td>
-                  <td style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', maxWidth: '320px' }}>{cap.managementResponse}</td>
-                  <td className="tabular-nums" style={{ fontWeight: 700 }}>{cap.targetDate}</td>
+                  <td style={{ fontSize: '0.84rem' }}>{cap.actionOwner || cap.owner || 'Head of Custody / Operations'}</td>
+                  <td style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', maxWidth: '320px' }}>{cap.managementResponse || cap.actionPlan || 'Automated verification and control testing committed by management.'}</td>
+                  <td className="tabular-nums" style={{ fontWeight: 700 }}>{cap.targetDate || cap.dueDate || '2026-09-30'}</td>
                   <td>
                     {cap.status === 'Open' && <span className="badge-danger">Open</span>}
                     {cap.status === 'In Progress' && <span className="badge-warning">In Progress</span>}
                     {cap.status === 'Awaiting Validation' && <span className="badge-info">Awaiting Validation</span>}
                     {cap.status === 'Closed' && <span className="badge-success">Closed</span>}
                     {cap.status === 'Overdue' && <span className="badge-chip-danger">Overdue</span>}
+                    {(!cap.status || (cap.status !== 'Open' && cap.status !== 'In Progress' && cap.status !== 'Awaiting Validation' && cap.status !== 'Closed' && cap.status !== 'Overdue')) && <span className="badge-warning">{cap.status || 'Open'}</span>}
                   </td>
                   <td>
                     <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>

@@ -1,14 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* Institutional Obsidian & Executive Velvet Crimson Palette (Zenith Pension Custodian Theme) */
-  --bg-main: #07090e;
-  --bg-dark: #07090e;
-  --bg-card: rgba(14, 18, 28, 0.76);
-  --bg-card-hover: rgba(20, 26, 38, 0.86);
-  --bg-header: rgba(11, 14, 23, 0.92);
-  --border-color: rgba(255, 255, 255, 0.07);
-  --border-highlight: rgba(200, 30, 30, 0.38);
+  /* Gunmetal & Dark Silver-Ash Hybrid Palette (Executive Quantitative & Risk Architecture) */
+  --bg-main: #0b101b; /* Elevated Dark Obsidian-Silver Canvas */
+  --bg-dark: #0b101b;
+  --bg-card: rgba(30, 41, 59, 0.82); /* Gunmetal Slate-Ash Card Surface */
+  --bg-card-hover: rgba(41, 53, 72, 0.92); /* Rich Ash Hover Surface */
+  --bg-header: rgba(18, 26, 41, 0.94); /* Dark Slate-Gunmetal Header */
+  --border-color: rgba(148, 163, 184, 0.22); /* Crisp Metallic Silver Border */
+  --border-highlight: rgba(200, 30, 30, 0.45);
   
   /* Institutional Accent Tokens (Zenith Velvet Red Palette) */
   --accent-primary: #C81E1E; /* Zenith Velvet Crimson / Executive Red */
@@ -18,22 +18,22 @@
   --accent-cyan: #3B82F6;
   
   /* Soothing Ergonomic Typography */
-  --text-main: #F8FAFC;
+  --text-main: #FFFFFF;
   --text-secondary: #E2E8F0;
   --text-muted: #94A3B8;
   --text-dim: #64748B;
   
   /* Risk Severity Indicators */
   --status-crisis: #EF4444; /* Critical / Severe */
-  --status-crisis-bg: rgba(239, 68, 68, 0.14);
+  --status-crisis-bg: rgba(239, 68, 68, 0.15);
   --status-stress: #F59E0B; /* High / Moderate Stress */
-  --status-stress-bg: rgba(245, 158, 11, 0.12);
+  --status-stress-bg: rgba(245, 158, 11, 0.14);
   --status-regular: #10B981; /* Satisfactory / Safe */
-  --status-regular-bg: rgba(16, 185, 129, 0.12);
+  --status-regular-bg: rgba(16, 185, 129, 0.14);
   --status-info: #3B82F6;
-  --status-info-bg: rgba(59, 130, 246, 0.14);
+  --status-info-bg: rgba(59, 130, 246, 0.15);
   --status-purple: #8B5CF6;
-  --status-purple-bg: rgba(139, 92, 246, 0.14);
+  --status-purple-bg: rgba(139, 92, 246, 0.15);
   
   /* Generous De-Cluttered Layout Spacing */
   --spacing-sm: 0.65rem;
@@ -48,7 +48,7 @@
   --radius-xl: 1.5rem;
   --radius-full: 9999px;
   
-  --shadow-card: 0 10px 28px -6px rgba(0, 0, 0, 0.7);
+  --shadow-card: 0 10px 28px -6px rgba(0, 0, 0, 0.65);
   --shadow-glow-blue: 0 0 25px rgba(59, 130, 246, 0.18);
   --shadow-glow-red: 0 0 25px rgba(200, 30, 30, 0.22);
   --shadow-glow-emerald: 0 0 25px rgba(16, 185, 129, 0.16);
@@ -125,8 +125,8 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--bg-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-top: 1px solid rgba(255, 255, 255, 0.11);
+  border: 1px solid var(--border-color);
+  border-top: 1px solid rgba(148, 163, 184, 0.38);
   border-radius: var(--radius-lg);
   padding: 1.5rem 1.65rem;
   box-shadow: var(--shadow-card);
@@ -136,10 +136,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  border-top-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(148, 163, 184, 0.35);
+  border-top-color: rgba(148, 163, 184, 0.55);
   background: var(--bg-card-hover);
-  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.75);
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.85);
 }
 
 .glass-card::before {
@@ -260,7 +260,7 @@ h1, h2, h3, h4, h5, h6 {
   overflow-x: auto;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(18, 26, 41, 0.55);
 }
 
 .data-table {
@@ -275,8 +275,8 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.025);
+  color: #E2E8F0;
+  background: rgba(148, 163, 184, 0.12);
   border-bottom: 1px solid var(--border-color);
   white-space: nowrap;
 }
@@ -454,10 +454,10 @@ h1, h2, h3, h4, h5, h6 {
   height: 100vh;
   position: sticky;
   top: 0;
-  background: rgba(10, 15, 29, 0.95);
+  background: rgba(18, 26, 41, 0.96);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   z-index: 50;
@@ -467,7 +467,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .sidebar-header {
   padding: 1.5rem 1.4rem 1.2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
 }
 

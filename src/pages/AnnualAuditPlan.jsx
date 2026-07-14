@@ -207,51 +207,57 @@ const AnnualAuditPlan = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredPlans.map(plan => (
-                <tr key={plan.id}>
-                  <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{plan.id}</td>
-                  <td style={{ fontWeight: 700, maxWidth: '280px' }}>{plan.auditName}</td>
-                  <td>{plan.department}</td>
-                  <td>
-                    {plan.riskRating === 'Critical' && <span className="badge-danger">Critical</span>}
-                    {plan.riskRating === 'High' && <span className="badge-warning">High</span>}
-                    {plan.riskRating === 'Medium' && <span className="badge-info">Medium</span>}
-                    {plan.riskRating === 'Low' && <span className="badge-success">Low</span>}
-                  </td>
-                  <td className="tabular-nums">{plan.frequency}</td>
-                  <td className="tabular-nums" style={{ fontWeight: 700 }}>{plan.estimatedHours} hrs</td>
-                  <td style={{ fontSize: '0.84rem' }}>{plan.leadAuditor}</td>
-                  <td className="tabular-nums" style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                    {plan.plannedStartDate} ➔ {plan.plannedEndDate}
-                  </td>
-                  <td className="tabular-nums" style={{ fontWeight: 700, color: '#34d399' }}>
-                    {currency === 'NGN' ? `₦${plan.budget}M` : `$${(plan.budget * 0.65).toFixed(1)}K`}
-                  </td>
-                  <td>
-                    {plan.status === 'Completed' && <span className="badge-success">Completed</span>}
-                    {plan.status === 'In Progress' && <span className="badge-info">In Progress</span>}
-                    {plan.status === 'Approved' && <span className="badge-purple">Approved</span>}
-                    {plan.status === 'Draft' && <span className="badge-chip" style={{ background: 'rgba(255,255,255,0.08)', color: '#cbd5e1' }}>Draft</span>}
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '0.4rem' }}>
-                      {plan.status === 'Draft' && (
-                        <button onClick={() => handleApprovePlan(plan.id)} className="btn-success" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
-                          Approve
+              {filteredPlans.map(plan => {
+                const rating = plan.riskRating || plan.priority || 'High';
+                const hrs = plan.estimatedHours || plan.budgetHours || 180;
+                const timeline = plan.plannedStartDate ? `${plan.plannedStartDate} ➔ ${plan.plannedEndDate}` : plan.plannedQuarter || 'Q2 2026';
+                const bdg = plan.budget !== undefined && !isNaN(plan.budget) ? plan.budget : 18;
+                return (
+                  <tr key={plan.id}>
+                    <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{plan.id}</td>
+                    <td style={{ fontWeight: 700, maxWidth: '280px' }}>{plan.auditName || plan.title || 'Risk-Based Assurance Review'}</td>
+                    <td>{plan.department || plan.businessUnit || 'Operations & Custody'}</td>
+                    <td>
+                      {rating === 'Critical' && <span className="badge-danger">Critical</span>}
+                      {rating === 'High' && <span className="badge-warning">High</span>}
+                      {rating === 'Medium' && <span className="badge-info">Medium</span>}
+                      {(!rating || rating === 'Low') && <span className="badge-success">{rating || 'Low'}</span>}
+                    </td>
+                    <td className="tabular-nums">{plan.frequency || 'Annual'}</td>
+                    <td className="tabular-nums" style={{ fontWeight: 700 }}>{hrs} hrs</td>
+                    <td style={{ fontSize: '0.84rem' }}>{plan.leadAuditor || plan.owner || 'Lead Senior Auditor'}</td>
+                    <td className="tabular-nums" style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                      {timeline}
+                    </td>
+                    <td className="tabular-nums" style={{ fontWeight: 700, color: '#34d399' }}>
+                      {currency === 'NGN' ? `₦${bdg}M` : `$${(bdg * 0.65).toFixed(1)}K`}
+                    </td>
+                    <td>
+                      {plan.status === 'Completed' && <span className="badge-success">Completed</span>}
+                      {(plan.status === 'In Progress' || plan.status === 'Active') && <span className="badge-info">In Progress</span>}
+                      {(plan.status === 'Approved' || plan.status === 'Scheduled') && <span className="badge-purple">{plan.status || 'Approved'}</span>}
+                      {(plan.status === 'Draft' || (!plan.status || (plan.status !== 'Completed' && plan.status !== 'In Progress' && plan.status !== 'Active' && plan.status !== 'Approved' && plan.status !== 'Scheduled'))) && <span className="badge-chip" style={{ background: 'rgba(255,255,255,0.08)', color: '#cbd5e1' }}>{plan.status || 'Draft'}</span>}
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '0.4rem' }}>
+                        {plan.status === 'Draft' && (
+                          <button onClick={() => handleApprovePlan(plan.id)} className="btn-success" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
+                            Approve
+                          </button>
+                        )}
+                        {plan.status === 'Approved' && (
+                          <button onClick={() => handleStartFieldwork(plan.id)} className="btn-primary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
+                            Launch Fieldwork
+                          </button>
+                        )}
+                        <button onClick={() => navigate('/engagements')} className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
+                          Manage ➔
                         </button>
-                      )}
-                      {plan.status === 'Approved' && (
-                        <button onClick={() => handleStartFieldwork(plan.id)} className="btn-primary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
-                          Launch Fieldwork
-                        </button>
-                      )}
-                      <button onClick={() => navigate('/engagements')} className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
-                        Manage ➔
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

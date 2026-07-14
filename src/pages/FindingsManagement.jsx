@@ -350,21 +350,21 @@ const FindingsManagement = () => {
               </thead>
               <tbody>
                 {filteredFindings.map(f => (
-                  <tr key={f.findingNumber}>
-                    <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{f.findingNumber}</td>
+                  <tr key={f.findingNumber || f.id}>
+                    <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{f.findingNumber || f.id || 'FND-001'}</td>
                     <td style={{ maxWidth: '340px' }}>
-                      <div style={{ fontWeight: 700, color: 'white', marginBottom: '0.2rem' }}>{f.observation}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Cause: {f.rootCause}</div>
+                      <div style={{ fontWeight: 700, color: 'white', marginBottom: '0.2rem' }}>{f.observation || f.title || 'Control Observation'}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Cause: {f.rootCause || 'Identified during substantive testing'}</div>
                     </td>
-                    <td>{f.businessUnit}</td>
+                    <td>{f.businessUnit || f.department || 'Operations'}</td>
                     <td className="tabular-nums" style={{ fontWeight: 800, fontSize: '0.95rem' }}>
-                      L{f.likelihood} × I{f.impact} = <span style={{ color: f.residualRisk >= 80 ? '#EF4444' : f.residualRisk >= 60 ? '#F59E0B' : '#10B981' }}>{f.residualRisk}</span>
+                      L{f.likelihood || 5} × I{f.impact || 6} = <span style={{ color: (f.residualRisk || 50) >= 80 ? '#EF4444' : (f.residualRisk || 50) >= 60 ? '#F59E0B' : '#10B981' }}>{f.residualRisk || (f.likelihood || 5) * (f.impact || 6)}</span>
                     </td>
                     <td>
                       {f.priority === 'Critical' && <span className="badge-danger">🔴 Critical</span>}
                       {f.priority === 'High' && <span className="badge-warning">🟡 High</span>}
                       {f.priority === 'Medium' && <span className="badge-info">🔵 Medium</span>}
-                      {f.priority === 'Low' && <span className="badge-success">🟢 Low</span>}
+                      {(!f.priority || f.priority === 'Low') && <span className="badge-success">🟢 {f.priority || 'Low'}</span>}
                     </td>
                     <td>
                       {f.isRepeat ? (
@@ -373,13 +373,14 @@ const FindingsManagement = () => {
                         <span className="badge-chip" style={{ background: 'rgba(255,255,255,0.06)' }}>New</span>
                       )}
                     </td>
-                    <td style={{ fontSize: '0.84rem' }}>{f.actionOwner}</td>
-                    <td className="tabular-nums" style={{ fontSize: '0.82rem' }}>{f.targetDate}</td>
+                    <td style={{ fontSize: '0.84rem' }}>{f.actionOwner || f.owner || 'Head of Department / ERM Liaison'}</td>
+                    <td className="tabular-nums" style={{ fontSize: '0.82rem' }}>{f.targetDate || f.dueDate || '2026-09-30'}</td>
                     <td>
                       {f.status === 'Open' && <span className="badge-danger">Open</span>}
                       {f.status === 'In Progress' && <span className="badge-warning">In Progress</span>}
                       {f.status === 'Awaiting Validation' && <span className="badge-info">Awaiting Validation</span>}
                       {f.status === 'Closed' && <span className="badge-success">Closed</span>}
+                      {(!f.status || (f.status !== 'Open' && f.status !== 'In Progress' && f.status !== 'Awaiting Validation' && f.status !== 'Closed')) && <span className="badge-warning">{f.status || 'Open'}</span>}
                     </td>
                   </tr>
                 ))}
