@@ -1,29 +1,66 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuditContext } from '../context/AuditContext';
-import { Database, Plus, Search, Layers, ShieldCheck, Filter } from 'lucide-react';
+import { Database, Plus, Search, Layers, ShieldCheck, Filter, Edit2, Trash2 } from 'lucide-react';
 
 const MasterData = () => {
   const navigate = useNavigate();
-  const { businessUnits, addBusinessUnit, auditUniverse, setAuditUniverse, addNotification } = useContext(AuditContext);
+  const { businessUnits, addBusinessUnit, setBusinessUnits, auditUniverse, setAuditUniverse, addNotification, checkRbacPermission, verifyRbacOrAlert } = useContext(AuditContext);
   const [activeTab, setActiveTab] = useState('bus'); // 'bus' or 'universe'
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBu, setFilterBu] = useState('All');
 
-  // New BU Modal State
+  // New & Edit BU Modal State
   const [isBuModalOpen, setIsBuModalOpen] = useState(false);
+  const [editingBuId, setEditingBuId] = useState(null);
   const [newBuName, setNewBuName] = useState('');
   const [newBuHead, setNewBuHead] = useState('');
   const [newBuCode, setNewBuCode] = useState('');
   const [newBuRisk, setNewBuRisk] = useState('Medium');
 
-  // New Universe Process Modal State
+  // New & Edit Universe Process Modal State
   const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
+  const [editingProcId, setEditingProcId] = useState(null);
   const [procName, setProcName] = useState('');
   const [procBu, setProcBu] = useState('Operations');
   const [procCode, setProcCode] = useState('');
   const [procLead, setProcLead] = useState('Lead Senior Auditor');
   const [procFreq, setProcFreq] = useState('Quarterly');
+
+  const handleStartEditBu = (bu) => {
+    if (!verifyRbacOrAlert('edit', 'universe')) return;
+    setEditingBuId(bu.id);
+    setNewBuName(bu.name || bu.department || '');
+    setNewBuHead(bu.head || bu.owner || '');
+    setNewBuCode(bu.code || '');
+    setNewBuRisk(bu.riskLevel || 'Medium');
+    setIsBuModalOpen(true);
+  };
+
+  const handleDeleteBu = (buId, buName) => {
+    if (!verifyRbacOrAlert('delete', 'universe')) return;
+    if (!window.confirm(`Are you sure you want to delete Business Unit "${buName}"?`)) return;
+    setBusinessUnits(prev => prev.filter(b => b.id !== buId));
+    addNotification('Business Unit Deleted', `Unit "${buName}" removed from Audit Universe.`, 'info');
+  };
+
+  const handleStartEditProc = (proc) => {
+    if (!verifyRbacOrAlert('edit', 'universe')) return;
+    setEditingProcId(proc.id);
+    setProcName(proc.processName || proc.title || '');
+    setProcBu(proc.businessUnit || proc.department || 'Operations');
+    setProcCode(proc.code || '');
+    setProcLead(proc.leadAuditor || proc.owner || 'Lead Senior Auditor');
+    setProcFreq(proc.frequency || 'Quarterly');
+    setIsProcessModalOpen(true);
+  };
+
+  const handleDeleteProc = (procId, procCodeVal) => {
+    if (!verifyRbacOrAlert('delete', 'universe')) return;
+    if (!window.confirm(`Are you sure you want to delete auditable process "${procCodeVal}"?`)) return;
+    setAuditUniverse(prev => prev.filter(p => p.id !== procId));
+    addNotification('Process Deleted', `Auditable process "${procCodeVal}" removed from Master Universe.`, 'info');
+  };
 
   const filteredBus = businessUnits.filter(bu => 
     bu.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -42,41 +79,68 @@ const MasterData = () => {
   const handleCreateBu = (e) => {
     e.preventDefault();
     if (!newBuName || !newBuCode) return;
-    addBusinessUnit({
-      name: newBuName,
-      head: newBuHead || 'Unassigned Lead',
-      code: newBuCode.toUpperCase(),
-      staffCount: 15,
-      riskLevel: newBuRisk
-    });
+    if (editingBuId) {
+      if (!verifyRbacOrAlert('edit', 'universe')) return;
+      setBusinessUnits(prev => prev.map(bu => bu.id === editingBuId ? {
+        ...bu,
+        name: newBuName,
+        head: newBuHead || 'Unassigned Lead',
+        code: newBuCode.toUpperCase(),
+        riskLevel: newBuRisk
+      } : bu));
+      addNotification('Business Unit Updated', `Business Unit "${newBuName}" updated successfully.`, 'success');
+    } else {
+      addBusinessUnit({
+        name: newBuName,
+        head: newBuHead || 'Unassigned Lead',
+        code: newBuCode.toUpperCase(),
+        staffCount: 15,
+        riskLevel: newBuRisk
+      });
+    }
     setNewBuName('');
     setNewBuHead('');
     setNewBuCode('');
+    setEditingBuId(null);
     setIsBuModalOpen(false);
   };
 
   const handleCreateProcess = (e) => {
     e.preventDefault();
     if (!procName || !procCode) return;
-    const newProc = {
-      id: `au-${Date.now()}`,
-      processName: procName,
-      businessUnit: procBu,
-      code: procCode.toUpperCase(),
-      inherentRisk: 7,
-      financialExposure: 7,
-      regulatoryImpact: 8,
-      previousFindings: 5,
-      fraudExposure: 5,
-      itDependency: 6,
-      lastAudited: new Date().toISOString().split('T')[0],
-      frequency: procFreq,
-      leadAuditor: procLead
-    };
-    setAuditUniverse(prev => [newProc, ...prev]);
-    addNotification('Audit Universe Expanded', `Auditable process "${newProc.processName}" added to Master Data foundation.`, 'success');
+    if (editingProcId) {
+      if (!verifyRbacOrAlert('edit', 'universe')) return;
+      setAuditUniverse(prev => prev.map(item => item.id === editingProcId ? {
+        ...item,
+        processName: procName,
+        businessUnit: procBu,
+        code: procCode.toUpperCase(),
+        frequency: procFreq,
+        leadAuditor: procLead
+      } : item));
+      addNotification('Audit Universe Updated', `Auditable process "${procName}" updated successfully.`, 'success');
+    } else {
+      const newProc = {
+        id: `au-${Date.now()}`,
+        processName: procName,
+        businessUnit: procBu,
+        code: procCode.toUpperCase(),
+        inherentRisk: 7,
+        financialExposure: 7,
+        regulatoryImpact: 8,
+        previousFindings: 5,
+        fraudExposure: 5,
+        itDependency: 6,
+        lastAudited: new Date().toISOString().split('T')[0],
+        frequency: procFreq,
+        leadAuditor: procLead
+      };
+      setAuditUniverse(prev => [newProc, ...prev]);
+      addNotification('Audit Universe Expanded', `Auditable process "${newProc.processName}" added to Master Data foundation.`, 'success');
+    }
     setProcName('');
     setProcCode('');
+    setEditingProcId(null);
     setIsProcessModalOpen(false);
   };
 
@@ -189,6 +253,7 @@ const MasterData = () => {
                   <th>Inherent Risk Profile</th>
                   <th>Audit Universe Coverage %</th>
                   <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -220,6 +285,26 @@ const MasterData = () => {
                       <td>
                         <span className="badge-success">Active Universe</span>
                       </td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '0.4rem' }}>
+                          <button
+                            onClick={() => handleStartEditBu(bu)}
+                            className="btn-secondary"
+                            style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('edit', 'universe') ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('edit', 'universe') ? '#60A5FA' : 'var(--text-muted)' }}
+                            title={checkRbacPermission('edit', 'universe') ? "Edit Business Unit (✏️)" : "🔒 RBAC Restricted"}
+                          >
+                            <Edit2 size={13} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteBu(bu.id, bu.name)}
+                            className="btn-secondary"
+                            style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('delete', 'universe') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('delete', 'universe') ? '#F87171' : 'var(--text-muted)' }}
+                            title={checkRbacPermission('delete', 'universe') ? "Delete Business Unit (🗑️)" : "🔒 RBAC Restricted"}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}
@@ -247,6 +332,7 @@ const MasterData = () => {
                   <th>Last Audited</th>
                   <th>Assigned Lead Auditor</th>
                   <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -261,6 +347,26 @@ const MasterData = () => {
                     <td>
                       <span className="badge-success">Auditable Unit</span>
                     </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '0.4rem' }}>
+                        <button
+                          onClick={() => handleStartEditProc(item)}
+                          className="btn-secondary"
+                          style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('edit', 'universe') ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('edit', 'universe') ? '#60A5FA' : 'var(--text-muted)' }}
+                          title={checkRbacPermission('edit', 'universe') ? "Edit Auditable Process (✏️)" : "🔒 RBAC Restricted"}
+                        >
+                          <Edit2 size={13} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProc(item.id, item.code || item.processName)}
+                          className="btn-secondary"
+                          style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('delete', 'universe') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('delete', 'universe') ? '#F87171' : 'var(--text-muted)' }}
+                          title={checkRbacPermission('delete', 'universe') ? "Delete Auditable Process (🗑️)" : "🔒 RBAC Restricted"}
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -269,13 +375,13 @@ const MasterData = () => {
         </div>
       )}
 
-      {/* New BU Modal */}
+      {/* Add / Edit BU Modal */}
       {isBuModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content" style={{ maxWidth: '520px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Add New Business Unit</h3>
-              <button onClick={() => setIsBuModalOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{editingBuId ? 'Edit Business Unit' : 'Add New Business Unit'}</h3>
+              <button onClick={() => { setIsBuModalOpen(false); setEditingBuId(null); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
             </div>
             <form onSubmit={handleCreateBu} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
@@ -300,21 +406,21 @@ const MasterData = () => {
                 </select>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
-                <button type="button" onClick={() => setIsBuModalOpen(false)} className="btn-secondary">Cancel</button>
-                <button type="submit" className="btn-primary">Create Business Unit</button>
+                <button type="button" onClick={() => { setIsBuModalOpen(false); setEditingBuId(null); }} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary">{editingBuId ? 'Save Changes' : 'Create Business Unit'}</button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* New Process Modal */}
+      {/* Add / Edit Process Modal */}
       {isProcessModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content" style={{ maxWidth: '560px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Add Auditable Process to Universe</h3>
-              <button onClick={() => setIsProcessModalOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{editingProcId ? 'Edit Auditable Process' : 'Add Auditable Process to Universe'}</h3>
+              <button onClick={() => { setIsProcessModalOpen(false); setEditingProcId(null); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
             </div>
             <form onSubmit={handleCreateProcess} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
@@ -351,8 +457,8 @@ const MasterData = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
-                <button type="button" onClick={() => setIsProcessModalOpen(false)} className="btn-secondary">Cancel</button>
-                <button type="submit" className="btn-primary">Add to Universe</button>
+                <button type="button" onClick={() => { setIsProcessModalOpen(false); setEditingProcId(null); }} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary">{editingProcId ? 'Save Changes' : 'Add to Universe'}</button>
               </div>
             </form>
           </div>

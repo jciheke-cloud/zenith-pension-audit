@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
-import { AlertOctagon, Plus, ShieldAlert, RefreshCw, CheckCircle, Search, Filter, Sliders, Award } from 'lucide-react';
+import { AlertOctagon, Plus, ShieldAlert, RefreshCw, CheckCircle, Search, Filter, Sliders, Award, Edit2, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const FindingsManagement = () => {
-  const { findings, saveFinding, businessUnits, addNotification } = useContext(AuditContext);
+  const { findings, saveFinding, setFindings, businessUnits, addNotification, checkRbacPermission, verifyRbacOrAlert } = useContext(AuditContext);
   const navigate = useNavigate();
 
   const [activeView, setActiveView] = useState('matrix'); // 'matrix' or 'list'
@@ -12,8 +12,9 @@ const FindingsManagement = () => {
   const [filterBu, setFilterBu] = useState('All');
   const [filterPriority, setFilterPriority] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingFindingId, setEditingFindingId] = useState(null);
 
-  // New Finding Form State
+  // New & Edit Finding Form State
   const [bu, setBu] = useState('Custody Operations');
   const [observation, setObservation] = useState('');
   const [rootCause, setRootCause] = useState('Process Failure / Lack of Automated Control');
@@ -31,6 +32,29 @@ const FindingsManagement = () => {
   else if (residualCalc >= 60) calculatedTier = 'High';
   else if (residualCalc >= 30) calculatedTier = 'Medium';
 
+  const handleStartEditFinding = (f) => {
+    if (!verifyRbacOrAlert('edit', 'findings')) return;
+    setEditingFindingId(f.id);
+    setBu(f.businessUnit || 'Custody Operations');
+    setObservation(f.observation || '');
+    setRootCause(f.rootCause || 'Process Failure / Lack of Automated Control');
+    setCriteria(f.criteria || 'PenCom Guidelines Section 5.2 on 24-hr Cash Sweeping');
+    setRiskImpact(f.riskImpact || 'Potential financial loss or SLA penalty from regulatory authority');
+    setLikelihood(f.likelihood || 8);
+    setImpact(f.impact || 9);
+    setMgmtResponse(f.managementResponse || '');
+    setActionOwner(f.actionOwner || 'Head of Custody Operations');
+    setTargetDate(f.targetDate || '2026-08-30');
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteFinding = (fId, fNum) => {
+    if (!verifyRbacOrAlert('delete', 'findings')) return;
+    if (!window.confirm(`Are you sure you want to delete finding "${fNum}"?`)) return;
+    setFindings(prev => prev.filter(item => item.id !== fId));
+    addNotification('Finding Deleted', `Finding "${fNum}" removed successfully.`, 'info');
+  };
+
   const filteredFindings = findings.filter(f => {
     const matchesSearch = f.observation?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           f.findingNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -43,20 +67,40 @@ const FindingsManagement = () => {
   const handleCreateFinding = (e) => {
     e.preventDefault();
     if (!observation) return;
-    saveFinding({
-      businessUnit: bu,
-      observation,
-      rootCause,
-      criteria,
-      riskImpact,
-      likelihood: parseInt(likelihood, 10),
-      impact: parseInt(impact, 10),
-      managementResponse: mgmtResponse,
-      actionOwner,
-      targetDate,
-      status: 'Open'
-    });
+    if (editingFindingId) {
+      if (!verifyRbacOrAlert('edit', 'findings')) return;
+      setFindings(prev => prev.map(f => f.id === editingFindingId ? {
+        ...f,
+        businessUnit: bu,
+        observation,
+        rootCause,
+        criteria,
+        riskImpact,
+        likelihood: parseInt(likelihood, 10),
+        impact: parseInt(impact, 10),
+        managementResponse: mgmtResponse,
+        actionOwner,
+        targetDate,
+        priority: calculatedTier
+      } : f));
+      addNotification('Finding Updated', `Finding updated successfully.`, 'success');
+    } else {
+      saveFinding({
+        businessUnit: bu,
+        observation,
+        rootCause,
+        criteria,
+        riskImpact,
+        likelihood: parseInt(likelihood, 10),
+        impact: parseInt(impact, 10),
+        managementResponse: mgmtResponse,
+        actionOwner,
+        targetDate,
+        status: 'Open'
+      });
+    }
     setIsModalOpen(false);
+    setEditingFindingId(null);
     setObservation('');
   };
 
@@ -346,6 +390,7 @@ const FindingsManagement = () => {
                   <th>Management Action Owner</th>
                   <th>Target Date</th>
                   <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -382,6 +427,26 @@ const FindingsManagement = () => {
                       {f.status === 'Closed' && <span className="badge-success">Closed</span>}
                       {(!f.status || (f.status !== 'Open' && f.status !== 'In Progress' && f.status !== 'Awaiting Validation' && f.status !== 'Closed')) && <span className="badge-warning">{f.status || 'Open'}</span>}
                     </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '0.4rem' }}>
+                        <button
+                          onClick={() => handleStartEditFinding(f)}
+                          className="btn-secondary"
+                          style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('edit', 'findings') ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('edit', 'findings') ? '#60A5FA' : 'var(--text-muted)' }}
+                          title={checkRbacPermission('edit', 'findings') ? "Edit Finding (✏️)" : "🔒 RBAC Restricted"}
+                        >
+                          <Edit2 size={13} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteFinding(f.id, f.findingNumber || f.observation)}
+                          className="btn-secondary"
+                          style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('delete', 'findings') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('delete', 'findings') ? '#F87171' : 'var(--text-muted)' }}
+                          title={checkRbacPermission('delete', 'findings') ? "Delete Finding (🗑️)" : "🔒 RBAC Restricted"}
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -390,13 +455,13 @@ const FindingsManagement = () => {
         </div>
       )}
 
-      {/* New Finding Modal */}
+      {/* New / Edit Finding Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content" style={{ maxWidth: '680px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Log Audit Finding on 10×10 Risk Matrix</h3>
-              <button onClick={() => setIsModalOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{editingFindingId ? 'Edit Audit Finding' : 'Log Audit Finding on 10×10 Risk Matrix'}</h3>
+              <button onClick={() => { setIsModalOpen(false); setEditingFindingId(null); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
             </div>
             <form onSubmit={handleCreateFinding} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -465,8 +530,8 @@ const FindingsManagement = () => {
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
-                <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary">Cancel</button>
-                <button type="submit" className="btn-primary">Save to Matrix & Sync ERM</button>
+                <button type="button" onClick={() => { setIsModalOpen(false); setEditingFindingId(null); }} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary">{editingFindingId ? 'Save Changes & Sync ERM' : 'Save to Matrix & Sync ERM'}</button>
               </div>
             </form>
           </div>

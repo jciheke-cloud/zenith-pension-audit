@@ -1,18 +1,36 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
-import { FolderOpen, Plus, FileText, Download, Eye, CheckCircle, Search, Filter, ShieldCheck } from 'lucide-react';
+import { FolderOpen, Plus, FileText, Download, Eye, CheckCircle, Search, Filter, ShieldCheck, Edit2, Trash2 } from 'lucide-react';
 
 const WorkingPapers = () => {
-  const { workingPapers, addWorkingPaper, auditPlans } = useContext(AuditContext);
+  const { workingPapers, addWorkingPaper, setWorkingPapers, auditPlans, checkRbacPermission, verifyRbacOrAlert, addNotification } = useContext(AuditContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingWpId, setEditingWpId] = useState(null);
 
-  // New WP Form State
+  // New & Edit WP Form State
   const [title, setTitle] = useState('');
   const [fileType, setFileType] = useState('Excel Workbook (.xlsx)');
   const [linkedAudit, setLinkedAudit] = useState(auditPlans[0]?.auditName || 'Q3 Custody Fee Sweep Reconciliation');
   const [uploadedBy, setUploadedBy] = useState('Lead Senior Auditor');
+
+  const handleStartEdit = (wp) => {
+    if (!verifyRbacOrAlert('edit', 'workingPapers')) return;
+    setEditingWpId(wp.id);
+    setTitle(wp.title || '');
+    setFileType(wp.fileType || 'Excel Workbook (.xlsx)');
+    setLinkedAudit(wp.linkedAudit || auditPlans[0]?.auditName || '');
+    setUploadedBy(wp.uploadedBy || 'Lead Senior Auditor');
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteWp = (wpId, wpTitle) => {
+    if (!verifyRbacOrAlert('delete', 'workingPapers')) return;
+    if (!window.confirm(`Are you sure you want to delete working paper "${wpTitle}"?`)) return;
+    setWorkingPapers(prev => prev.filter(w => w.id !== wpId));
+    addNotification('Working Paper Deleted', `Working paper "${wpTitle}" has been removed.`, 'info');
+  };
 
   const filteredPapers = workingPapers.filter(wp => {
     const matchesSearch = wp.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -25,14 +43,28 @@ const WorkingPapers = () => {
   const handleUpload = (e) => {
     e.preventDefault();
     if (!title) return;
-    addWorkingPaper({
-      title,
-      fileName: `${title.toLowerCase().replace(/\s+/g, '_')}.xlsx`,
-      fileType,
-      linkedAudit,
-      uploadedBy
-    });
+    if (editingWpId) {
+      if (!verifyRbacOrAlert('edit', 'workingPapers')) return;
+      setWorkingPapers(prev => prev.map(wp => wp.id === editingWpId ? {
+        ...wp,
+        title,
+        fileName: `${title.toLowerCase().replace(/\s+/g, '_')}.xlsx`,
+        fileType,
+        linkedAudit,
+        uploadedBy
+      } : wp));
+      addNotification('Working Paper Updated', `Working paper "${title}" updated successfully.`, 'success');
+    } else {
+      addWorkingPaper({
+        title,
+        fileName: `${title.toLowerCase().replace(/\s+/g, '_')}.xlsx`,
+        fileType,
+        linkedAudit,
+        uploadedBy
+      });
+    }
     setIsModalOpen(false);
+    setEditingWpId(null);
     setTitle('');
   };
 
@@ -122,12 +154,28 @@ const WorkingPapers = () => {
                     {(!wp.status || (wp.status !== 'Approved' && wp.status !== 'Supervisor Signed-Off' && wp.status !== 'QA Approved' && wp.status !== 'Submitted for Review' && wp.status !== 'Under Review' && wp.status !== 'In Progress')) && <span className="badge-info">{wp.status || 'Verified'}</span>}
                   </td>
                   <td>
-                    <div style={{ display: 'flex', gap: '0.4rem' }}>
+                    <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                       <button className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
                         <Eye size={13} /> View
                       </button>
                       <button className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
                         <Download size={13} />
+                      </button>
+                      <button
+                        onClick={() => handleStartEdit(wp)}
+                        className="btn-secondary"
+                        style={{ padding: '0.3rem 0.5rem', background: checkRbacPermission('edit', 'workingPapers') ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('edit', 'workingPapers') ? '#60A5FA' : 'var(--text-muted)' }}
+                        title={checkRbacPermission('edit', 'workingPapers') ? "Edit Working Paper (✏️)" : "🔒 RBAC Restricted"}
+                      >
+                        <Edit2 size={13} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteWp(wp.id, wp.title)}
+                        className="btn-secondary"
+                        style={{ padding: '0.3rem 0.5rem', background: checkRbacPermission('delete', 'workingPapers') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('delete', 'workingPapers') ? '#F87171' : 'var(--text-muted)' }}
+                        title={checkRbacPermission('delete', 'workingPapers') ? "Delete Working Paper (🗑️)" : "🔒 RBAC Restricted"}
+                      >
+                        <Trash2 size={13} />
                       </button>
                     </div>
                   </td>
@@ -138,13 +186,13 @@ const WorkingPapers = () => {
         </div>
       </div>
 
-      {/* Upload Modal */}
+      {/* Upload / Edit Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content" style={{ maxWidth: '520px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Upload Working Paper Evidence</h3>
-              <button onClick={() => setIsModalOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{editingWpId ? 'Edit Working Paper Evidence' : 'Upload Working Paper Evidence'}</h3>
+              <button onClick={() => { setIsModalOpen(false); setEditingWpId(null); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
             </div>
             <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
@@ -175,8 +223,8 @@ const WorkingPapers = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
-                <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary">Cancel</button>
-                <button type="submit" className="btn-primary">Upload & Link Evidence</button>
+                <button type="button" onClick={() => { setIsModalOpen(false); setEditingWpId(null); }} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary">{editingWpId ? 'Save Changes' : 'Upload & Link Evidence'}</button>
               </div>
             </form>
           </div>

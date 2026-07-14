@@ -157,6 +157,35 @@ export const AuditProvider = ({ children }) => {
     setNotifications(prev => [newNotif, ...prev]);
   };
 
+  // RBAC Permission Checkers
+  const checkRbacPermission = (action, moduleName = 'general') => {
+    const roleId = currentRole?.id || 'cae';
+    // 'cae' and 'manager' have full write/delete across all modules
+    if (roleId === 'cae' || roleId === 'manager') return true;
+    // 'senior' and 'qa' can edit/update status on testing, working papers, controls, findings, but NOT delete master universe or programs
+    if (action === 'edit' && ['senior', 'qa'].includes(roleId)) return true;
+    if (action === 'delete' && ['senior', 'qa'].includes(roleId) && !['universe', 'programs', 'master'].includes(moduleName)) return true;
+    // 'owner' (Auditee / Dept Head) can ONLY edit findings action plans or CAPs
+    if (roleId === 'owner' && action === 'edit' && moduleName === 'findings') return true;
+    // 'erm' can edit/add KRI / risk sync or reviews
+    if (roleId === 'erm' && action === 'edit' && ['reviews', 'continuous', 'universe'].includes(moduleName)) return true;
+    // 'committee' (Board) has read-only/approval sign-off, no direct inline editing or deletion of field rows
+    return false;
+  };
+
+  const verifyRbacOrAlert = (action, moduleName = 'general') => {
+    if (checkRbacPermission(action, moduleName)) {
+      return true;
+    } else {
+      addNotification(
+        '🔒 RBAC Access Denied',
+        `Your active role "${currentRole?.name || 'User'}" does not have ${action.toUpperCase()} permissions for ${moduleName.toUpperCase()}. Please switch to an Audit Executive or Manager role to modify this record.`,
+        'danger'
+      );
+      return false;
+    }
+  };
+
   const clearAllMockData = () => {
     localStorage.setItem('ZPC_AUDIT_MOCK_REMOVED', 'true');
     // Directly feed all Audit Library tables (Universe, Findings, Plans, Working Papers, Controls, Reviews, Fraud Cases, Continuous Exceptions) from ERM
@@ -324,10 +353,47 @@ export const AuditProvider = ({ children }) => {
       status: (risk.residualScore || 50) >= 80 ? 'Under Review' : 'Cleared / Verified Normal'
     }));
 
+    const newErmPrograms = ermDepartments.map((dept, idx) => {
+      const deptRisks = ermRisks.filter(r => r.department === dept);
+      const proceduresList = deptRisks.map((r, pIdx) => ({
+        id: `p-erm-${idx}-${pIdx + 1}`,
+        ref: `PROC-${dept.substring(0, 3).toUpperCase()}-${String(pIdx + 1).padStart(2, '0')}`,
+        step: `Verify controls mitigating ${r.riskTitle} and ensure compliance with PenCom prudenital guidelines.`,
+        sampleSize: (r.residualScore || 50) >= 75 ? '50 Samples (100% Target)' : '25 Samples (Selected Batches)',
+        riskLink: r.category || 'Operational Risk',
+        expectedControl: `Dual Maker/Checker authorization and daily exception log review for ${r.category}.`,
+        evidenceRequired: 'System audit trails, approval sign-off slips, and daily reconciliation sheets.',
+        status: (r.residualScore || 50) >= 80 ? 'Tested - Exception' : (r.residualScore || 50) >= 65 ? 'In Progress' : 'Tested - Pass',
+        findingRef: (r.residualScore || 50) >= 80 ? `FND-ERM-${String(ermRisks.indexOf(r) + 1).padStart(3, '0')}` : null
+      }));
+      return {
+        id: `PROG-ERM-${idx + 1}`,
+        title: `${dept} Risk-Based Testing & Assurance Program`,
+        name: `${dept} Risk-Based Testing & Assurance Program`,
+        category: dept,
+        objectives: `Comprehensive step-by-step verification procedures designed to evaluate internal controls across ${dept}, directly addressing ${deptRisks.length} high-priority ERM risk register items.`,
+        description: `Comprehensive step-by-step verification procedures designed to evaluate internal controls across ${dept}, directly addressing ${deptRisks.length} high-priority ERM risk register items.`,
+        procedures: proceduresList.length > 0 ? proceduresList : [
+          {
+            id: `p-erm-${idx}-1`,
+            ref: `PROC-${dept.substring(0, 3).toUpperCase()}-01`,
+            step: `Substantive test of operational controls in ${dept} for regulatory compliance.`,
+            sampleSize: '30 Samples',
+            riskLink: 'Compliance Risk',
+            expectedControl: 'Standard operational authorization and reconciliation.',
+            evidenceRequired: 'Audit log verification.',
+            status: 'Tested - Pass',
+            findingRef: null
+          }
+        ]
+      };
+    });
+
     saveArrayState('UNIVERSE', syncedUniverse, setAuditUniverse);
     if (isPurgeOrInit) {
       saveArrayState('FINDINGS', newErmFindings, setFindings);
       saveArrayState('PLANS', newErmPlans, setAuditPlans);
+      saveArrayState('PROGRAMS', newErmPrograms, setAuditPrograms);
       saveArrayState('PAPERS', newErmPapers, setWorkingPapers);
       saveArrayState('CONTROLS', newErmControls, setControls);
       saveArrayState('REVIEWS', newErmReviews, setRegulatoryReviews);
@@ -335,7 +401,9 @@ export const AuditProvider = ({ children }) => {
       saveArrayState('CONTINUOUS', newErmContinuous, setContinuousExceptions);
     } else {
       const combinedFindings = [...newErmFindings, ...findings.filter(f => !f.findingNumber.startsWith('FND-ERM-'))];
+      const combinedPrograms = [...newErmPrograms, ...auditPrograms.filter(p => !p.id.startsWith('PROG-ERM-'))];
       saveArrayState('FINDINGS', combinedFindings, setFindings);
+      saveArrayState('PROGRAMS', combinedPrograms, setAuditPrograms);
     }
     if (!isPurgeOrInit) {
       addNotification('Direct ERM Sync Complete', `Ingested ${ermRisks.length} Enterprise Risks directly from RiskINTEGRA ERM Suite into all Audit Library modules.`, 'success');
@@ -512,6 +580,7 @@ export const AuditProvider = ({ children }) => {
         mockUsersList: MOCK_USERS,
         businessUnits,
         addBusinessUnit,
+        setBusinessUnits,
         auditUniverse,
         setAuditUniverse,
         auditPlans,
@@ -520,8 +589,10 @@ export const AuditProvider = ({ children }) => {
         setAuditPrograms,
         workingPapers,
         addWorkingPaper,
+        setWorkingPapers,
         findings,
         saveFinding,
+        setFindings,
         updateFindingStatus,
         controls,
         setControls,
@@ -543,7 +614,9 @@ export const AuditProvider = ({ children }) => {
         addNotification,
         drawerOpen,
         setDrawerOpen,
-        markAllRead
+        markAllRead,
+        checkRbacPermission,
+        verifyRbacOrAlert
       }}
     >
       {children}

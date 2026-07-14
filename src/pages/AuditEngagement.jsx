@@ -40,7 +40,14 @@ const AuditEngagement = () => {
       if (prog.id !== programId) return prog;
       const updatedProcs = prog.procedures?.map(proc => {
         if (proc.id !== procId) return proc;
-        const nextStatus = proc.status === 'Passed' ? 'Failed' : proc.status === 'Failed' ? 'In Progress' : 'Passed';
+        let nextStatus = 'Tested - Pass';
+        if (proc.status === 'Tested - Pass' || proc.status === 'Passed' || proc.status?.includes('Pass') || proc.status?.includes('Satisfactory')) {
+          nextStatus = 'Tested - Exception';
+        } else if (proc.status === 'Tested - Exception' || proc.status === 'Failed' || proc.status?.includes('Exception') || proc.status?.includes('Failed')) {
+          nextStatus = 'In Progress';
+        } else if (proc.status === 'In Progress' || proc.status?.includes('Progress')) {
+          nextStatus = 'Tested - Pass';
+        }
         return { ...proc, status: nextStatus };
       });
       return { ...prog, procedures: updatedProcs };
@@ -234,10 +241,18 @@ const AuditEngagement = () => {
                     <td className="tabular-nums">{proc.sampleSize || '25 Samples'}</td>
                     <td style={{ fontSize: '0.84rem' }}>{proc.assignedTo || proc.owner || 'Senior Field Auditor'}</td>
                     <td>
-                      {proc.status === 'Passed' && <span className="badge-success">Passed / Satisfactory</span>}
-                      {proc.status === 'Failed' && <span className="badge-danger">Failed / Exception</span>}
-                      {proc.status === 'In Progress' && <span className="badge-info">In Progress</span>}
-                      {(!proc.status || (proc.status !== 'Passed' && proc.status !== 'Failed' && proc.status !== 'In Progress')) && <span className="badge-warning">{proc.status || 'Pending Test'}</span>}
+                      {(proc.status === 'Tested - Pass' || proc.status === 'Passed' || proc.status?.includes('Pass') || proc.status?.includes('Satisfactory')) && (
+                        <span className="badge-success">Passed / Satisfactory</span>
+                      )}
+                      {(proc.status === 'Tested - Exception' || proc.status === 'Failed' || proc.status?.includes('Exception') || proc.status?.includes('Failed')) && (
+                        <span className="badge-danger">Failed / Exception</span>
+                      )}
+                      {(proc.status === 'In Progress' || proc.status?.includes('Progress')) && (
+                        <span className="badge-info">In Progress</span>
+                      )}
+                      {(!proc.status || (proc.status !== 'Tested - Pass' && proc.status !== 'Passed' && !proc.status?.includes('Pass') && proc.status !== 'Tested - Exception' && proc.status !== 'Failed' && !proc.status?.includes('Exception') && proc.status !== 'In Progress' && !proc.status?.includes('Progress'))) && (
+                        <span className="badge-warning">{proc.status || 'Pending Test'}</span>
+                      )}
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: '0.4rem' }}>

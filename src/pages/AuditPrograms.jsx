@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
-import { FileText, Plus, CheckSquare, Shield, Layers, Search, Filter } from 'lucide-react';
+import { FileText, Plus, CheckSquare, Shield, Layers, Search, Filter, Edit2, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const AuditPrograms = () => {
-  const { auditPrograms, setAuditPrograms, addNotification } = useContext(AuditContext);
+  const { auditPrograms, setAuditPrograms, addNotification, checkRbacPermission, verifyRbacOrAlert } = useContext(AuditContext);
   const navigate = useNavigate();
 
   const [selectedProgramId, setSelectedProgramId] = useState(auditPrograms[0]?.id || 'AP-01');
@@ -12,8 +12,9 @@ const AuditPrograms = () => {
 
   const selectedProgram = auditPrograms.find(p => p.id === selectedProgramId) || auditPrograms[0];
 
-  // New Procedure Modal
+  // New & Edit Procedure Modal
   const [isProcModalOpen, setIsProcModalOpen] = useState(false);
+  const [editingProcId, setEditingProcId] = useState(null);
   const [procRef, setProcRef] = useState('');
   const [procStep, setProcStep] = useState('');
   const [procSample, setProcSample] = useState('25 Transactions');
@@ -24,31 +25,78 @@ const AuditPrograms = () => {
     p.ref.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleAddProcedure = (e) => {
-    e.preventDefault();
-    if (!procRef || !procStep) return;
-    const newProc = {
-      id: `proc-${Date.now()}`,
-      ref: procRef.toUpperCase(),
-      step: procStep,
-      sampleSize: procSample,
-      assignedTo: 'Lead Reviewer',
-      status: 'In Progress',
-      riskLink: `${selectedProgram.name} Core Risk`
-    };
+  const handleStartEdit = (proc) => {
+    if (!verifyRbacOrAlert('edit', 'programs')) return;
+    setEditingProcId(proc.id);
+    setProcRef(proc.ref || '');
+    setProcStep(proc.step || '');
+    setProcSample(proc.sampleSize || '25 Transactions');
+    setProcRisk(proc.riskLink || 'High');
+    setIsProcModalOpen(true);
+  };
 
+  const handleDeleteProcedure = (procId, procRefCode) => {
+    if (!verifyRbacOrAlert('delete', 'programs')) return;
+    if (!window.confirm(`Are you sure you want to delete testing procedure ${procRefCode}?`)) return;
     setAuditPrograms(prev => prev.map(prog => {
       if (prog.id === selectedProgramId) {
         return {
           ...prog,
-          procedures: [...prog.procedures, newProc]
+          procedures: prog.procedures.filter(p => p.id !== procId)
         };
       }
       return prog;
     }));
+    addNotification('Procedure Deleted', `Procedure ${procRefCode} has been removed from "${selectedProgram.title || selectedProgram.name || 'this program'}".`, 'info');
+  };
 
-    addNotification('Procedure Added', `Testing step ${newProc.ref} added to "${selectedProgram.name}" program.`, 'success');
+  const handleAddProcedure = (e) => {
+    e.preventDefault();
+    if (!procRef || !procStep) return;
+
+    if (editingProcId) {
+      if (!verifyRbacOrAlert('edit', 'programs')) return;
+      setAuditPrograms(prev => prev.map(prog => {
+        if (prog.id === selectedProgramId) {
+          return {
+            ...prog,
+            procedures: prog.procedures.map(p => p.id === editingProcId ? {
+              ...p,
+              ref: procRef.toUpperCase(),
+              step: procStep,
+              sampleSize: procSample,
+              riskLink: procRisk
+            } : p)
+          };
+        }
+        return prog;
+      }));
+      addNotification('Procedure Updated', `Testing step ${procRef.toUpperCase()} updated successfully.`, 'success');
+    } else {
+      const newProc = {
+        id: `proc-${Date.now()}`,
+        ref: procRef.toUpperCase(),
+        step: procStep,
+        sampleSize: procSample,
+        assignedTo: 'Lead Reviewer',
+        status: 'In Progress',
+        riskLink: procRisk || `${selectedProgram.title || selectedProgram.name || 'Standard'} Core Risk`
+      };
+
+      setAuditPrograms(prev => prev.map(prog => {
+        if (prog.id === selectedProgramId) {
+          return {
+            ...prog,
+            procedures: [...prog.procedures, newProc]
+          };
+        }
+        return prog;
+      }));
+      addNotification('Procedure Added', `Testing step ${newProc.ref} added to "${selectedProgram.title || selectedProgram.name || 'Standard Audit Program'}".`, 'success');
+    }
+
     setIsProcModalOpen(false);
+    setEditingProcId(null);
     setProcRef('');
     setProcStep('');
   };
@@ -81,10 +129,10 @@ const AuditPrograms = () => {
             onClick={() => { setSelectedProgramId(prog.id); setSearchTerm(''); }}
             className={`nav-tab-btn ${selectedProgramId === prog.id ? 'active' : ''}`}
             style={{ padding: '0.65rem 1.1rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }}
-            title={`Click to load testing procedures for ${prog.name}. Contains ${prog.procedures?.length || 0} specific verification steps.`}
+            title={`Click to load testing procedures for ${prog.title || prog.name || 'Standard Audit Program'}. Contains ${prog.procedures?.length || 0} specific verification steps.`}
           >
             <FileText size={16} />
-            <span style={{ fontWeight: 600 }}>{prog.name}</span>
+            <span style={{ fontWeight: 600 }}>{prog.title || prog.name || 'Standard Program'}</span>
             <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
               {prog.procedures?.length || 0} Test Procedures
             </span>
@@ -98,11 +146,11 @@ const AuditPrograms = () => {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem' }}>
               <span className="badge-purple">Code: {selectedProgram.id}</span>
-              <span className="badge-chip-info">Standard Program</span>
+              <span className="badge-chip-info">{selectedProgram.category || 'Standard Program'}</span>
             </div>
-            <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: 800, color: 'white' }}>{selectedProgram.name}</h2>
-            <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-secondary)', maxWidth: '800px' }}>
-              {selectedProgram.description}
+            <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: 800, color: 'white' }}>{selectedProgram.title || selectedProgram.name || 'Standard Audit Program'}</h2>
+            <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-secondary)', maxWidth: '800px', lineHeight: '1.6' }}>
+              {selectedProgram.objectives || selectedProgram.description || 'Comprehensive testing checklist and field procedures for internal audit validation and regulatory compliance.'}
             </p>
           </div>
           <div style={{ textAlign: 'right' }}>
@@ -120,7 +168,7 @@ const AuditPrograms = () => {
           <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
           <input
             type="text"
-            placeholder={`Search testing procedures in ${selectedProgram.name}...`}
+            placeholder={`Search testing procedures in ${selectedProgram.title || selectedProgram.name || 'this program'}...`}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             className="form-input"
@@ -134,7 +182,7 @@ const AuditPrograms = () => {
         <div className="section-header-bar">
           <div>
             <h3 className="section-title">Step-by-Step Testing Procedures & Sampling Methodology</h3>
-            <p className="section-subtitle">Comprehensive field checklist for {selectedProgram.name}</p>
+            <p className="section-subtitle">Comprehensive field checklist for: <strong style={{ color: '#60A5FA' }}>{selectedProgram.title || selectedProgram.name || 'Standard Audit Program'}</strong></p>
           </div>
         </div>
 
@@ -154,18 +202,50 @@ const AuditPrograms = () => {
               {filteredProcedures.map(proc => (
                 <tr key={proc.id}>
                   <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{proc.ref || proc.id || 'PROC-01'}</td>
-                  <td style={{ fontWeight: 600, maxWidth: '460px', lineHeight: '1.5' }}>{proc.step}</td>
+                  <td style={{ fontWeight: 600, maxWidth: '460px', lineHeight: '1.5' }}>
+                    <div style={{ color: 'white', marginBottom: '0.2rem' }}>{proc.step}</div>
+                    {proc.expectedControl && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}><strong>Expected Control:</strong> {proc.expectedControl}</div>}
+                  </td>
                   <td className="tabular-nums" style={{ fontWeight: 700 }}>{proc.sampleSize || '30 Samples (100% Target)'}</td>
                   <td><span className="badge-chip" style={{ background: 'rgba(255,255,255,0.06)' }}>{proc.riskLink || 'Custody Compliance Risk'}</span></td>
                   <td>
-                    {proc.status === 'Passed' && <span className="badge-success">Passed</span>}
-                    {proc.status === 'Failed' && <span className="badge-danger">Exception</span>}
-                    {proc.status === 'In Progress' && <span className="badge-info">In Progress</span>}
+                    {(proc.status === 'Tested - Pass' || proc.status === 'Passed' || proc.status?.includes('Pass') || proc.status?.includes('Satisfactory')) && (
+                      <span className="badge-success" title="Substantive field testing completed with 0 deviations. Control operating effectively.">Tested - Pass / Satisfactory</span>
+                    )}
+                    {(proc.status === 'Tested - Exception' || proc.status === 'Failed' || proc.status?.includes('Exception') || proc.status?.includes('Failed')) && (
+                      <span className="badge-danger" title={`Exception identified during sample testing. Linked to finding ${proc.findingRef || 'in 10×10 Matrix'}.`}>
+                        Tested - Exception {proc.findingRef ? `(${proc.findingRef})` : '(Action Req.)'}
+                      </span>
+                    )}
+                    {(proc.status === 'In Progress' || proc.status?.includes('Progress')) && (
+                      <span className="badge-info" title="Fieldwork and PBC sample testing currently underway by assigned auditor.">Fieldwork In Progress</span>
+                    )}
+                    {(!proc.status || (proc.status !== 'Tested - Pass' && proc.status !== 'Passed' && !proc.status?.includes('Pass') && proc.status !== 'Tested - Exception' && proc.status !== 'Failed' && !proc.status?.includes('Exception') && proc.status !== 'In Progress' && !proc.status?.includes('Progress'))) && (
+                      <span className="badge-warning" title="Procedure scheduled in annual audit plan; substantive test pending execution.">{proc.status || 'Pending Field Test'}</span>
+                    )}
                   </td>
                   <td>
-                    <button onClick={() => navigate('/engagements')} className="btn-secondary" style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}>
-                      Execute in Field ➔
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <button onClick={() => navigate('/engagements')} className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }} title="Execute step in active field engagement">
+                        Execute ➔
+                      </button>
+                      <button
+                        onClick={() => handleStartEdit(proc)}
+                        className="btn-secondary"
+                        style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('edit', 'programs') ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('edit', 'programs') ? '#60A5FA' : 'var(--text-muted)' }}
+                        title={checkRbacPermission('edit', 'programs') ? "Edit Procedure (✏️)" : "🔒 RBAC Restricted: Only Audit Team can edit"}
+                      >
+                        <Edit2 size={13} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteProcedure(proc.id, proc.ref || proc.id)}
+                        className="btn-secondary"
+                        style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('delete', 'programs') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('delete', 'programs') ? '#F87171' : 'var(--text-muted)' }}
+                        title={checkRbacPermission('delete', 'programs') ? "Delete Procedure (🗑️)" : "🔒 RBAC Restricted: Only CAE/Manager can delete"}
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -174,13 +254,15 @@ const AuditPrograms = () => {
         </div>
       </div>
 
-      {/* Add Procedure Modal */}
+      {/* Add / Edit Procedure Modal */}
       {isProcModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content" style={{ maxWidth: '560px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Add Procedure to {selectedProgram.name}</h3>
-              <button onClick={() => setIsProcModalOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
+                {editingProcId ? 'Edit Procedure Step' : `Add Procedure to ${selectedProgram.name}`}
+              </h3>
+              <button onClick={() => { setIsProcModalOpen(false); setEditingProcId(null); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
             </div>
             <form onSubmit={handleAddProcedure} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
@@ -202,8 +284,8 @@ const AuditPrograms = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
-                <button type="button" onClick={() => setIsProcModalOpen(false)} className="btn-secondary">Cancel</button>
-                <button type="submit" className="btn-primary">Add Procedure</button>
+                <button type="button" onClick={() => { setIsProcModalOpen(false); setEditingProcId(null); }} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary">{editingProcId ? 'Save Changes' : 'Add Procedure'}</button>
               </div>
             </form>
           </div>
