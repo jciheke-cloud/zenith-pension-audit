@@ -9,8 +9,64 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 const ExecutiveDashboard = () => {
-  const { auditPlans, findings, auditUniverse, businessUnits, currency } = useContext(AuditContext);
+  const { auditPlans, findings, auditUniverse, businessUnits, currency, currentRole, currentUser } = useContext(AuditContext);
   const navigate = useNavigate();
+  const roleId = currentRole?.id || 'cae';
+
+  // Role custom titles, subtitles, and callout boxes
+  const roleDisplay = {
+    committee: {
+      title: 'Board Audit Committee Overview Dashboard',
+      subtitle: 'High-level assurance portal displaying regulatory readiness, overdue management action plans, and audit universe coverage.',
+      banner: '🏛️ BOARD VIEW ACTIVE: You are viewing executive summaries and high-level 10×10 risk matrices. Operational fieldwork details are filtered out.',
+      btnText1: 'Review Committee Reports', btnAction1: () => navigate('/reports-committee'),
+      btnText2: 'Annual Plan Status', btnAction2: () => navigate('/annual-plan')
+    },
+    owner: {
+      title: 'Auditee Process Owner Dashboard',
+      subtitle: 'Departmental CAP remediation portal for reviewing audit findings, uploading closure evidence, and self-assessing controls.',
+      banner: '🏢 PROCESS OWNER VIEW ACTIVE: Showing your department corrective action plans (CAPs) and assigned control retest windows.',
+      btnText1: 'Action Tracker (CAPs)', btnAction1: () => navigate('/action-tracker'),
+      btnText2: 'View Assigned Findings', btnAction2: () => navigate('/findings')
+    },
+    qa: {
+      title: 'Methodology & Quality Assurance Dashboard',
+      subtitle: 'QA compliance monitor tracking working paper sign-offs, evidence chain validation, and peer review schedules.',
+      banner: '🔍 METHODOLOGY & QA VIEW ACTIVE: Prioritizing independent working paper sign-off and control effectiveness ratings.',
+      btnText1: 'Audit Working Papers', btnAction1: () => navigate('/working-papers'),
+      btnText2: 'Retest Controls', btnAction2: () => navigate('/controls')
+    },
+    senior: {
+      title: 'Senior Field Lead Execution Dashboard',
+      subtitle: 'Fieldwork execution cockpit for executing audit programs, logging procedure status, and raising draft audit findings.',
+      banner: '📋 FIELDWORK VIEW ACTIVE: Prioritizing active procedure sampling (Tested - Pass / Exception) and evidence upload chains.',
+      btnText1: 'Open Audit Programs', btnAction1: () => navigate('/programs'),
+      btnText2: 'Log Audit Finding', btnAction2: () => navigate('/findings')
+    },
+    erm: {
+      title: 'ERM Risk Ecosystem & KRI Sync Dashboard',
+      subtitle: 'Cross-ecosystem bridge monitoring continuous KRI sensor breaches, risk register import rates, and PenCom regulatory mandates.',
+      banner: '🌐 ERM ECOSYSTEM VIEW ACTIVE: Tracking live risk feeds from RiskINTEGRA ERM Suite and automated KRI triggers.',
+      btnText1: 'Open ERM Sync Bridge', btnAction1: () => navigate('/erm-sync'),
+      btnText2: 'Continuous Exceptions', btnAction2: () => navigate('/fraud-continuous')
+    },
+    manager: {
+      title: 'Audit Management & Resource Dashboard',
+      subtitle: 'Management cockpit overseeing audit team allocation, engagement timelines, and draft report approvals.',
+      banner: '🎯 MANAGEMENT VIEW ACTIVE: Overseeing annual audit plan progress, team field assignments, and quality reviews.',
+      btnText1: 'View Audit Engagements', btnAction1: () => navigate('/engagements'),
+      btnText2: 'Log Audit Finding', btnAction2: () => navigate('/findings')
+    },
+    cae: {
+      title: 'Chief Audit Executive (CAE) Dashboard',
+      subtitle: 'Real-time oversight of the Zenith Pension Custodian internal audit lifecycle, regulatory readiness, and 10×10 risk findings.',
+      banner: '👑 EXECUTIVE AUTHORITY VIEW ACTIVE: Full read/write authority across all audit engagements, risk scores, and board reporting packs.',
+      btnText1: 'View Annual Plan', btnAction1: () => navigate('/annual-plan'),
+      btnText2: 'Log Audit Finding', btnAction2: () => navigate('/findings')
+    }
+  };
+
+  const activeRoleConfig = roleDisplay[roleId] || roleDisplay.cae;
 
   // Calculate 10 Executive KPIs
   const totalPlans = auditPlans.length;
@@ -66,22 +122,43 @@ const ExecutiveDashboard = () => {
 
   return (
     <div className="page-container">
+      {/* Role Notice Callout */}
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.04)',
+        border: '1px solid rgba(255, 255, 255, 0.12)',
+        borderRadius: '8px',
+        padding: '0.65rem 1.2rem',
+        marginBottom: '1.25rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        fontSize: '0.82rem',
+        color: '#e2e8f0'
+      }}>
+        <div>
+          <strong style={{ color: '#fda4af' }}>{activeRoleConfig.banner}</strong>
+        </div>
+        <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600 }}>
+          Logged in as: {currentUser?.name || currentRole?.name}
+        </span>
+      </div>
+
       {/* Header */}
       <div className="module-header">
         <div>
-          <h1 className="module-title">Executive Dashboard</h1>
+          <h1 className="module-title">{activeRoleConfig.title}</h1>
           <p className="module-subtitle">
-            Real-time oversight of the Zenith Pension Custodian internal audit lifecycle, regulatory readiness, and 10×10 risk findings.
+            {activeRoleConfig.subtitle}
           </p>
         </div>
         <div className="header-actions">
-          <button onClick={() => navigate('/annual-plan')} className="btn-secondary">
+          <button onClick={activeRoleConfig.btnAction1} className="btn-secondary">
             <FileSpreadsheet size={16} />
-            <span>View Annual Plan</span>
+            <span>{activeRoleConfig.btnText1}</span>
           </button>
-          <button onClick={() => navigate('/findings')} className="btn-primary">
+          <button onClick={activeRoleConfig.btnAction2} className="btn-primary">
             <AlertOctagon size={16} />
-            <span>Log Audit Finding</span>
+            <span>{activeRoleConfig.btnText2}</span>
           </button>
         </div>
       </div>

@@ -227,54 +227,91 @@ const UserGuidePage = () => {
             </div>
           )}
 
-          {/* TAB 2: RBAC */}
+          {/* TAB 2: RBAC & ROLE VIEWS */}
           {activeTab === 'rbac' && (
             <div>
               <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fda4af', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem', marginTop: 0 }}>
-                🔐 Executive Role-Based Access Control (RBAC)
+                🔐 Role Divisions & Tailored View Architecture (RBAC)
               </h2>
               <p style={{ lineHeight: 1.7, fontSize: '0.92rem', color: '#CBD5E1', marginBottom: '1.5rem' }}>
-                To maintain strict independence and governance, operations within RiskINTEGRA are segregated across 4 distinct institutional tiers. You can select your role on the login screen or switch anytime using the top profile selector:
+                To maintain strict institutional governance, independence, and operational relevance, <strong>RiskINTEGRA Internal Audit Management™</strong> enforces role-separated UI views across 7 distinct user tiers. When an executive or staff member logs in (or switches roles via the live Topbar switcher), the sidebar navigation, dashboard KPIs, and module actions automatically reconfigure to their exact authority level:
               </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
                 <div style={{ borderLeft: '4px solid #C81E1E', background: 'rgba(200, 30, 30, 0.08)', padding: '1.25rem', borderRadius: '0 0.75rem 0.75rem 0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>Chief Audit Executive (CAE)</span>
-                    <span style={{ background: '#C81E1E', color: 'white', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>TIER 1 — FULL OVERRIDE</span>
+                    <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>1. Chief Audit Executive (CAE)</span>
+                    <span style={{ background: '#C81E1E', color: 'white', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>👑 TIER 1 — EXECUTIVE AUTHORITY</span>
                   </div>
                   <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: '#E2E8F0', lineHeight: 1.6 }}>
-                    <strong>Capabilities:</strong> Final approval of the Annual Audit Plan, sign-off on completed Working Papers, generation of official Board Audit & Risk Committee (BARC) decks, and authority to bridge directly into the Chief Risk Officer (CRO) ERM view.
-                  </p>
-                </div>
-
-                <div style={{ borderLeft: '4px solid #F59E0B', background: 'rgba(245, 158, 11, 0.08)', padding: '1.25rem', borderRadius: '0 0.75rem 0.75rem 0' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>Senior Audit Manager</span>
-                    <span style={{ background: '#D97706', color: 'white', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>TIER 2 — OVERSIGHT</span>
-                  </div>
-                  <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: '#E2E8F0', lineHeight: 1.6 }}>
-                    <strong>Capabilities:</strong> Engagement scheduling, allocation of audit hours, peer review of audit test results, formal adjudication of management exceptions, and tracking of Corrective Action Plans (CAPs).
+                    <strong>Corresponding View & Navigation:</strong> Unrestricted visibility across all 14 audit modules and Master Data administration.<br />
+                    <strong>Key Capabilities:</strong> Final approval of the Annual Audit Plan, sign-off on completed Working Papers, generation of official Board Audit & Risk Committee (BARC) decks, master universe rating overrides, and full bi-directional synchronization with the ERM suite.
                   </p>
                 </div>
 
                 <div style={{ borderLeft: '4px solid #3B82F6', background: 'rgba(59, 130, 246, 0.08)', padding: '1.25rem', borderRadius: '0 0.75rem 0.75rem 0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>Audit Team Leader</span>
-                    <span style={{ background: '#2563EB', color: 'white', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>TIER 3 — SUPERVISION</span>
+                    <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>2. Audit Manager</span>
+                    <span style={{ background: '#2563EB', color: 'white', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>🎯 TIER 2 — MANAGEMENT OVERSIGHT</span>
                   </div>
                   <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: '#E2E8F0', lineHeight: 1.6 }}>
-                    <strong>Capabilities:</strong> Supervision of field fieldwork, verification of uploaded evidence binders, preliminary risk scoring of findings, and coordination of audit programs.
+                    <strong>Corresponding View & Navigation:</strong> Full visibility across planning, execution, remediation, and reporting modules (excluding Master Data structural changes).<br />
+                    <strong>Key Capabilities:</strong> Engagement resource allocation, audit team assignment, review and quality scoring of field working papers, adjudication of draft audit findings, and tracking of Corrective Action Plans (CAPs).
                   </p>
                 </div>
 
                 <div style={{ borderLeft: '4px solid #10B981', background: 'rgba(16, 185, 129, 0.08)', padding: '1.25rem', borderRadius: '0 0.75rem 0.75rem 0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>Field Auditor / Analyst</span>
-                    <span style={{ background: '#059669', color: 'white', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>TIER 4 — EXECUTION</span>
+                    <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>3. Senior Auditor (Field Lead)</span>
+                    <span style={{ background: '#059669', color: 'white', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>📋 TIER 3 — FIELDWORK EXECUTION</span>
                   </div>
                   <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: '#E2E8F0', lineHeight: 1.6 }}>
-                    <strong>Capabilities:</strong> Execution of individual audit program test steps, attachment of bank reconciliation sheets and SWIFT proofs, and drafting of initial observation reports.
+                    <strong>Corresponding View & Navigation:</strong> Focused on Fieldwork Execution (`Engagements`, `Audit Programs`, `Working Papers & Evidence`), `Findings & 10×10 Matrix`, `Internal Controls`, and `Fraud Continuous Auditing`.<br />
+                    <strong>Key Capabilities:</strong> Executing audit program test steps (`Tested - Pass / Exception`), attaching cryptographic evidence binders, raising initial finding observations, and logging sampling results.
+                  </p>
+                </div>
+
+                <div style={{ borderLeft: '4px solid #F59E0B', background: 'rgba(245, 158, 11, 0.08)', padding: '1.25rem', borderRadius: '0 0.75rem 0.75rem 0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>4. Quality Assurance Reviewer (QA)</span>
+                    <span style={{ background: '#D97706', color: 'white', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>🔍 TIER 4 — METHODOLOGY & QA</span>
+                  </div>
+                  <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: '#E2E8F0', lineHeight: 1.6 }}>
+                    <strong>Corresponding View & Navigation:</strong> Isolates `Working Papers & Evidence`, `Audit Engagements`, `Internal Controls Assessment`, and `Findings & 10×10 Matrix`. Hides planning setup engines.<br />
+                    <strong>Key Capabilities:</strong> Independent validation of evidence chains, compliance checks against IIA / PENCOM audit methodology standards, and peer review sign-offs before CAE presentation.
+                  </p>
+                </div>
+
+                <div style={{ borderLeft: '4px solid #A855F7', background: 'rgba(168, 85, 247, 0.08)', padding: '1.25rem', borderRadius: '0 0.75rem 0.75rem 0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>5. Process Owner (Auditee Department Head)</span>
+                    <span style={{ background: '#9333EA', color: 'white', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>🏢 TIER 5 — REMEDIATION & RESPONSE</span>
+                  </div>
+                  <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: '#E2E8F0', lineHeight: 1.6 }}>
+                    <strong>Corresponding View & Navigation:</strong> Highly tailored auditee view isolating only `Action Tracker (CAPs)`, `Findings & 10×10 Matrix`, `Internal Controls Assessment`, and the `User Guide`. Hides internal audit fieldwork, audit programs, and working papers.<br />
+                    <strong>Key Capabilities:</strong> Reviewing audit findings assigned to their department (`Settlements`, `Custody Operations`, `PFC Accounting`), submitting management responses, uploading CAP closure proofs, and completing control self-assessments.
+                  </p>
+                </div>
+
+                <div style={{ borderLeft: '4px solid #0EA5E9', background: 'rgba(14, 165, 233, 0.08)', padding: '1.25rem', borderRadius: '0 0.75rem 0.75rem 0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>6. Risk & Compliance Manager (ERM)</span>
+                    <span style={{ background: '#0284C7', color: 'white', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>🌐 TIER 6 — ECOSYSTEM LINKAGE</span>
+                  </div>
+                  <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: '#E2E8F0', lineHeight: 1.6 }}>
+                    <strong>Corresponding View & Navigation:</strong> Streamlined to `Risk-Based Planning Engine`, `ERM Sync Bridge™`, `Compliance & Regulatory`, `Fraud Continuous Auditing`, and `Findings`. Hides tactical working paper creation.<br />
+                    <strong>Key Capabilities:</strong> Pushing live KRI threshold breaches and loss ledgers into the Audit suite, aligning residual risk scores, and monitoring PENCOM statutory capital compliance.
+                  </p>
+                </div>
+
+                <div style={{ borderLeft: '4px solid #F43F5E', background: 'rgba(244, 63, 94, 0.08)', padding: '1.25rem', borderRadius: '0 0.75rem 0.75rem 0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>7. Board Audit Committee Member (BARC)</span>
+                    <span style={{ background: '#E11D48', color: 'white', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>🏛️ TIER 7 — BOARD OVERSIGHT (READ-ONLY)</span>
+                  </div>
+                  <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: '#E2E8F0', lineHeight: 1.6 }}>
+                    <strong>Corresponding View & Navigation:</strong> Dedicated Executive Read-Only Portal presenting `Executive Dashboard`, `Annual Audit Planning`, `Findings & 10×10 Matrix`, `Reports & Committee Portal`, and `ERM Sync Bridge™`. Operational testing steps and draft workpapers are hidden.<br />
+                    <strong>Key Capabilities:</strong> High-level oversight of institutional risk exposure, review of quarterly BARC executive summary decks, evaluation of repeat finding patterns across audit cycles, and formal governance sign-off.
                   </p>
                 </div>
               </div>

@@ -10,6 +10,7 @@ const Topbar = () => {
     currency,
     toggleCurrency,
     currentRole,
+    switchRole,
     currentUser,
     logout,
     notifications,
@@ -62,9 +63,44 @@ const Topbar = () => {
       </div>
 
       {/* Right side controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1.0rem' }}>
         {/* Unified 9-Dot App Switcher */}
         <AppSwitcherDropdown />
+
+        {/* Instant Role View Switcher */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.4rem',
+          background: 'rgba(255, 255, 255, 0.05)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          padding: '0.25rem 0.6rem',
+          borderRadius: '0.5rem'
+        }}>
+          <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#fda4af' }}>👁️ View Role:</span>
+          <select
+            value={currentRole?.id || 'cae'}
+            onChange={(e) => switchRole(e.target.value)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'white',
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              outline: 'none'
+            }}
+            title="Switch active role view and navigation instantly"
+          >
+            <option value="cae" style={{ color: 'black' }}>👑 Chief Audit Executive (CAE)</option>
+            <option value="manager" style={{ color: 'black' }}>🎯 Audit Manager</option>
+            <option value="senior" style={{ color: 'black' }}>📋 Senior Auditor (Field Lead)</option>
+            <option value="qa" style={{ color: 'black' }}>🔍 QA Reviewer (Methodology)</option>
+            <option value="owner" style={{ color: 'black' }}>🏢 Process Owner (Auditee Head)</option>
+            <option value="erm" style={{ color: 'black' }}>🌐 Risk & Compliance Mgr (ERM)</option>
+            <option value="committee" style={{ color: 'black' }}>🏛️ Board Audit Committee</option>
+          </select>
+        </div>
 
         {/* Currency Selector */}
         <button
