@@ -64,7 +64,7 @@ const ReportsAndCommittee = () => {
       </div>
 
       {/* Generator View */}
-      {activeTab === 'generator' && (
+      {activeTab === 'generator' ? (
         !selectedPlan ? (
           <div className="glass-card" style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--text-muted)' }}>
             <FileText size={48} style={{ opacity: 0.5, margin: '0 auto 1rem' }} />
@@ -179,7 +179,7 @@ const ReportsAndCommittee = () => {
             </div>
           </div>
         </div>
-        )}
+        )
       ) : (
         /* Board Committee Portal */
         <div className="app-grid" style={{ padding: 0, gap: '1.75rem' }}>
