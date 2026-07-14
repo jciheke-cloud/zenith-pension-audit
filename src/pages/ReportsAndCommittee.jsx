@@ -89,7 +89,7 @@ const ReportsAndCommittee = () => {
                 </select>
               </div>
 
-              <div style={{ background: 'rgba(0,0,0,0.35)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+              <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
                 <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fda4af', display: 'block', marginBottom: '0.4rem' }}>Included Document Sections:</span>
                 <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
                   <li>Executive Summary & Overall Audit Rating ({selectedPlan.auditRating || 'Satisfactory'})</li>
@@ -112,7 +112,7 @@ const ReportsAndCommittee = () => {
           </div>
 
           {/* Right: Live Report Preview */}
-          <div className="glass-card col-span-7" style={{ background: '#0F172A', border: '1px solid var(--border-highlight)' }}>
+          <div className="glass-card col-span-7" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
             <div className="flex-between" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.8rem', marginBottom: '1.2rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                 <span className="badge-danger">LIVE PREVIEW</span>
@@ -121,7 +121,7 @@ const ReportsAndCommittee = () => {
               <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>ZPC Institutional Template v3.1</span>
             </div>
 
-            <div style={{ background: '#1E293B', padding: '2rem', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.08)', color: 'white', minHeight: '480px', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+            <div style={{ background: 'rgba(18, 26, 41, 0.85)', padding: '2rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', color: 'white', minHeight: '480px', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
               <div style={{ textAlign: 'center', borderBottom: '2px solid #C81E1E', paddingBottom: '1rem' }}>
                 <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, letterSpacing: '-0.5px' }}>{clientProfile.toUpperCase()}</h2>
                 <h3 style={{ margin: '0.4rem 0 0', fontSize: '1.1rem', color: '#fda4af' }}>INTERNAL AUDIT DEPARTMENT</h3>
@@ -135,7 +135,7 @@ const ReportsAndCommittee = () => {
                 </p>
               </div>
 
-              <div style={{ display: 'flex', gap: '1.5rem', background: 'rgba(0,0,0,0.4)', padding: '1rem', borderRadius: '4px' }}>
+              <div style={{ display: 'flex', gap: '1.5rem', background: 'rgba(30, 41, 59, 0.6)', padding: '1rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
                 <div>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>OVERALL AUDIT RATING</span>
                   <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#10B981' }}>{selectedPlan.auditRating || 'SATISFACTORY'}</span>
@@ -183,7 +183,7 @@ const ReportsAndCommittee = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-              <div style={{ background: 'rgba(0,0,0,0.35)', padding: '1.4rem', borderRadius: 'var(--radius-md)', borderLeft: '4px solid #10B981' }}>
+              <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.4rem', borderRadius: 'var(--radius-md)', borderTop: '1px solid var(--border-color)', borderRight: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)', borderLeft: '4px solid #10B981' }}>
                 <div className="flex-between" style={{ marginBottom: '0.6rem' }}>
                   <div>
                     <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'white' }}>Q1 2026 Comprehensive Board Audit Pack</h4>
@@ -200,7 +200,7 @@ const ReportsAndCommittee = () => {
                 </p>
               </div>
 
-              <div style={{ background: 'rgba(0,0,0,0.35)', padding: '1.4rem', borderRadius: 'var(--radius-md)', borderLeft: '4px solid #F59E0B' }}>
+              <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.4rem', borderRadius: 'var(--radius-md)', borderTop: '1px solid var(--border-color)', borderRight: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)', borderLeft: '4px solid #F59E0B' }}>
                 <div className="flex-between" style={{ marginBottom: '0.6rem' }}>
                   <div>
                     <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'white' }}>Q2 2026 Mid-Year Audit Progress Report & High-Risk CAP Escalations</h4>
@@ -217,7 +217,7 @@ const ReportsAndCommittee = () => {
                 </p>
               </div>
 
-              <div style={{ background: 'rgba(0,0,0,0.35)', padding: '1.4rem', borderRadius: 'var(--radius-md)', borderLeft: '4px solid #3B82F6' }}>
+              <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.4rem', borderRadius: 'var(--radius-md)', borderTop: '1px solid var(--border-color)', borderRight: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)', borderLeft: '4px solid #3B82F6' }}>
                 <div className="flex-between" style={{ marginBottom: '0.6rem' }}>
                   <div>
                     <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'white' }}>RiskINTEGRA ERM & Audit Ecosystem Alignment Certificate</h4>
@@ -235,15 +235,15 @@ const ReportsAndCommittee = () => {
           <div className="glass-card col-span-4">
             <h3 className="section-title" style={{ marginBottom: '0.8rem' }}>Committee Governance KPIs</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
-              <div className="flex-between" style={{ padding: '0.85rem', background: 'rgba(0,0,0,0.4)', borderRadius: '4px' }}>
+              <div className="flex-between" style={{ padding: '0.85rem', background: 'rgba(18, 26, 41, 0.65)', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
                 <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Statutory Meetings Held (2026)</span>
                 <span className="tabular-nums" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#34d399' }}>2 / 4 Quarterly</span>
               </div>
-              <div className="flex-between" style={{ padding: '0.85rem', background: 'rgba(0,0,0,0.4)', borderRadius: '4px' }}>
+              <div className="flex-between" style={{ padding: '0.85rem', background: 'rgba(18, 26, 41, 0.65)', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
                 <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Charter Compliance Status</span>
                 <span className="badge-success">100% Compliant</span>
               </div>
-              <div className="flex-between" style={{ padding: '0.85rem', background: 'rgba(0,0,0,0.4)', borderRadius: '4px' }}>
+              <div className="flex-between" style={{ padding: '0.85rem', background: 'rgba(18, 26, 41, 0.65)', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
                 <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>PenCom Statutory Return Status</span>
                 <span className="badge-purple">Form IA-01 Submitted</span>
               </div>

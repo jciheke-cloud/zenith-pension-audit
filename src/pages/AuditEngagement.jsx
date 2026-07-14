@@ -174,19 +174,19 @@ const AuditEngagement = () => {
           <div className="glass-card col-span-6">
             <h3 className="section-title" style={{ marginBottom: '0.8rem' }}>Pre-Engagement Risk Assessment & Team Allocation</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-              <div className="flex-between" style={{ padding: '0.7rem', background: 'rgba(0,0,0,0.3)', borderRadius: 'var(--radius-sm)' }}>
+              <div className="flex-between" style={{ padding: '0.7rem', background: 'rgba(18, 26, 41, 0.65)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
                 <span style={{ fontSize: '0.86rem', fontWeight: 600 }}>Inherent Risk Rating:</span>
                 <span className="badge-danger">{selectedPlan.riskRating} Risk</span>
               </div>
-              <div className="flex-between" style={{ padding: '0.7rem', background: 'rgba(0,0,0,0.3)', borderRadius: 'var(--radius-sm)' }}>
+              <div className="flex-between" style={{ padding: '0.7rem', background: 'rgba(18, 26, 41, 0.65)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
                 <span style={{ fontSize: '0.86rem', fontWeight: 600 }}>Fraud Risk Susceptibility:</span>
                 <span className="badge-warning">High (Custody Cash Handling)</span>
               </div>
-              <div className="flex-between" style={{ padding: '0.7rem', background: 'rgba(0,0,0,0.3)', borderRadius: 'var(--radius-sm)' }}>
+              <div className="flex-between" style={{ padding: '0.7rem', background: 'rgba(18, 26, 41, 0.65)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
                 <span style={{ fontSize: '0.86rem', fontWeight: 600 }}>Estimated Fieldwork Hours:</span>
                 <span className="tabular-nums" style={{ fontWeight: 800 }}>{selectedPlan.estimatedHours} Hours</span>
               </div>
-              <div style={{ padding: '0.7rem', background: 'rgba(0,0,0,0.3)', borderRadius: 'var(--radius-sm)' }}>
+              <div style={{ padding: '0.7rem', background: 'rgba(18, 26, 41, 0.65)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
                 <span style={{ fontSize: '0.86rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Assigned Engagement Team:</span>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   <span className="badge-chip-purple">Lead: {selectedPlan.leadAuditor}</span>
@@ -274,7 +274,7 @@ const AuditEngagement = () => {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {reviewNotes.map(note => (
-                <div key={note.id} style={{ background: 'rgba(0,0,0,0.35)', padding: '1.1rem', borderRadius: 'var(--radius-md)', borderLeft: note.status === 'Open' ? '4px solid #F59E0B' : '4px solid #10B981' }}>
+                <div key={note.id} style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', borderTop: '1px solid var(--border-color)', borderRight: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)', borderLeft: note.status === 'Open' ? '4px solid #F59E0B' : '4px solid #10B981' }}>
                   <div className="flex-between" style={{ marginBottom: '0.4rem' }}>
                     <span style={{ fontWeight: 800, fontSize: '0.9rem', color: 'white' }}>{note.author}</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>

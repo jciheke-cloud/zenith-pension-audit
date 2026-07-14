@@ -279,7 +279,7 @@ const FindingsManagement = () => {
                 Simulate any finding coordinate to test residual risk thresholds and automatic CAP SLA deadlines.
               </p>
 
-              <div style={{ background: 'rgba(0,0,0,0.35)', padding: '1.2rem', borderRadius: 'var(--radius-md)', marginBottom: '1.2rem' }}>
+              <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.2rem', borderRadius: 'var(--radius-md)', marginBottom: '1.2rem', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem' }}>
                   <span style={{ fontWeight: 700, fontSize: '0.85rem' }}>Likelihood Factor (1-10)</span>
                   <span className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{likelihood}</span>
@@ -427,7 +427,7 @@ const FindingsManagement = () => {
               </div>
 
               {/* 10x10 Matrix Sliders */}
-              <div style={{ background: 'rgba(0,0,0,0.35)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+              <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
                 <h4 style={{ margin: '0 0 0.8rem', fontSize: '0.88rem', fontWeight: 800, color: '#fda4af' }}>10×10 Matrix Residual Risk Calculation</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', alignItems: 'center' }}>
                   <div>

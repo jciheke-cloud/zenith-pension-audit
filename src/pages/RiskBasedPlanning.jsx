@@ -115,7 +115,7 @@ const RiskBasedPlanning = () => {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginTop: '1.2rem' }}>
-          <div style={{ background: 'rgba(0,0,0,0.35)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+          <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
             <div className="flex-between" style={{ marginBottom: '0.5rem' }}>
               <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#fda4af' }}>Inherent Risk Factor</span>
               <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.inherentRisk}%</span>
@@ -133,7 +133,7 @@ const RiskBasedPlanning = () => {
             </span>
           </div>
 
-          <div style={{ background: 'rgba(0,0,0,0.35)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+          <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
             <div className="flex-between" style={{ marginBottom: '0.5rem' }}>
               <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#fcd34d' }}>Financial Exposure</span>
               <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.financialExposure}%</span>
@@ -151,7 +151,7 @@ const RiskBasedPlanning = () => {
             </span>
           </div>
 
-          <div style={{ background: 'rgba(0,0,0,0.35)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+          <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
             <div className="flex-between" style={{ marginBottom: '0.5rem' }}>
               <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#60a5fa' }}>Regulatory Impact</span>
               <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.regulatoryImpact}%</span>
@@ -169,7 +169,7 @@ const RiskBasedPlanning = () => {
             </span>
           </div>
 
-          <div style={{ background: 'rgba(0,0,0,0.35)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+          <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
             <div className="flex-between" style={{ marginBottom: '0.5rem' }}>
               <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#34d399' }}>Previous Findings</span>
               <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.previousFindings}%</span>
@@ -187,7 +187,7 @@ const RiskBasedPlanning = () => {
             </span>
           </div>
 
-          <div style={{ background: 'rgba(0,0,0,0.35)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+          <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
             <div className="flex-between" style={{ marginBottom: '0.5rem' }}>
               <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#a78bfa' }}>Fraud Exposure</span>
               <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.fraudExposure}%</span>
@@ -205,7 +205,7 @@ const RiskBasedPlanning = () => {
             </span>
           </div>
 
-          <div style={{ background: 'rgba(0,0,0,0.35)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+          <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
             <div className="flex-between" style={{ marginBottom: '0.5rem' }}>
               <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#cbd5e1' }}>IT Dependency</span>
               <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.itDependency}%</span>

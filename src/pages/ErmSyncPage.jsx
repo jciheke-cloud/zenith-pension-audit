@@ -132,7 +132,7 @@ const ErmSyncPage = () => {
             </p>
           </div>
 
-          <div style={{ background: 'rgba(0,0,0,0.5)', padding: '1.4rem 1.8rem', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', gap: '0.6rem', minWidth: '280px' }}>
+          <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.4rem 1.8rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)', display: 'flex', flexDirection: 'column', gap: '0.6rem', minWidth: '280px' }}>
             <div className="flex-between">
               <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Connection Status</span>
               <span className="badge-success">● Active / Live Socket</span>
@@ -255,7 +255,7 @@ const ErmSyncPage = () => {
               <select
                 value={uploadType}
                 onChange={(e) => setUploadType(e.target.value)}
-                style={{ padding: '0.35rem 0.6rem', background: '#090d16', color: 'white', border: '1px solid #334155', borderRadius: '0.35rem', fontSize: '0.8rem', fontWeight: 700 }}
+                style={{ padding: '0.35rem 0.6rem', background: 'rgba(18, 26, 41, 0.85)', color: 'white', border: '1px solid var(--border-color)', borderRadius: '0.35rem', fontSize: '0.8rem', fontWeight: 700 }}
               >
                 <option value="findings">Audit Findings (10×10 Matrix)</option>
                 <option value="universe">Auditable Universe (Master Data)</option>
@@ -271,8 +271,8 @@ const ErmSyncPage = () => {
             style={{
               width: '100%',
               padding: '0.75rem',
-              background: '#040711',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              background: 'rgba(15, 23, 42, 0.75)',
+              border: '1px solid var(--border-color)',
               borderRadius: '0.5rem',
               color: 'white',
               fontFamily: 'monospace',
