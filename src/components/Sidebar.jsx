@@ -31,22 +31,9 @@ const Sidebar = () => {
   const isSenior = roleId === 'senior';
   const isErm = roleId === 'erm';
 
-  // Role Banner configuration
-  const roleBanners = {
-    cae: { title: '👑 EXECUTIVE AUTHORITY', subtitle: 'Full Read/Write & Board Sign-Off', bg: 'linear-gradient(135deg, rgba(200, 30, 30, 0.3) 0%, rgba(159, 18, 57, 0.4) 100%)', border: '#C81E1E' },
-    manager: { title: '🎯 MANAGEMENT OVERSIGHT', subtitle: 'Audit Plan & Team Administration', bg: 'linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(30, 64, 175, 0.35) 100%)', border: '#3B82F6' },
-    senior: { title: '📋 FIELDWORK EXECUTION', subtitle: 'Audit Testing & Evidence Capture', bg: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(6, 95, 70, 0.35) 100%)', border: '#10B981' },
-    qa: { title: '🔍 METHODOLOGY & QA', subtitle: 'Working Paper & Evidence Validation', bg: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(180, 83, 9, 0.35) 100%)', border: '#F59E0B' },
-    owner: { title: '🏢 AUDITEE / PROCESS OWNER', subtitle: 'CAP Remediation & Finding Response', bg: 'linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(107, 33, 168, 0.35) 100%)', border: '#A855F7' },
-    erm: { title: '🌐 ERM RISK ECOSYSTEM', subtitle: 'KRI Telemetry & Risk Linkage Sync', bg: 'linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(3, 105, 161, 0.35) 100%)', border: '#0EA5E9' },
-    committee: { title: '🏛️ BOARD & COMMITTEE PORTAL', subtitle: 'Executive Oversight & Read-Only Pack', bg: 'linear-gradient(135deg, rgba(244, 63, 94, 0.25) 0%, rgba(190, 18, 60, 0.35) 100%)', border: '#F43F5E' }
-  };
-
-  const activeBanner = roleBanners[roleId] || roleBanners.cae;
-
   return (
     <aside className="sidebar">
-      <div className="sidebar-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', paddingBottom: '0.8rem' }}>
+      <div className="sidebar-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', paddingBottom: '1.2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
           <img src="/logo.png" alt="Zenith Pensions Logo" style={{ height: '32px' }} />
           <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.5px', color: 'white' }}>
@@ -58,30 +45,13 @@ const Sidebar = () => {
         </span>
       </div>
 
-      {/* Role View Badge Banner */}
-      <div style={{
-        margin: '0 12px 10px',
-        padding: '8px 10px',
-        background: activeBanner.bg,
-        borderLeft: `3px solid ${activeBanner.border}`,
-        borderRadius: '6px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
-      }}>
-        <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'white', letterSpacing: '0.03em' }}>
-          {activeBanner.title}
-        </div>
-        <div style={{ fontSize: '0.62rem', fontWeight: 600, color: '#E2E8F0', marginTop: '2px' }}>
-          {activeBanner.subtitle}
-        </div>
-      </div>
-
-      <nav className="sidebar-nav" style={{ padding: '0.2rem 0' }}>
+      <nav className="sidebar-nav" style={{ padding: '0.4rem 0' }}>
         <div style={{ margin: '0.6rem 0 0.3rem', padding: '0 1rem', fontSize: '0.66rem', fontWeight: 800, color: '#94a3b8', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
           EXECUTIVE DASHBOARD
         </div>
         <NavLink to="/" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end>
           <LayoutDashboard />
-          <span>{isBoard ? 'Board Overview Dashboard' : isOwner ? 'Process Owner Dashboard' : 'Executive Dashboard'}</span>
+          <span>Executive Dashboard</span>
         </NavLink>
 
         {/* FOUNDATION & PLANNING - Seen by Executive, Senior, ERM, Board */}
