@@ -179,9 +179,6 @@ const Sidebar = () => {
         borderTop: '1px solid rgba(255,255,255,0.05)',
         background: 'rgba(0,0,0,0.2)'
       }}>
-        <div style={{ marginBottom: '0.3rem', fontWeight: 700, color: activeBanner.border }}>
-          View Role: {currentRole?.name || 'Chief Audit Executive'}
-        </div>
         RiskINTEGRA Internal Audit™<br />
         <span style={{ fontSize: '0.7rem', fontWeight: '600', color: '#94a3b8' }}>© 2026 NayandJoeRiskTechConsulting</span>
       </div>
