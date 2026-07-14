@@ -393,7 +393,7 @@ export const AuditProvider = ({ children }) => {
     if (isPurgeOrInit) {
       saveArrayState('FINDINGS', newErmFindings, setFindings);
       saveArrayState('PLANS', newErmPlans, setAuditPlans);
-      saveArrayState('PROGRAMS', newErmPrograms, setAuditPrograms);
+      saveArrayState('PROGRAMS', [...newErmPrograms, ...INITIAL_AUDIT_PROGRAMS], setAuditPrograms);
       saveArrayState('PAPERS', newErmPapers, setWorkingPapers);
       saveArrayState('CONTROLS', newErmControls, setControls);
       saveArrayState('REVIEWS', newErmReviews, setRegulatoryReviews);
