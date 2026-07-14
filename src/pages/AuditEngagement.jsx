@@ -97,7 +97,16 @@ const AuditEngagement = () => {
       </div>
 
       {/* Engagement Summary Banner */}
-      <div className="glass-card" style={{ marginBottom: '1.75rem', borderLeft: '4px solid #C81E1E' }}>
+      {!selectedPlan ? (
+        <div className="glass-card" style={{ padding: '3rem', textAlign: 'center' }}>
+          <Briefcase size={48} style={{ color: 'var(--text-muted)', margin: '0 auto 1rem' }} />
+          <h3>No Active Engagements</h3>
+          <p style={{ color: 'var(--text-muted)' }}>There are currently no active audit engagements in your database.</p>
+          <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Please create an annual audit plan first, or sync via the ERM bridge.</p>
+        </div>
+      ) : (
+      <>
+        <div className="glass-card" style={{ marginBottom: '1.75rem', borderLeft: '4px solid #C81E1E' }}>
         <div className="flex-between" style={{ flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <span className="badge-chip-info" style={{ marginBottom: '0.4rem', display: 'inline-block' }}>{selectedPlan.department}</span>
@@ -368,6 +377,8 @@ const AuditEngagement = () => {
             </form>
           </div>
         </div>
+      )}
+      </>
       )}
     </div>
   );

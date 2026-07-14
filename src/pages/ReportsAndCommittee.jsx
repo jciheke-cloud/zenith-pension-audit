@@ -14,8 +14,8 @@ const ReportsAndCommittee = () => {
     ermLinkage: true
   });
 
-  const selectedPlan = auditPlans.find(p => p.id === selectedAuditId) || auditPlans[0];
-  const linkedFindings = findings.filter(f => f.businessUnit.includes(selectedPlan.department.split(' ')[0]) || f.findingNumber === 'FND-2026-001');
+  const selectedPlan = auditPlans.find(p => p.id === selectedAuditId) || auditPlans[0] || null;
+  const linkedFindings = selectedPlan ? findings.filter(f => f.businessUnit.includes(selectedPlan.department?.split(' ')[0]) || f.findingNumber === 'FND-2026-001') : [];
 
   const handleGenerateReport = () => {
     setIsGenerating(true);
@@ -63,8 +63,17 @@ const ReportsAndCommittee = () => {
         </button>
       </div>
 
-      {activeTab === 'generator' ? (
-        <div className="app-grid" style={{ padding: 0, gap: '1.75rem' }}>
+      {/* Generator View */}
+      {activeTab === 'generator' && (
+        !selectedPlan ? (
+          <div className="glass-card" style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--text-muted)' }}>
+            <FileText size={48} style={{ opacity: 0.5, margin: '0 auto 1rem' }} />
+            <h3>No Completed Engagements</h3>
+            <p>You cannot compile an audit report pack because there are currently no completed audit engagements.</p>
+            <p style={{ fontSize: '0.85rem' }}>Please complete an audit engagement in the "Engagements" module first.</p>
+          </div>
+        ) : (
+        <div className="grid-12" style={{ alignItems: 'start' }}>
           {/* Left: Generator Configuration */}
           <div className="glass-card col-span-5">
             <h3 className="section-title" style={{ marginBottom: '1rem' }}>Configure & Compile Audit Report Pack</h3>
@@ -170,6 +179,7 @@ const ReportsAndCommittee = () => {
             </div>
           </div>
         </div>
+        )}
       ) : (
         /* Board Committee Portal */
         <div className="app-grid" style={{ padding: 0, gap: '1.75rem' }}>

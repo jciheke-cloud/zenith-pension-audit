@@ -141,7 +141,15 @@ const AuditPrograms = () => {
       </div>
 
       {/* Program Header Summary */}
-      <div className="glass-card" style={{ marginBottom: '1.75rem', background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%)' }}>
+      {!selectedProgram ? (
+        <div className="glass-card" style={{ padding: '3rem', textAlign: 'center' }}>
+          <FileText size={48} style={{ color: 'var(--text-muted)', margin: '0 auto 1rem' }} />
+          <h3>No Audit Programs Found</h3>
+          <p style={{ color: 'var(--text-muted)' }}>There are currently no testing checklists available.</p>
+        </div>
+      ) : (
+      <>
+        <div className="glass-card" style={{ marginBottom: '1.75rem', background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%)' }}>
         <div className="flex-between">
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem' }}>
@@ -290,6 +298,8 @@ const AuditPrograms = () => {
             </form>
           </div>
         </div>
+      )}
+      </>
       )}
     </div>
   );
