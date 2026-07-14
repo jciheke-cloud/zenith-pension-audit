@@ -50,13 +50,13 @@ export const AuditProvider = ({ children }) => {
       );
     }
 
-    // Auto-bootstrap ERM bridge data if hardcoded mock data was removed or on first launch
-    const isBootstrapped = localStorage.getItem('ZPC_AUDIT_BOOTSTRAPPED_ERM_V5');
+    // Auto-bootstrap ERM bridge data if hardcoded mock data was removed or on first launch / V6 unification
+    const isBootstrapped = localStorage.getItem('ZPC_AUDIT_BOOTSTRAPPED_ERM_V6');
     const isMockRemoved = localStorage.getItem('ZPC_AUDIT_MOCK_REMOVED') === 'true';
     if (!isBootstrapped || isMockRemoved) {
       setTimeout(() => {
         syncFromErmSuite(true);
-        localStorage.setItem('ZPC_AUDIT_BOOTSTRAPPED_ERM_V5', 'true');
+        localStorage.setItem('ZPC_AUDIT_BOOTSTRAPPED_ERM_V6', 'true');
       }, 100);
     }
   }, []);
@@ -389,22 +389,25 @@ export const AuditProvider = ({ children }) => {
       };
     });
 
-    saveArrayState('UNIVERSE', syncedUniverse, setAuditUniverse);
-    if (isPurgeOrInit) {
-      saveArrayState('FINDINGS', newErmFindings, setFindings);
-      saveArrayState('PLANS', newErmPlans, setAuditPlans);
-      saveArrayState('PROGRAMS', [...newErmPrograms, ...INITIAL_AUDIT_PROGRAMS], setAuditPrograms);
-      saveArrayState('PAPERS', newErmPapers, setWorkingPapers);
-      saveArrayState('CONTROLS', newErmControls, setControls);
-      saveArrayState('REVIEWS', newErmReviews, setRegulatoryReviews);
-      saveArrayState('FRAUD', newErmFraud, setFraudCases);
-      saveArrayState('CONTINUOUS', newErmContinuous, setContinuousExceptions);
-    } else {
-      const combinedFindings = [...newErmFindings, ...findings.filter(f => !f.findingNumber.startsWith('FND-ERM-'))];
-      const combinedPrograms = [...newErmPrograms, ...auditPrograms.filter(p => !p.id.startsWith('PROG-ERM-'))];
-      saveArrayState('FINDINGS', combinedFindings, setFindings);
-      saveArrayState('PROGRAMS', combinedPrograms, setAuditPrograms);
-    }
+    const combinedUniverse = [...syncedUniverse, ...INITIAL_AUDIT_UNIVERSE.filter(u => !syncedUniverse.some(su => su.name === u.name || su.id === u.id))];
+    const combinedFindings = [...newErmFindings, ...INITIAL_FINDINGS.filter(f => !newErmFindings.some(nf => nf.id === f.id || nf.findingNumber === f.findingNumber))];
+    const combinedPlans = [...newErmPlans, ...INITIAL_ANNUAL_AUDIT_PLANS.filter(p => !newErmPlans.some(np => np.id === p.id || np.auditName === p.auditName))];
+    const combinedPrograms = [...newErmPrograms, ...INITIAL_AUDIT_PROGRAMS.filter(p => !newErmPrograms.some(np => np.id === p.id))];
+    const combinedPapers = [...newErmPapers, ...INITIAL_WORKING_PAPERS.filter(p => !newErmPapers.some(np => np.id === p.id))];
+    const combinedControls = [...newErmControls, ...INITIAL_INTERNAL_CONTROLS.filter(c => !newErmControls.some(nc => nc.id === c.id))];
+    const combinedReviews = [...newErmReviews, ...INITIAL_REGULATORY_REVIEWS.filter(r => !newErmReviews.some(nr => nr.id === r.id))];
+    const combinedFraud = [...newErmFraud, ...INITIAL_FRAUD_CASES.filter(f => !newErmFraud.some(nf => nf.id === f.id))];
+    const combinedContinuous = [...newErmContinuous, ...INITIAL_CONTINUOUS_EXCEPTIONS.filter(c => !newErmContinuous.some(nc => nc.id === c.id))];
+
+    saveArrayState('UNIVERSE', combinedUniverse, setAuditUniverse);
+    saveArrayState('FINDINGS', combinedFindings, setFindings);
+    saveArrayState('PLANS', combinedPlans, setAuditPlans);
+    saveArrayState('PROGRAMS', combinedPrograms, setAuditPrograms);
+    saveArrayState('PAPERS', combinedPapers, setWorkingPapers);
+    saveArrayState('CONTROLS', combinedControls, setControls);
+    saveArrayState('REVIEWS', combinedReviews, setRegulatoryReviews);
+    saveArrayState('FRAUD', combinedFraud, setFraudCases);
+    saveArrayState('CONTINUOUS', combinedContinuous, setContinuousExceptions);
     if (!isPurgeOrInit) {
       addNotification('Direct ERM Sync Complete', `Ingested ${ermRisks.length} Enterprise Risks directly from RiskINTEGRA ERM Suite into all Audit Library modules.`, 'success');
     }
