@@ -63,37 +63,37 @@ const AppSwitcherDropdown = () => {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.5rem',
+          gap: '0.35rem',
           background: isOpen ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' : 'linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%)',
           border: '1px solid #60A5FA',
           color: '#FFFFFF',
-          padding: '0.48rem 0.95rem',
-          borderRadius: '0.55rem',
+          padding: '0.28rem 0.62rem',
+          borderRadius: '0.45rem',
           cursor: 'pointer',
           fontWeight: 800,
-          fontSize: '0.84rem',
+          fontSize: '0.74rem',
           transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-          boxShadow: isOpen ? '0 0 16px rgba(59, 130, 246, 0.7)' : '0 4px 14px rgba(59, 130, 246, 0.45)',
-          letterSpacing: '0.02em'
+          boxShadow: isOpen ? '0 0 14px rgba(59, 130, 246, 0.65)' : '0 3px 10px rgba(59, 130, 246, 0.4)',
+          letterSpacing: '0.01em'
         }}
         title="Switch RiskINTEGRA Corporate Governance Applications"
       >
-        <LayoutGrid size={17} />
-        <span>Switch App 🔀</span>
+        <LayoutGrid size={14} />
+        <span>Switch App</span>
       </button>
 
       {/* Dropdown Menu */}
       {isOpen && (
         <div style={{
           position: 'absolute',
-          top: 'calc(100% + 10px)',
+          top: 'calc(100% + 8px)',
           right: 0,
-          width: '380px',
+          width: '330px',
           background: '#0B1120',
           border: '1px solid rgba(255, 255, 255, 0.18)',
-          borderRadius: '1rem',
-          padding: '1.1rem',
-          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.85)',
+          borderRadius: '0.85rem',
+          padding: '0.85rem',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.85)',
           zIndex: 9999,
           backdropFilter: 'blur(24px)'
         }}>
