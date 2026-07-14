@@ -59,6 +59,14 @@ export const AuditProvider = ({ children }) => {
         localStorage.setItem('ZPC_AUDIT_BOOTSTRAPPED_ERM_V6', 'true');
       }, 100);
     }
+
+    // V7 Hard Wipe: Strip all dummy data from localStorage to ensure 100% real/ERM-synced data
+    if (!localStorage.getItem('ZPC_AUDIT_WIPED_MOCKS_V7')) {
+      const keysToWipe = ['PLANS', 'PROGRAMS', 'PAPERS', 'FINDINGS', 'CONTROLS', 'REVIEWS', 'FRAUD', 'CONTINUOUS'];
+      keysToWipe.forEach(k => localStorage.removeItem(`ZPC_AUDIT_STATE_${k}`));
+      localStorage.setItem('ZPC_AUDIT_WIPED_MOCKS_V7', 'true');
+      window.location.reload();
+    }
   }, []);
   
   const loadState = (key, initial) => {
