@@ -44,11 +44,11 @@ const CbnDmoMacroTicker = () => {
       icon: <DollarSign size={13} style={{ color: '#38BDF8' }} />
     },
     {
-      id: 'nbs-cpi',
-      category: 'NBS INFLATION',
-      label: 'Headline CPI (YoY)',
-      value: '34.19%',
-      change: '+22 bps',
+      id: 'cbn-cpi',
+      category: 'CBN INFLATION',
+      label: 'Headline Inflation Rate (YoY)',
+      value: '34.80%',
+      change: '+20 bps',
       trend: 'up',
       icon: <Activity size={13} style={{ color: '#FBBF24' }} />
     },
