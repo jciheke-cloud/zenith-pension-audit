@@ -47,9 +47,9 @@ const CbnDmoMacroTicker = () => {
       id: 'cbn-cpi',
       category: 'CBN INFLATION',
       label: 'Headline Inflation Rate (YoY)',
-      value: '34.80%',
-      change: '+20 bps',
-      trend: 'up',
+      value: '15.91%',
+      change: '-2 bps',
+      trend: 'down',
       icon: <Activity size={13} style={{ color: '#FBBF24' }} />
     },
     {
