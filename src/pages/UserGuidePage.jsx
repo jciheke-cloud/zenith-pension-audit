@@ -241,7 +241,7 @@ const UserGuidePage = () => {
                 <div style={{ borderLeft: '4px solid #C81E1E', background: 'rgba(200, 30, 30, 0.08)', padding: '1.25rem', borderRadius: '0 0.75rem 0.75rem 0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>1. Chief Audit Executive (CAE)</span>
-                    <span style={{ background: '#C81E1E', color: 'white', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>👑 TIER 1 — EXECUTIVE AUTHORITY</span>
+                    <span style={{ background: '#C81E1E', color: 'white', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>🛡️ TIER 1 — EXECUTIVE AUTHORITY</span>
                   </div>
                   <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: '#E2E8F0', lineHeight: 1.6 }}>
                     <strong>Corresponding View & Navigation:</strong> Unrestricted visibility across all 14 audit modules and Master Data administration.<br />

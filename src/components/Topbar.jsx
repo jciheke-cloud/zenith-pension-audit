@@ -138,7 +138,7 @@ const Topbar = () => {
               cursor: 'pointer',
               transition: 'all 0.2s'
             }}
-            title="Sign out to switch mock executive role"
+            title="Sign out of institutional Audit Portal"
           >
             Sign Out
           </button>

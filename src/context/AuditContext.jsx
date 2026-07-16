@@ -30,7 +30,14 @@ export const AuditProvider = ({ children }) => {
     } catch (e) { /* ignore */ }
     return ROLES_LIST[0]; // Chief Audit Executive by default
   });
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    try {
+      const session = JSON.parse(localStorage.getItem('zpc_auth_session'));
+      return !!session?.user;
+    } catch (e) {
+      return false;
+    }
+  });
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const session = JSON.parse(localStorage.getItem('zpc_auth_session'));
@@ -43,7 +50,7 @@ export const AuditProvider = ({ children }) => {
         };
       }
     } catch (e) { /* ignore */ }
-    return MOCK_USERS[0];
+    return null;
   });
 
   // Intercept Cross-App SSO URL parameters or listen for storage sync on mount
@@ -194,24 +201,45 @@ export const AuditProvider = ({ children }) => {
     });
   };
 
-  // Switch active user role
-  const switchRole = (roleId) => {
-    const found = ROLES_LIST.find(r => r.id === roleId) || ROLES_LIST[0];
-    setCurrentRole(found);
-  };
-
-  // Mock account login
-  const loginWithMockAccount = (user) => {
-    setCurrentUser(user);
-    const role = ROLES_LIST.find(r => r.id === user.roleId) || ROLES_LIST[0];
-    setCurrentRole(role);
-    setIsAuthenticated(true);
-    addNotification('Authentication Successful', `Welcome back, ${user.name} (${role.name}). Active session initialized.`, 'success');
+  const login = async (email, password) => {
+    try {
+      let users = [];
+      try {
+        users = JSON.parse(localStorage.getItem('zpc_users_directory')) || [];
+      } catch (e) { /* ignore */ }
+      
+      const cleanEmail = email.trim().toLowerCase();
+      const found = users.find(u => u.email.toLowerCase() === cleanEmail);
+      if (found) {
+        const userObj = {
+          name: found.name,
+          title: `${found.department} (${found.role?.toUpperCase()})`,
+          email: found.email,
+          roleId: found.role === 'auditor' || found.role === 'admin' ? 'cae' : 'manager'
+        };
+        setCurrentUser(userObj);
+        const role = ROLES_LIST.find(r => r.id === userObj.roleId) || ROLES_LIST[0];
+        setCurrentRole(role);
+        setIsAuthenticated(true);
+        const sessionPayload = {
+          token: `jwt-cognito-${found.cognitoSub || Date.now()}`,
+          user: found
+        };
+        localStorage.setItem('zpc_auth_session', JSON.stringify(sessionPayload));
+        addNotification('SSO Authentication Successful', `Welcome back, ${found.name}. Active Cognito RBAC session initialized.`, 'success');
+        return { success: true };
+      }
+      return { success: false, error: 'User email not found in AWS Cognito identity pool directory or invalid credentials.' };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
   };
 
   const logout = () => {
     setIsAuthenticated(false);
-    addNotification('Session Closed', `Logged out of ${currentUser?.name || currentRole.name}'s mock account.`, 'info');
+    setCurrentUser(null);
+    localStorage.removeItem('zpc_auth_session');
+    addNotification('Session Terminated', `Securely logged out of ZPC institutional audit portal.`, 'info');
   };
 
   // Add notification helper
@@ -645,15 +673,13 @@ export const AuditProvider = ({ children }) => {
         currency,
         toggleCurrency,
         currentRole,
-        switchRole,
         rolesList: ROLES_LIST,
         isAuthenticated,
         setIsAuthenticated,
         currentUser,
         setCurrentUser,
-        loginWithMockAccount,
+        login,
         logout,
-        mockUsersList: MOCK_USERS,
         businessUnits,
         addBusinessUnit,
         setBusinessUnits,

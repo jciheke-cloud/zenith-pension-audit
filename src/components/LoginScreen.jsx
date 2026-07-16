@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { AuditContext } from '../context/AuditContext';
 
 const LoginScreen = () => {
-  const { loginWithMockAccount, mockUsersList, clientProfile } = useContext(AuditContext);
+  const { login, clientProfile } = useContext(AuditContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -13,31 +13,11 @@ const LoginScreen = () => {
     setError('');
     setIsLoading(true);
 
-    setTimeout(() => {
-      const cleanEmail = email.trim().toLowerCase();
-      // Match role ID or email prefix (e.g. 'cae', 'manager', 'cae@zpc.com')
-      const foundUser = mockUsersList.find(u => {
-        const prefix = u.roleId.toLowerCase();
-        return cleanEmail === prefix || cleanEmail === `${prefix}@zpc.com` || cleanEmail === u.email.toLowerCase();
-      });
-
-      if (foundUser) {
-        loginWithMockAccount(foundUser);
-      } else {
-        // Fallback or default if they type something else valid like admin@zpc.com
-        if (cleanEmail === 'admin@zpc.com' || cleanEmail === 'admin') {
-          loginWithMockAccount(mockUsersList[0]);
-        } else {
-          setError('Invalid username/email or password. Check the demo roles below.');
-          setIsLoading(false);
-        }
-      }
-    }, 450);
-  };
-
-  const handleSelectDemo = (roleId, pass) => {
-    setEmail(`${roleId}@zpc.com`);
-    setPassword(pass);
+    const result = await login(email, password);
+    if (!result.success) {
+      setError(result.error);
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -154,68 +134,6 @@ const LoginScreen = () => {
             {isLoading ? 'Authenticating...' : 'Secure Login'}
           </button>
         </form>
-
-        {/* Tiny font demo account details exactly like ERM app */}
-        <div style={{ marginTop: '1.8rem', paddingTop: '1.2rem', borderTop: '1px solid rgba(255,255,255,0.06)', fontSize: '0.72rem', color: 'var(--text-muted)', textAlign: 'left' }}>
-          <p style={{ margin: '0 0 0.6rem 0', fontWeight: '700', color: '#CBD5E1' }}>
-            <strong>Demo RBAC Accounts (Click to fill):</strong>
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.55rem', lineHeight: '1.3' }}>
-            <div 
-              onClick={() => handleSelectDemo('cae', 'cae')}
-              style={{ cursor: 'pointer', padding: '0.3rem', borderRadius: '4px', background: 'rgba(255,255,255,0.02)' }}
-              title="Click to autofill CAE credentials"
-            >
-              <strong style={{ color: '#fda4af' }}>CAE (Chief Audit Exec)</strong><br/>
-              <code>cae@zpc.com</code><br/>Pass: <code>cae</code>
-            </div>
-
-            <div 
-              onClick={() => handleSelectDemo('manager', 'manager')}
-              style={{ cursor: 'pointer', padding: '0.3rem', borderRadius: '4px', background: 'rgba(255,255,255,0.02)' }}
-              title="Click to autofill Audit Manager credentials"
-            >
-              <strong style={{ color: '#60A5FA' }}>Audit Manager</strong><br/>
-              <code>manager@zpc.com</code><br/>Pass: <code>manager</code>
-            </div>
-
-            <div 
-              onClick={() => handleSelectDemo('senior', 'senior')}
-              style={{ cursor: 'pointer', padding: '0.3rem', borderRadius: '4px', background: 'rgba(255,255,255,0.02)' }}
-              title="Click to autofill Senior Auditor credentials"
-            >
-              <strong style={{ color: '#34d399' }}>Senior Auditor</strong><br/>
-              <code>senior@zpc.com</code><br/>Pass: <code>senior</code>
-            </div>
-
-            <div 
-              onClick={() => handleSelectDemo('qa', 'qa')}
-              style={{ cursor: 'pointer', padding: '0.3rem', borderRadius: '4px', background: 'rgba(255,255,255,0.02)' }}
-              title="Click to autofill QA Reviewer credentials"
-            >
-              <strong style={{ color: '#FBBF24' }}>QA Reviewer</strong><br/>
-              <code>qa@zpc.com</code><br/>Pass: <code>qa</code>
-            </div>
-
-            <div 
-              onClick={() => handleSelectDemo('owner', 'owner')}
-              style={{ cursor: 'pointer', padding: '0.3rem', borderRadius: '4px', background: 'rgba(255,255,255,0.02)' }}
-              title="Click to autofill Process Owner credentials"
-            >
-              <strong style={{ color: '#A855F7' }}>Process Owner / Head</strong><br/>
-              <code>owner@zpc.com</code><br/>Pass: <code>owner</code>
-            </div>
-
-            <div 
-              onClick={() => handleSelectDemo('committee', 'committee')}
-              style={{ cursor: 'pointer', padding: '0.3rem', borderRadius: '4px', background: 'rgba(255,255,255,0.02)' }}
-              title="Click to autofill Board Audit Committee credentials"
-            >
-              <strong style={{ color: '#FB7185' }}>Board Committee</strong><br/>
-              <code>committee@zpc.com</code><br/>Pass: <code>committee</code>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
