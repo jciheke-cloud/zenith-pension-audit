@@ -19,11 +19,34 @@ export const AuditContext = createContext();
 export const AuditProvider = ({ children }) => {
   const [clientProfile, setClientProfile] = useState('Zenith Pension Custodian Limited (ZPC)');
   const [currency, setCurrency] = useState('NGN');
-  const [currentRole, setCurrentRole] = useState(ROLES_LIST[0]); // Chief Audit Executive by default
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState(MOCK_USERS[0]);
+  const [currentRole, setCurrentRole] = useState(() => {
+    try {
+      const session = JSON.parse(localStorage.getItem('zpc_auth_session'));
+      if (session?.user) {
+        if (session.user.role === 'admin' || session.user.role === 'executive') return ROLES_LIST[0]; // Chief Audit Executive
+        if (session.user.role === 'auditor') return ROLES_LIST.find(r => r.id === 'cae' || r.id === 'senior') || ROLES_LIST[0];
+        if (session.user.role === 'maker') return ROLES_LIST.find(r => r.id === 'manager' || r.id === 'owner') || ROLES_LIST[1];
+      }
+    } catch (e) { /* ignore */ }
+    return ROLES_LIST[0]; // Chief Audit Executive by default
+  });
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const session = JSON.parse(localStorage.getItem('zpc_auth_session'));
+      if (session?.user) {
+        return {
+          name: session.user.name,
+          title: `${session.user.department} (${session.user.role?.toUpperCase()})`,
+          email: session.user.email,
+          roleId: session.user.role === 'auditor' || session.user.role === 'admin' ? 'cae' : 'manager'
+        };
+      }
+    } catch (e) { /* ignore */ }
+    return MOCK_USERS[0];
+  });
 
-  // Intercept Cross-App SSO URL parameters on mount
+  // Intercept Cross-App SSO URL parameters or listen for storage sync on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const ssoRole = params.get('sso_role');
