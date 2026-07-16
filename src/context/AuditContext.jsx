@@ -23,12 +23,14 @@ export const AuditProvider = ({ children }) => {
     try {
       const session = JSON.parse(localStorage.getItem('zpc_auth_session'));
       if (session?.user) {
-        if (session.user.role === 'admin' || session.user.role === 'executive') return ROLES_LIST[0]; // Chief Audit Executive
-        if (session.user.role === 'auditor') return ROLES_LIST.find(r => r.id === 'cae' || r.id === 'senior') || ROLES_LIST[0];
-        if (session.user.role === 'maker') return ROLES_LIST.find(r => r.id === 'manager' || r.id === 'owner') || ROLES_LIST[1];
+        const foundExact = ROLES_LIST.find(r => r.id.toLowerCase() === session.user.role?.toLowerCase() || r.name.toLowerCase().includes(session.user.role?.toLowerCase()));
+        if (foundExact) return foundExact;
+        if (session.user.role === 'admin' || session.user.role === 'executive') return ROLES_LIST.find(r => r.id === 'Chief_Audit_Executive') || ROLES_LIST[3];
+        if (session.user.role === 'auditor') return ROLES_LIST.find(r => r.id === 'Auditor' || r.id === 'Chief_Audit_Executive') || ROLES_LIST[8];
+        if (session.user.role === 'maker') return ROLES_LIST.find(r => r.id === 'Audit_Manager' || r.id === 'Control_Owner') || ROLES_LIST[7];
       }
     } catch (e) { /* ignore */ }
-    return ROLES_LIST[0]; // Chief Audit Executive by default
+    return ROLES_LIST.find(r => r.id === 'Chief_Audit_Executive') || ROLES_LIST[3]; // Chief Audit Executive by default
   });
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     try {
@@ -62,10 +64,27 @@ export const AuditProvider = ({ children }) => {
     const source = params.get('source');
 
     if (ssoRole && (ssoToken === 'riskintegra_auth_bridge' || ssoRole)) {
-      const foundUser = MOCK_USERS.find(u => u.roleId.toLowerCase() === ssoRole.toLowerCase()) || MOCK_USERS[0];
-      const roleObj = ROLES_LIST.find(r => r.id === foundUser.roleId) || ROLES_LIST[0];
+      let users = [];
+      try {
+        users = JSON.parse(localStorage.getItem('zpc_users_directory')) || [];
+      } catch (e) { /* ignore */ }
+
+      const foundDirUser = users.find(u => u.role?.toLowerCase() === ssoRole.toLowerCase() || u.email?.toLowerCase().includes(ssoRole.toLowerCase()));
+      const roleObj = ROLES_LIST.find(r => r.id.toLowerCase() === ssoRole.toLowerCase() || r.name.toLowerCase().includes(ssoRole.toLowerCase())) || ROLES_LIST.find(r => r.id === 'Chief_Audit_Executive') || ROLES_LIST[3];
       
-      setCurrentUser(foundUser);
+      const targetUser = foundDirUser ? {
+        name: foundDirUser.name,
+        title: `${foundDirUser.department} (${foundDirUser.role?.toUpperCase()})`,
+        email: foundDirUser.email,
+        roleId: roleObj.id
+      } : {
+        name: `${roleObj.name}`,
+        title: `Internal Audit & Governance (${roleObj.badge})`,
+        email: `${roleObj.id.toLowerCase()}@zenithcustodian.com`,
+        roleId: roleObj.id
+      };
+
+      setCurrentUser(targetUser);
       setCurrentRole(roleObj);
       setIsAuthenticated(true);
 
@@ -76,7 +95,7 @@ export const AuditProvider = ({ children }) => {
 
       addNotification(
         'SSO Gateway Active',
-        `Authenticated automatically from ${source ? source.toUpperCase() : 'ERM'} Suite under ${foundUser.title}.`,
+        `Authenticated automatically from ${source ? source.toUpperCase() : 'ERM'} Suite under ${targetUser.title}.`,
         'success'
       );
     }
@@ -184,12 +203,15 @@ export const AuditProvider = ({ children }) => {
   };
 
   // Notifications drawer / alerts
-  const [notifications, setNotifications] = useState([
-    { id: 'notif-1', title: 'ERM Sync Active', message: 'Audit Universe linked to RiskINTEGRA ERM Risk Register.', time: 'Just now', type: 'info', read: false },
-    { id: 'notif-2', title: 'Repeat Finding Alert', message: 'FND-2026-001 (Unreconciled Cash Sweep Variance) detected in Custody Operations for 3rd consecutive audit cycle.', time: '12m ago', type: 'danger', read: false },
-    { id: 'notif-3', title: 'Continuous Audit Exception', message: 'Maker/Checker SoD breach flagged on Terminal IP 10.14.22.105.', time: '1h ago', type: 'warning', read: false },
-    { id: 'notif-4', title: 'Audit Committee Review', message: 'Q1 Board Audit Pack ready for Audit Committee Portal sign-off.', time: '2h ago', type: 'success', read: false }
-  ]);
+  const [notifications, setNotifications] = useState(() => {
+    try {
+      const saved = localStorage.getItem('ZPC_AUDIT_NOTIFICATIONS');
+      if (saved) return JSON.parse(saved);
+    } catch (e) { /* ignore */ }
+    return [
+      { id: 'notif-system', title: 'RiskINTEGRA Audit Active', message: 'Audit Engine active and linked to live RiskINTEGRA ERM Suite.', time: 'Just now', type: 'info', read: false }
+    ];
+  });
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Toggle currency
@@ -211,14 +233,14 @@ export const AuditProvider = ({ children }) => {
       const cleanEmail = email.trim().toLowerCase();
       const found = users.find(u => u.email.toLowerCase() === cleanEmail);
       if (found) {
+        const role = ROLES_LIST.find(r => r.id.toLowerCase() === found.role?.toLowerCase() || r.name.toLowerCase().includes(found.role?.toLowerCase())) || ROLES_LIST.find(r => r.id === 'Chief_Audit_Executive') || ROLES_LIST[3];
         const userObj = {
           name: found.name,
-          title: `${found.department} (${found.role?.toUpperCase()})`,
+          title: `${found.department} (${role.name})`,
           email: found.email,
-          roleId: found.role === 'auditor' || found.role === 'admin' ? 'cae' : 'manager'
+          roleId: role.id
         };
         setCurrentUser(userObj);
-        const role = ROLES_LIST.find(r => r.id === userObj.roleId) || ROLES_LIST[0];
         setCurrentRole(role);
         setIsAuthenticated(true);
         const sessionPayload = {
@@ -299,15 +321,8 @@ export const AuditProvider = ({ children }) => {
       if (savedRisks) ermRisks = JSON.parse(savedRisks);
     } catch (e) { /* ignore */ }
 
-    if (!ermRisks || ermRisks.length === 0) {
-      // Direct high-fidelity ERM risk register bridge payload
-      ermRisks = [
-        { id: 101, riskTitle: 'Delayed dividend sweeping to PFA client accounts', category: 'Settlement Risk', department: 'Settlements & Corporate Actions', residualScore: 68 },
-        { id: 102, riskTitle: 'Core custody accounting database downtime during peak settlement window', category: 'Technology Risk', department: 'Settlements & Operations', residualScore: 82 },
-        { id: 103, riskTitle: '24h Contribution Notification SLA Delay Penalty Breach', category: 'Compliance Risk', department: 'Contribution Reconciliation Dept', residualScore: 74 },
-        { id: 104, riskTitle: 'RMAS Gateway connectivity drop or data intercept on PENCOM uplink', category: 'Cybersecurity Risk', department: 'IT & Cybersecurity', residualScore: 88 },
-        { id: 105, riskTitle: 'Counterparty default on money market placements & FGN bonds', category: 'Credit & Treasury Risk', department: 'Treasury & Markets', residualScore: 45 }
-      ];
+    if (!ermRisks || !Array.isArray(ermRisks)) {
+      ermRisks = [];
     }
 
     // Transform ERM risks directly into Audit Universe Units

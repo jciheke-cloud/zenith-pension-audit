@@ -74,7 +74,7 @@ const LoginScreen = () => {
               type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="e.g., cae@zpc.com"
+              placeholder="Enter corporate email"
               required
               style={{
                 width: '100%',

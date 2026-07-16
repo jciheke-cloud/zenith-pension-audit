@@ -29,12 +29,6 @@ const ErmSyncPage = () => {
     }, 1000);
   };
 
-  const handleClearMockData = () => {
-    if (window.confirm('⚠️ Are you sure you want to purge all demo/mock transactional records? This gets RiskINTEGRA Audit ready for live user input and direct ERM data sync.')) {
-      clearAllMockData && clearAllMockData();
-    }
-  };
-
   const handleDownloadTemplate = (type) => {
     let content = '';
     let filename = '';
@@ -94,14 +88,6 @@ const ErmSyncPage = () => {
           </p>
         </div>
         <div className="header-actions" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <button
-            onClick={handleClearMockData}
-            className="btn-secondary"
-            style={{ padding: '0.6rem 1.1rem', fontSize: '0.85rem', borderColor: '#EF4444', color: '#fda4af' }}
-            title="Purge demo items and prepare for live institutional input"
-          >
-            <span>🗑️ Purge Mock Data (Ready for User Input)</span>
-          </button>
           <button
             onClick={handleForceSync}
             disabled={isSyncing}

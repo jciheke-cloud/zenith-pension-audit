@@ -145,7 +145,7 @@ Any unauthorized inspection, reverse-engineering, or redistribution is strictly 
               </div>
             )}
             <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.75rem' }}>
-              💡 Authorized Demo Key: <code>RISKINTEGRA-ZPC-2026-ENTERPRISE-PROD</code>
+              💡 Institutional Production License Key: <code>RISKINTEGRA-ZPC-2026-ENTERPRISE-PROD</code>
             </div>
           </form>
 

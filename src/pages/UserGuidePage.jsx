@@ -511,14 +511,14 @@ const UserGuidePage = () => {
                 <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '0.85rem', padding: '1.3rem' }}>
                   <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#F8FAFC', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                     <span style={{ background: '#E11D48', color: 'white', padding: '0.3rem', borderRadius: '6px', display: 'inline-flex' }}><Wrench size={18} /></span>
-                    <span>9. Purge Mock Data & Live ERM Sync Bridge (Module 14)</span>
+                    <span>9. Live ERM Sync Bridge & Data Hub (Module 14)</span>
                   </div>
                   <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6 }}>
-                    Two dedicated operational lifecycle utilities that transition the app from demonstration mode (`Mock Data`) to live institutional execution (`Ready for User Inputs`).
+                    Dedicated enterprise integration module that connects RiskINTEGRA Audit bi-directionally to the RiskINTEGRA ERM Suite in permanent production mode.
                   </p>
                   <div style={{ fontSize: '0.84rem', color: '#CBD5E1' }}>
-                    • <strong>🗑️ Purge Mock Data (Ready for User Input):</strong> Clears all hardcoded sample data across all 8 modules (findings, plans, universe, working papers, etc.) and initializes clean, empty structures stored directly in `localStorage` (`ZPC_AUDIT_STATE_*`).<br />
-                    • <strong>🔗 Sync Data Directly From ERM:</strong> Connects bi-directionally to the <em>RiskINTEGRA ERM Suite</em> across ports or sockets (`ZPC_ERM_RISK_REGISTER`), automatically populating the Audit Universe and creating high-priority audit findings for any enterprise risk scoring ≥60!
+                    • <strong>🔗 Sync Data Directly From ERM:</strong> Connects bi-directionally to the <em>RiskINTEGRA ERM Suite</em> (`ZPC_ERM_RISK_REGISTER`), automatically populating the Audit Universe and creating high-priority audit findings for any enterprise risk scoring ≥60!<br />
+                    • <strong>📁 Bulk CSV/Excel Ingestion Hub:</strong> Allows institutional upload of previous audit cycles, historical findings, and working papers directly into clean production storage (`ZPC_AUDIT_STATE_*`).
                   </div>
                 </div>
 
