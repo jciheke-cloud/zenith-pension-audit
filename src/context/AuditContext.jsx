@@ -100,24 +100,29 @@ export const AuditProvider = ({ children }) => {
       );
     }
 
-    // V12 Zero-Mock Protection Guard: Complete institutional storage cleanup on upgrade
-    if (!localStorage.getItem('ZPC_AUDIT_CLEAN_GUARD_V13_TOTAL_PURGE')) {
+    // V14 Zero-Mock Protection Guard: Complete institutional storage cleanup on upgrade
+    if (!localStorage.getItem('ZPC_ERM_CLEAN_GUARD_V14_PENCOM_PURGE')) {
       const keysToWipe = ['BUSINESS_UNITS', 'PLANS', 'PROGRAMS', 'PAPERS', 'FINDINGS', 'CONTROLS', 'REVIEWS', 'FRAUD', 'CONTINUOUS', 'UNIVERSE'];
       keysToWipe.forEach(k => localStorage.removeItem(`ZPC_AUDIT_STATE_${k}`));
       localStorage.removeItem('ZPC_AUDIT_NOTIFICATIONS');
       localStorage.removeItem('ZPC_AUDIT_BOOTSTRAPPED_ERM_V8');
       localStorage.removeItem('ZPC_AUDIT_BACKEND_GUARD_V8');
       localStorage.removeItem('ZPC_ERM_RISK_REGISTER');
+      localStorage.removeItem('zpc_pencom_funds');
+      localStorage.removeItem('zpc_pencom_risks');
+      localStorage.removeItem('zpc_pencom_losses');
+      localStorage.removeItem('zpc_pencom_audit');
       localStorage.setItem('ZPC_AUDIT_CLEAN_GUARD_V13_TOTAL_PURGE', 'true');
       localStorage.setItem('ZPC_ERM_CLEAN_GUARD_V13_TOTAL_PURGE', 'true');
+      localStorage.setItem('ZPC_ERM_CLEAN_GUARD_V14_PENCOM_PURGE', 'true');
       window.location.reload();
     }
   }, []);
   
-  // V13 Backend Schema Guard: Ensures zero mock items or old cached state persist
+  // V14 Backend Schema Guard: Ensures zero mock items or old cached state persist
   const loadState = (key, initial) => {
     try {
-      if (!localStorage.getItem('ZPC_AUDIT_CLEAN_GUARD_V13_TOTAL_PURGE')) {
+      if (!localStorage.getItem('ZPC_ERM_CLEAN_GUARD_V14_PENCOM_PURGE')) {
         localStorage.removeItem(`ZPC_AUDIT_STATE_${key}`);
         return initial;
       }
