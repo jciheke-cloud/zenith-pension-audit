@@ -47,7 +47,7 @@ const AppSwitcherDropdown = () => {
     const isRem = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
     const targetBase = ermUrl || (isRem ? window.location.origin + '/index.html' : 'http://localhost:5173');
     const roleId = currentUser?.roleId || currentRole?.id || 'cae';
-    const target = `${targetBase}?sso_role=${encodeURIComponent(roleId)}&sso_token=riskintegra_auth_bridge&source=audit`;
+    const target = `${targetBase}?sso_role=${encodeURIComponent(roleId)}&sso_token=riskintegra_auth_bridge&source=audit#/`;
     window.location.href = target;
   };
 

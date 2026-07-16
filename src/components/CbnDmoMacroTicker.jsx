@@ -14,7 +14,8 @@ const CbnDmoMacroTicker = () => {
       value: '26.75%',
       change: '+50 bps',
       trend: 'up',
-      icon: <Landmark size={13} style={{ color: '#F87171' }} />
+      iconType: 'Landmark',
+      iconColor: '#F87171'
     },
     {
       id: 'dmo-10yr',
@@ -23,7 +24,8 @@ const CbnDmoMacroTicker = () => {
       value: '19.85%',
       change: '+15 bps',
       trend: 'up',
-      icon: <FileText size={13} style={{ color: '#34D399' }} />
+      iconType: 'FileText',
+      iconColor: '#34D399'
     },
     {
       id: 'dmo-t-bill',
@@ -32,7 +34,8 @@ const CbnDmoMacroTicker = () => {
       value: '21.50%',
       change: 'Stable',
       trend: 'neutral',
-      icon: <FileText size={13} style={{ color: '#60A5FA' }} />
+      iconType: 'FileText',
+      iconColor: '#60A5FA'
     },
     {
       id: 'cbn-fx',
@@ -41,7 +44,8 @@ const CbnDmoMacroTicker = () => {
       value: '₦1,535.40/$',
       change: '-0.30%',
       trend: 'down',
-      icon: <DollarSign size={13} style={{ color: '#38BDF8' }} />
+      iconType: 'DollarSign',
+      iconColor: '#38BDF8'
     },
     {
       id: 'cbn-cpi',
@@ -50,7 +54,8 @@ const CbnDmoMacroTicker = () => {
       value: '15.91%',
       change: '-2 bps',
       trend: 'down',
-      icon: <Activity size={13} style={{ color: '#FBBF24' }} />
+      iconType: 'Activity',
+      iconColor: '#FBBF24'
     },
     {
       id: 'pencom-floor',
@@ -59,7 +64,8 @@ const CbnDmoMacroTicker = () => {
       value: '₦25B + 0.1% AUC',
       change: 'Active Enforcer',
       trend: 'neutral',
-      icon: <Landmark size={13} style={{ color: '#A855F7' }} />
+      iconType: 'Landmark',
+      iconColor: '#A855F7'
     },
     {
       id: 'fgn-spread',
@@ -68,9 +74,32 @@ const CbnDmoMacroTicker = () => {
       value: '-165 bps',
       change: 'Inverted',
       trend: 'down',
-      icon: <TrendingDown size={13} style={{ color: '#FB7185' }} />
+      iconType: 'TrendingDown',
+      iconColor: '#FB7185'
     }
   ]);
+
+  const renderMacroIcon = (item) => {
+    if (React.isValidElement(item?.icon)) return item.icon;
+    const size = 13;
+    const color = item?.iconColor || '#F87171';
+    if (item?.id === 'cbn-mpr' || item?.id === 'pencom-floor' || item?.iconType === 'Landmark') {
+      return <Landmark size={size} style={{ color: item?.id === 'pencom-floor' ? '#A855F7' : color }} />;
+    }
+    if (item?.id === 'dmo-10yr' || item?.id === 'dmo-t-bill' || item?.iconType === 'FileText') {
+      return <FileText size={size} style={{ color: item?.id === 'dmo-10yr' ? '#34D399' : '#60A5FA' }} />;
+    }
+    if (item?.id === 'cbn-fx' || item?.iconType === 'DollarSign') {
+      return <DollarSign size={size} style={{ color: '#38BDF8' }} />;
+    }
+    if (item?.id === 'cbn-cpi' || item?.iconType === 'Activity') {
+      return <Activity size={size} style={{ color: '#FBBF24' }} />;
+    }
+    if (item?.id === 'fgn-spread' || item?.iconType === 'TrendingDown') {
+      return <TrendingDown size={size} style={{ color: '#FB7185' }} />;
+    }
+    return <TrendingUp size={size} style={{ color: '#38BDF8' }} />;
+  };
 
   useEffect(() => {
     fetchLatestMacroData();
@@ -80,7 +109,21 @@ const CbnDmoMacroTicker = () => {
     setIsRefreshing(true);
     try {
       const cached = localStorage.getItem('riskintegra_live_macro_cache');
-      let currentItems = cached ? JSON.parse(cached) : macroItems;
+      let currentItems = macroItems;
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            currentItems = parsed.map((pItem, idx) => ({
+              ...macroItems[idx],
+              ...pItem,
+              icon: undefined
+            }));
+          }
+        } catch (err) {
+          console.warn('Macro cache parse reset');
+        }
+      }
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 4000);
@@ -106,7 +149,8 @@ const CbnDmoMacroTicker = () => {
         );
       }
 
-      localStorage.setItem('riskintegra_live_macro_cache', JSON.stringify(currentItems));
+      const cleanForStorage = currentItems.map(({ icon, ...rest }) => rest);
+      localStorage.setItem('riskintegra_live_macro_cache', JSON.stringify(cleanForStorage));
       setMacroItems(currentItems);
       setLastUpdated(new Date().toLocaleTimeString());
     } catch (e) {
@@ -133,7 +177,8 @@ const CbnDmoMacroTicker = () => {
           }
           return item;
         });
-        localStorage.setItem('riskintegra_live_macro_cache', JSON.stringify(updated));
+        const cleanForStorage = updated.map(({ icon, ...rest }) => rest);
+        localStorage.setItem('riskintegra_live_macro_cache', JSON.stringify(cleanForStorage));
         return updated;
       });
       setLastUpdated(new Date().toLocaleTimeString());
@@ -217,7 +262,7 @@ const CbnDmoMacroTicker = () => {
                 }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', opacity: 0.9 }}>
-                  {item.icon}
+                  {renderMacroIcon(item)}
                 </span>
                 <span style={{ fontWeight: 700, color: '#94A3B8', fontSize: '0.72rem', letterSpacing: '0.03em' }}>
                   {item.category}:
