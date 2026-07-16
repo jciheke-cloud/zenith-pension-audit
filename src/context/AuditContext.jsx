@@ -101,22 +101,23 @@ export const AuditProvider = ({ children }) => {
     }
 
     // V12 Zero-Mock Protection Guard: Complete institutional storage cleanup on upgrade
-    if (!localStorage.getItem('ZPC_AUDIT_CLEAN_GUARD_V12_ZERO_MOCK')) {
+    if (!localStorage.getItem('ZPC_AUDIT_CLEAN_GUARD_V13_TOTAL_PURGE')) {
       const keysToWipe = ['BUSINESS_UNITS', 'PLANS', 'PROGRAMS', 'PAPERS', 'FINDINGS', 'CONTROLS', 'REVIEWS', 'FRAUD', 'CONTINUOUS', 'UNIVERSE'];
       keysToWipe.forEach(k => localStorage.removeItem(`ZPC_AUDIT_STATE_${k}`));
       localStorage.removeItem('ZPC_AUDIT_NOTIFICATIONS');
       localStorage.removeItem('ZPC_AUDIT_BOOTSTRAPPED_ERM_V8');
       localStorage.removeItem('ZPC_AUDIT_BACKEND_GUARD_V8');
       localStorage.removeItem('ZPC_ERM_RISK_REGISTER');
-      localStorage.setItem('ZPC_AUDIT_CLEAN_GUARD_V12_ZERO_MOCK', 'true');
+      localStorage.setItem('ZPC_AUDIT_CLEAN_GUARD_V13_TOTAL_PURGE', 'true');
+      localStorage.setItem('ZPC_ERM_CLEAN_GUARD_V13_TOTAL_PURGE', 'true');
       window.location.reload();
     }
   }, []);
   
-  // V12 Backend Schema Guard: Ensures zero mock items or old cached state persist
+  // V13 Backend Schema Guard: Ensures zero mock items or old cached state persist
   const loadState = (key, initial) => {
     try {
-      if (!localStorage.getItem('ZPC_AUDIT_CLEAN_GUARD_V12_ZERO_MOCK')) {
+      if (!localStorage.getItem('ZPC_AUDIT_CLEAN_GUARD_V13_TOTAL_PURGE')) {
         localStorage.removeItem(`ZPC_AUDIT_STATE_${key}`);
         return initial;
       }
