@@ -47,6 +47,7 @@ const App = () => {
             <NotificationDrawer />
             <Routes>
               <Route path="/" element={<ExecutiveDashboard />} />
+              <Route path="/index.html" element={<ExecutiveDashboard />} />
               <Route path="/master-data" element={<MasterData />} />
               <Route path="/annual-plan" element={<AnnualAuditPlan />} />
               <Route path="/risk-scoring" element={<RiskBasedPlanning />} />
@@ -61,6 +62,7 @@ const App = () => {
               <Route path="/reports-committee" element={<ReportsAndCommittee />} />
               <Route path="/erm-sync" element={<ErmSyncPage />} />
               <Route path="/user-guide" element={<UserGuidePage />} />
+              <Route path="*" element={<ExecutiveDashboard />} />
             </Routes>
             <footer style={{
               textAlign: 'center',

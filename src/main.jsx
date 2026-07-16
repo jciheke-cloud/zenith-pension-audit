@@ -1,19 +1,17 @@
 import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import './index.css';
 import './App.css';
 import App from './App.jsx';
 import { AuditProvider } from './context/AuditContext';
 
-const basename = window.location.pathname.includes('/audit-portal') ? '/audit-portal' : undefined;
-
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter basename={basename}>
+    <HashRouter>
       <AuditProvider>
         <App />
       </AuditProvider>
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>
 );

@@ -48,7 +48,8 @@ export const AuditProvider = ({ children }) => {
 
   // Intercept Cross-App SSO URL parameters or listen for storage sync on mount
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+    const searchString = window.location.search || (window.location.hash.includes('?') ? window.location.hash.split('?')[1] : '');
+    const params = new URLSearchParams(searchString);
     const ssoRole = params.get('sso_role');
     const ssoToken = params.get('sso_token');
     const source = params.get('source');
@@ -62,7 +63,7 @@ export const AuditProvider = ({ children }) => {
       setIsAuthenticated(true);
 
       if (window.history.replaceState) {
-        const cleanUrl = window.location.pathname;
+        const cleanUrl = window.location.pathname + (window.location.hash.startsWith('#') ? '#/' : '');
         window.history.replaceState({}, document.title, cleanUrl);
       }
 
