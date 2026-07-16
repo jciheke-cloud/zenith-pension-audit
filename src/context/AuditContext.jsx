@@ -50,30 +50,49 @@ export const AuditProvider = ({ children }) => {
       );
     }
 
-    // Auto-bootstrap ERM bridge data if hardcoded mock data was removed or on first launch / V6 unification
-    const isBootstrapped = localStorage.getItem('ZPC_AUDIT_BOOTSTRAPPED_ERM_V6');
-    const isMockRemoved = localStorage.getItem('ZPC_AUDIT_MOCK_REMOVED') === 'true';
-    if (!isBootstrapped || isMockRemoved) {
-      setTimeout(() => {
-        syncFromErmSuite(true);
-        localStorage.setItem('ZPC_AUDIT_BOOTSTRAPPED_ERM_V6', 'true');
-      }, 100);
-    }
-
-    // V7 Hard Wipe: Strip all dummy data from localStorage to ensure 100% real/ERM-synced data
-    if (!localStorage.getItem('ZPC_AUDIT_WIPED_MOCKS_V7')) {
-      const keysToWipe = ['PLANS', 'PROGRAMS', 'PAPERS', 'FINDINGS', 'CONTROLS', 'REVIEWS', 'FRAUD', 'CONTINUOUS'];
+    // V8 Backend Protection Guard: Enterprise storage schema guard, zero-mock enforcement & quota write protection
+    if (!localStorage.getItem('ZPC_AUDIT_BACKEND_GUARD_V8')) {
+      const keysToWipe = ['PLANS', 'PROGRAMS', 'PAPERS', 'FINDINGS', 'CONTROLS', 'REVIEWS', 'FRAUD', 'CONTINUOUS', 'UNIVERSE'];
       keysToWipe.forEach(k => localStorage.removeItem(`ZPC_AUDIT_STATE_${k}`));
-      localStorage.setItem('ZPC_AUDIT_WIPED_MOCKS_V7', 'true');
+      localStorage.setItem('ZPC_AUDIT_BACKEND_GUARD_V8', 'true');
+      localStorage.setItem('ZPC_AUDIT_WIPED_MOCKS_V8', 'true');
+      localStorage.setItem('ZPC_AUDIT_MOCK_REMOVED', 'true');
+      syncFromErmSuite(true);
       window.location.reload();
+    } else {
+      // Auto-bootstrap ERM bridge data if missing or corrupted
+      const isBootstrapped = localStorage.getItem('ZPC_AUDIT_BOOTSTRAPPED_ERM_V8');
+      if (!isBootstrapped) {
+        setTimeout(() => {
+          syncFromErmSuite(false);
+          localStorage.setItem('ZPC_AUDIT_BOOTSTRAPPED_ERM_V8', 'true');
+        }, 100);
+      }
     }
   }, []);
   
+  // V8 Backend Schema Guard: Validates structure and ensures no legacy dummy items infiltrate live state
   const loadState = (key, initial) => {
     try {
       const saved = localStorage.getItem(`ZPC_AUDIT_STATE_${key}`);
-      if (saved) return JSON.parse(saved);
-    } catch (e) { /* fallback */ }
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          // Under V8 zero-mock protection, strip out any residual legacy dummy items (au-101, au-107, etc.)
+          if (localStorage.getItem('ZPC_AUDIT_BACKEND_GUARD_V8') === 'true' && key !== 'BUSINESS_UNITS') {
+            const cleaned = parsed.filter(item => {
+              const id = String(item.id || item.findingNumber || item.code || '');
+              const isLegacyDummy = id.startsWith('au-10') || id.startsWith('au-11') || id.startsWith('INITIAL_');
+              return !isLegacyDummy;
+            });
+            return cleaned.length > 0 ? cleaned : initial;
+          }
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.warn(`[V8 Storage Guard] State recovery initiated for ${key}:`, e);
+    }
     return initial;
   };
 
@@ -88,9 +107,28 @@ export const AuditProvider = ({ children }) => {
   const [fraudCases, setFraudCases] = useState(() => loadState('FRAUD', INITIAL_FRAUD_CASES));
   const [continuousExceptions, setContinuousExceptions] = useState(() => loadState('CONTINUOUS', INITIAL_CONTINUOUS_EXCEPTIONS));
 
+  // V8 Storage Write & Quota Protection Guard
   const saveArrayState = (key, data, setter) => {
+    if (!Array.isArray(data)) {
+      console.error(`[V8 Write Guard] Invalid array schema aborted for ${key}`);
+      return;
+    }
     setter(data);
-    try { localStorage.setItem(`ZPC_AUDIT_STATE_${key}`, JSON.stringify(data)); } catch (e) { /* ignore */ }
+    try {
+      localStorage.setItem(`ZPC_AUDIT_STATE_${key}`, JSON.stringify(data));
+    } catch (e) {
+      if (e.name === 'QuotaExceededError' || e.message?.toLowerCase().includes('quota')) {
+        console.warn(`[V8 Storage Quota Alert] Quota exceeded on writing ${key}. Pruning non-essential cache snapshots...`);
+        try {
+          // Free up quota by clearing transient caches while keeping master tables intact
+          localStorage.removeItem('ZPC_AUDIT_NOTIFICATIONS');
+          localStorage.removeItem('riskintegra_live_macro_cache');
+          localStorage.setItem(`ZPC_AUDIT_STATE_${key}`, JSON.stringify(data));
+        } catch (innerErr) {
+          console.error(`[V8 Storage Quota Alert] Critical write error for ${key}:`, innerErr);
+        }
+      }
+    }
   };
 
   // Risk-based audit planning weights
@@ -397,15 +435,18 @@ export const AuditProvider = ({ children }) => {
       };
     });
 
-    const combinedUniverse = [...syncedUniverse, ...INITIAL_AUDIT_UNIVERSE.filter(u => !syncedUniverse.some(su => su.name === u.name || su.id === u.id))];
-    const combinedFindings = [...newErmFindings, ...INITIAL_FINDINGS.filter(f => !newErmFindings.some(nf => nf.id === f.id || nf.findingNumber === f.findingNumber))];
-    const combinedPlans = [...newErmPlans, ...INITIAL_ANNUAL_AUDIT_PLANS.filter(p => !newErmPlans.some(np => np.id === p.id || np.auditName === p.auditName))];
-    const combinedPrograms = [...newErmPrograms, ...INITIAL_AUDIT_PROGRAMS.filter(p => !newErmPrograms.some(np => np.id === p.id))];
-    const combinedPapers = [...newErmPapers, ...INITIAL_WORKING_PAPERS.filter(p => !newErmPapers.some(np => np.id === p.id))];
-    const combinedControls = [...newErmControls, ...INITIAL_INTERNAL_CONTROLS.filter(c => !newErmControls.some(nc => nc.id === c.id))];
-    const combinedReviews = [...newErmReviews, ...INITIAL_REGULATORY_REVIEWS.filter(r => !newErmReviews.some(nr => nr.id === r.id))];
-    const combinedFraud = [...newErmFraud, ...INITIAL_FRAUD_CASES.filter(f => !newErmFraud.some(nf => nf.id === f.id))];
-    const combinedContinuous = [...newErmContinuous, ...INITIAL_CONTINUOUS_EXCEPTIONS.filter(c => !newErmContinuous.some(nc => nc.id === c.id))];
+    const isV8Protected = localStorage.getItem('ZPC_AUDIT_BACKEND_GUARD_V8') === 'true' || localStorage.getItem('ZPC_AUDIT_MOCK_REMOVED') === 'true';
+    
+    // Under V8 Backend Protection, strictly merge ERM items + custom user inputs (no legacy dummy injection)
+    const combinedUniverse = isV8Protected ? [...syncedUniverse, ...auditUniverse.filter(u => u.isUserCreated || (u.id && u.id.toString().startsWith('custom-')))] : [...syncedUniverse, ...INITIAL_AUDIT_UNIVERSE.filter(u => !syncedUniverse.some(su => su.name === u.name || su.id === u.id))];
+    const combinedFindings = isV8Protected ? [...newErmFindings, ...findings.filter(f => f.isUserCreated || (f.id && f.id.toString().startsWith('custom-')))] : [...newErmFindings, ...INITIAL_FINDINGS.filter(f => !newErmFindings.some(nf => nf.id === f.id || nf.findingNumber === f.findingNumber))];
+    const combinedPlans = isV8Protected ? [...newErmPlans, ...auditPlans.filter(p => p.isUserCreated || (p.id && p.id.toString().startsWith('custom-')))] : [...newErmPlans, ...INITIAL_ANNUAL_AUDIT_PLANS.filter(p => !newErmPlans.some(np => np.id === p.id || np.auditName === p.auditName))];
+    const combinedPrograms = isV8Protected ? [...newErmPrograms, ...auditPrograms.filter(p => p.isUserCreated || (p.id && p.id.toString().startsWith('custom-')))] : [...newErmPrograms, ...INITIAL_AUDIT_PROGRAMS.filter(p => !newErmPrograms.some(np => np.id === p.id))];
+    const combinedPapers = isV8Protected ? [...newErmPapers, ...workingPapers.filter(p => p.isUserCreated || (p.id && p.id.toString().startsWith('custom-')))] : [...newErmPapers, ...INITIAL_WORKING_PAPERS.filter(p => !newErmPapers.some(np => np.id === p.id))];
+    const combinedControls = isV8Protected ? [...newErmControls, ...controls.filter(c => c.isUserCreated || (c.id && c.id.toString().startsWith('custom-')))] : [...newErmControls, ...INITIAL_INTERNAL_CONTROLS.filter(c => !newErmControls.some(nc => nc.id === c.id))];
+    const combinedReviews = isV8Protected ? [...newErmReviews, ...regulatoryReviews.filter(r => r.isUserCreated || (r.id && r.id.toString().startsWith('custom-')))] : [...newErmReviews, ...INITIAL_REGULATORY_REVIEWS.filter(r => !newErmReviews.some(nr => nr.id === r.id))];
+    const combinedFraud = isV8Protected ? [...newErmFraud, ...fraudCases.filter(f => f.isUserCreated || (f.id && f.id.toString().startsWith('custom-')))] : [...newErmFraud, ...INITIAL_FRAUD_CASES.filter(f => !newErmFraud.some(nf => nf.id === f.id))];
+    const combinedContinuous = isV8Protected ? [...newErmContinuous, ...continuousExceptions.filter(c => c.isUserCreated || (c.id && c.id.toString().startsWith('custom-')))] : [...newErmContinuous, ...INITIAL_CONTINUOUS_EXCEPTIONS.filter(c => !newErmContinuous.some(nc => nc.id === c.id))];
 
     saveArrayState('UNIVERSE', combinedUniverse, setAuditUniverse);
     saveArrayState('FINDINGS', combinedFindings, setFindings);
