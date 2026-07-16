@@ -72,6 +72,48 @@ export const AuditProvider = ({ children }) => {
     return null;
   });
 
+  // Sync with active AWS Cognito session on startup
+  useEffect(() => {
+    const checkCognitoSession = async () => {
+      try {
+        const session = await fetchAuthSession();
+        if (session && session.tokens && session.tokens.accessToken) {
+          const attributes = await fetchUserAttributes();
+          const roleName = attributes['custom:role'] || 'Auditor';
+          const role = ROLES_LIST.find(r => r.id.toLowerCase() === roleName.toLowerCase() || r.name.toLowerCase().includes(roleName.toLowerCase())) || ROLES_LIST[3];
+          const found = {
+            id: attributes.sub || `usr-${Date.now()}`,
+            name: attributes.name || attributes.email?.split('@')[0] || 'User',
+            email: attributes.email,
+            role: role.id,
+            department: attributes['custom:department'] || 'Internal Audit & Governance',
+            appScope: attributes['custom:app_scope'] || 'both',
+            cognitoSub: attributes.sub
+          };
+          const userObj = {
+            name: found.name,
+            title: `${found.department} (${role.name})`,
+            email: found.email,
+            roleId: role.id
+          };
+          setCurrentUser(userObj);
+          setCurrentRole(role);
+          setIsAuthenticated(true);
+          const sessionPayload = {
+            token: session.tokens.accessToken.toString(),
+            user: found
+          };
+          localStorage.setItem('zpc_auth_session', JSON.stringify(sessionPayload));
+        }
+      } catch (e) {
+        // Not signed in via Cognito storage
+      }
+    };
+    if (!isAuthenticated) {
+      checkCognitoSession();
+    }
+  }, []);
+
   // Intercept Cross-App SSO URL parameters or listen for storage sync on mount
   useEffect(() => {
     const searchString = window.location.search || (window.location.hash.includes('?') ? window.location.hash.split('?')[1] : '');
@@ -128,11 +170,9 @@ export const AuditProvider = ({ children }) => {
       localStorage.removeItem('zpc_pencom_funds');
       localStorage.removeItem('zpc_pencom_risks');
       localStorage.removeItem('zpc_pencom_losses');
-      localStorage.removeItem('zpc_pencom_audit');
       localStorage.setItem('ZPC_AUDIT_CLEAN_GUARD_V13_TOTAL_PURGE', 'true');
       localStorage.setItem('ZPC_ERM_CLEAN_GUARD_V13_TOTAL_PURGE', 'true');
       localStorage.setItem('ZPC_ERM_CLEAN_GUARD_V14_PENCOM_PURGE', 'true');
-      window.location.reload();
     }
   }, []);
 
@@ -278,13 +318,59 @@ export const AuditProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const { isSignedIn, nextStep } = await signIn({ username: email, password });
+      let signInResult;
+      try {
+        signInResult = await signIn({ username: email, password });
+      } catch (err) {
+        if (err.name === 'UserAlreadyAuthenticatedException' || err.message?.includes('already a signed in user')) {
+          try {
+            const session = await fetchAuthSession();
+            const attributes = await fetchUserAttributes();
+            if (attributes && (attributes.email?.toLowerCase() === email.toLowerCase() || !email)) {
+              const roleName = attributes['custom:role'] || 'Auditor';
+              const role = ROLES_LIST.find(r => r.id.toLowerCase() === roleName.toLowerCase() || r.name.toLowerCase().includes(roleName.toLowerCase())) || ROLES_LIST[3];
+              const found = {
+                id: attributes.sub || `usr-${Date.now()}`,
+                name: attributes.name || email.split('@')[0],
+                email: attributes.email || email,
+                role: role.id,
+                department: attributes['custom:department'] || 'Internal Audit & Governance',
+                appScope: attributes['custom:app_scope'] || 'both',
+                cognitoSub: attributes.sub
+              };
+              const userObj = {
+                name: found.name,
+                title: `${found.department} (${role.name})`,
+                email: found.email,
+                roleId: role.id
+              };
+              setCurrentUser(userObj);
+              setCurrentRole(role);
+              setIsAuthenticated(true);
+              const sessionPayload = {
+                token: session.tokens?.accessToken?.toString() || `jwt-cognito-${found.cognitoSub}`,
+                user: found
+              };
+              localStorage.setItem('zpc_auth_session', JSON.stringify(sessionPayload));
+              addNotification('SSO Authentication Successful', `Welcome back, ${found.name}. Active Cognito RBAC session initialized.`, 'success');
+              return { success: true };
+            }
+          } catch (attrErr) { /* ignore and sign out */ }
+          
+          await signOut();
+          signInResult = await signIn({ username: email, password });
+        } else {
+          throw err;
+        }
+      }
+
+      const { isSignedIn, nextStep } = signInResult;
       
       if (nextStep?.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED') {
         return { success: false, challenge: 'NEW_PASSWORD_REQUIRED', email };
       }
 
-      if (isSignedIn) {
+      if (isSignedIn || nextStep?.signInStep === 'DONE') {
         const session = await fetchAuthSession();
         const attributes = await fetchUserAttributes();
         
