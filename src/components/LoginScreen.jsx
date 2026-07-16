@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AuditContext } from '../context/AuditContext';
+import { ForceChangePassword } from './ForceChangePassword';
 
 const LoginScreen = () => {
   const { login, clientProfile } = useContext(AuditContext);
@@ -7,6 +8,7 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [challengeEmail, setChallengeEmail] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,11 +16,20 @@ const LoginScreen = () => {
     setIsLoading(true);
 
     const result = await login(email, password);
+    if (result.challenge === 'NEW_PASSWORD_REQUIRED') {
+      setChallengeEmail(email);
+      setIsLoading(false);
+      return;
+    }
     if (!result.success) {
       setError(result.error);
     }
     setIsLoading(false);
   };
+
+  if (challengeEmail) {
+    return <ForceChangePassword email={challengeEmail} onComplete={() => window.location.reload()} />;
+  }
 
   return (
     <div style={{

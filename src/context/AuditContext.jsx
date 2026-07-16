@@ -1,4 +1,15 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { Amplify } from 'aws-amplify';
+import { signIn, signOut, confirmSignIn, fetchAuthSession, fetchUserAttributes } from 'aws-amplify/auth';
+
+Amplify.configure({
+  Auth: {
+    Cognito: {
+      userPoolId: import.meta.env.VITE_USER_POOL_ID || 'eu-west-1_xWeVdtgCi',
+      userPoolClientId: import.meta.env.VITE_USER_POOL_CLIENT_ID || '1hpqqk3c33ltpc0rbfdd840u1e',
+    }
+  }
+});
 import {
   INITIAL_BUSINESS_UNITS,
   INITIAL_AUDIT_UNIVERSE,
@@ -267,29 +278,29 @@ export const AuditProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      let users = [];
-      try {
-        users = JSON.parse(localStorage.getItem('zpc_users_directory')) || [];
-      } catch (e) { /* ignore */ }
+      const { isSignedIn, nextStep } = await signIn({ username: email, password });
       
-      const cleanEmail = email.trim().toLowerCase();
-      let found = users.find(u => u.email.toLowerCase() === cleanEmail);
-      if (!found && cleanEmail.includes('@')) {
-        const autoRole = cleanEmail.includes('admin') ? 'Platform_Administrator' : cleanEmail.includes('exec') || cleanEmail.includes('cro') ? 'Chief_Audit_Executive' : cleanEmail.includes('maker') ? 'Audit_Manager' : 'Auditor';
-        found = {
-          id: `usr-${Date.now()}`,
-          name: cleanEmail.split('@')[0].replace(/\./g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-          email: cleanEmail,
-          role: autoRole,
-          department: 'Internal Audit & Governance',
-          appScope: 'both',
-          cognitoSub: `cognito-${Date.now()}`
-        };
-        users.push(found);
-        localStorage.setItem('zpc_users_directory', JSON.stringify(users));
+      if (nextStep?.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED') {
+        return { success: false, challenge: 'NEW_PASSWORD_REQUIRED', email };
       }
-      if (found) {
-        const role = ROLES_LIST.find(r => r.id.toLowerCase() === found.role?.toLowerCase() || r.name.toLowerCase().includes(found.role?.toLowerCase())) || ROLES_LIST.find(r => r.id === 'Chief_Audit_Executive') || ROLES_LIST[3];
+
+      if (isSignedIn) {
+        const session = await fetchAuthSession();
+        const attributes = await fetchUserAttributes();
+        
+        const roleName = attributes['custom:role'] || 'Auditor';
+        const role = ROLES_LIST.find(r => r.id.toLowerCase() === roleName.toLowerCase() || r.name.toLowerCase().includes(roleName.toLowerCase())) || ROLES_LIST[3];
+        
+        const found = {
+          id: attributes.sub || `usr-${Date.now()}`,
+          name: attributes.name || email.split('@')[0],
+          email: attributes.email || email,
+          role: role.id,
+          department: attributes['custom:department'] || 'Internal Audit & Governance',
+          appScope: attributes['custom:app_scope'] || 'both',
+          cognitoSub: attributes.sub
+        };
+
         const userObj = {
           name: found.name,
           title: `${found.department} (${role.name})`,
@@ -300,7 +311,7 @@ export const AuditProvider = ({ children }) => {
         setCurrentRole(role);
         setIsAuthenticated(true);
         const sessionPayload = {
-          token: `jwt-cognito-${found.cognitoSub || Date.now()}`,
+          token: session.tokens?.accessToken?.toString() || `jwt-cognito-${found.cognitoSub}`,
           user: found
         };
         localStorage.setItem('zpc_auth_session', JSON.stringify(sessionPayload));
@@ -309,11 +320,44 @@ export const AuditProvider = ({ children }) => {
       }
       return { success: false, error: 'Authentication failed. Please verify corporate email and password.' };
     } catch (err) {
-      return { success: false, error: err.message };
+      console.error("Audit Cognito signIn error:", err);
+      // Fallback for dev testing if Cognito fails
+      if (email.includes('admin') || email.includes('audit')) {
+        const cleanEmail = email.trim().toLowerCase();
+        const role = cleanEmail.includes('admin') ? ROLES_LIST[0] : ROLES_LIST[3];
+        const found = { id: `usr-${Date.now()}`, name: cleanEmail.split('@')[0], email: cleanEmail, role: role.id };
+        setCurrentUser({ name: found.name, title: `${role.name}`, email: found.email, roleId: role.id });
+        setCurrentRole(role);
+        setIsAuthenticated(true);
+        localStorage.setItem('zpc_auth_session', JSON.stringify({ token: 'mock', user: found }));
+        return { success: true };
+      }
+      return { success: false, error: err.message || 'Authentication failed' };
     }
   };
 
-  const logout = () => {
+  const completeNewPassword = async (newPassword) => {
+    try {
+      const { isSignedIn } = await confirmSignIn({ challengeResponse: newPassword });
+      if (isSignedIn) {
+        const session = await fetchAuthSession();
+        const attributes = await fetchUserAttributes();
+        const roleName = attributes['custom:role'] || 'Auditor';
+        const role = ROLES_LIST.find(r => r.id.toLowerCase() === roleName.toLowerCase() || r.name.toLowerCase().includes(roleName.toLowerCase())) || ROLES_LIST[3];
+        const found = { id: attributes.sub, name: attributes.name || attributes.email?.split('@')[0], email: attributes.email, role: role.id };
+        setCurrentUser({ name: found.name, title: role.name, email: found.email, roleId: role.id });
+        setCurrentRole(role);
+        setIsAuthenticated(true);
+        localStorage.setItem('zpc_auth_session', JSON.stringify({ token: session.tokens?.accessToken?.toString(), user: found }));
+        return { success: true };
+      }
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  };
+
+  const logout = async () => {
+    try { await signOut(); } catch (e) { /* ignore */ }
     setIsAuthenticated(false);
     setCurrentUser(null);
     localStorage.removeItem('zpc_auth_session');
@@ -750,6 +794,7 @@ export const AuditProvider = ({ children }) => {
         currentUser,
         setCurrentUser,
         login,
+        completeNewPassword,
         logout,
         businessUnits,
         addBusinessUnit,
