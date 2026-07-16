@@ -17,6 +17,12 @@ import {
 export const AuditContext = createContext();
 
 export const AuditProvider = ({ children }) => {
+  // V16 Mandatory Login Reset: Wipe old local sessions so EVERY user starts at the login page cleanly
+  if (!localStorage.getItem('ZPC_AUDIT_CLEAN_GUARD_V16_COGNITO_ONLY')) {
+    localStorage.removeItem('zpc_auth_session');
+    localStorage.setItem('ZPC_AUDIT_CLEAN_GUARD_V16_COGNITO_ONLY', 'true');
+  }
+
   const [clientProfile, setClientProfile] = useState('Zenith Pension Custodian Limited (ZPC)');
   const [currency, setCurrency] = useState('NGN');
   const [currentRole, setCurrentRole] = useState(() => {
