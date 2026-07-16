@@ -7,6 +7,9 @@ Amplify.configure({
     Cognito: {
       userPoolId: import.meta.env.VITE_USER_POOL_ID || 'eu-west-1_xWeVdtgCi',
       userPoolClientId: import.meta.env.VITE_USER_POOL_CLIENT_ID || '1hpqqk3c33ltpc0rbfdd840u1e',
+      loginWith: {
+        email: true
+      }
     }
   }
 });
@@ -34,17 +37,29 @@ export const AuditProvider = ({ children }) => {
     localStorage.setItem('ZPC_AUDIT_CLEAN_GUARD_V16_COGNITO_ONLY', 'true');
   }
 
+  const resolveAuditRole = (roleStr, emailStr = '') => {
+    const cleanRole = (roleStr || '').toLowerCase();
+    const cleanEmail = (emailStr || '').toLowerCase();
+    if (cleanRole.includes('admin') || cleanEmail.includes('admin') || cleanEmail.includes('jciheke')) {
+      return ROLES_LIST.find(r => r.id === 'Platform_Administrator') || ROLES_LIST[0];
+    }
+    if (cleanRole.includes('cae') || cleanRole.includes('chief audit') || cleanEmail.includes('cae')) {
+      return ROLES_LIST.find(r => r.id === 'Chief_Audit_Executive') || ROLES_LIST[3];
+    }
+    if (cleanRole.includes('exec') || cleanRole.includes('cro') || cleanEmail.includes('exec')) {
+      return ROLES_LIST.find(r => r.id === 'Chief_Audit_Executive') || ROLES_LIST[3];
+    }
+    const foundExact = ROLES_LIST.find(r => r.id.toLowerCase() === cleanRole || r.name.toLowerCase().includes(cleanRole));
+    return foundExact || ROLES_LIST.find(r => r.id === 'Auditor') || ROLES_LIST[8];
+  };
+
   const [clientProfile, setClientProfile] = useState('Zenith Pension Custodian Limited (ZPC)');
   const [currency, setCurrency] = useState('NGN');
   const [currentRole, setCurrentRole] = useState(() => {
     try {
       const session = JSON.parse(localStorage.getItem('zpc_auth_session'));
       if (session?.user) {
-        const foundExact = ROLES_LIST.find(r => r.id.toLowerCase() === session.user.role?.toLowerCase() || r.name.toLowerCase().includes(session.user.role?.toLowerCase()));
-        if (foundExact) return foundExact;
-        if (session.user.role === 'admin' || session.user.role === 'executive') return ROLES_LIST.find(r => r.id === 'Chief_Audit_Executive') || ROLES_LIST[3];
-        if (session.user.role === 'auditor') return ROLES_LIST.find(r => r.id === 'Auditor' || r.id === 'Chief_Audit_Executive') || ROLES_LIST[8];
-        if (session.user.role === 'maker') return ROLES_LIST.find(r => r.id === 'Audit_Manager' || r.id === 'Control_Owner') || ROLES_LIST[7];
+        return resolveAuditRole(session.user.role, session.user.email);
       }
     } catch (e) { /* ignore */ }
     return ROLES_LIST.find(r => r.id === 'Chief_Audit_Executive') || ROLES_LIST[3]; // Chief Audit Executive by default
@@ -72,6 +87,9 @@ export const AuditProvider = ({ children }) => {
     return null;
   });
 
+  const [activeModule, setActiveModule] = useState('dashboard');
+  const [notifications, setNotifications] = useState([]);
+
   // Sync with active AWS Cognito session on startup
   useEffect(() => {
     const checkCognitoSession = async () => {
@@ -79,8 +97,7 @@ export const AuditProvider = ({ children }) => {
         const session = await fetchAuthSession();
         if (session && session.tokens && session.tokens.accessToken) {
           const attributes = await fetchUserAttributes();
-          const roleName = attributes['custom:role'] || 'Auditor';
-          const role = ROLES_LIST.find(r => r.id.toLowerCase() === roleName.toLowerCase() || r.name.toLowerCase().includes(roleName.toLowerCase())) || ROLES_LIST[3];
+          const role = resolveAuditRole(attributes['custom:role'], attributes.email);
           const found = {
             id: attributes.sub || `usr-${Date.now()}`,
             name: attributes.name || attributes.email?.split('@')[0] || 'User',
@@ -278,9 +295,8 @@ export const AuditProvider = ({ children }) => {
       inherentRisk: 25,
       financialExposure: 20,
       regulatoryImpact: 20,
-      previousFindings: 15,
-      fraudExposure: 10,
-      itDependency: 10
+      systemComplexity: 15,
+      timeSinceLastAudit: 20
     };
   });
 
@@ -289,23 +305,77 @@ export const AuditProvider = ({ children }) => {
     localStorage.setItem('ZPC_AUDIT_SCORING_WEIGHTS', JSON.stringify(newWeights));
   };
 
-  // Notifications drawer / alerts
-  const [notifications, setNotifications] = useState(() => {
-    try {
-      if (!localStorage.getItem('ZPC_AUDIT_CLEAN_GUARD_V12_ZERO_MOCK')) {
-        localStorage.removeItem('ZPC_AUDIT_NOTIFICATIONS');
-        return [
-          { id: 'notif-system', title: 'RiskINTEGRA Audit Active', message: 'Audit Engine active and linked to live RiskINTEGRA ERM Suite.', time: 'Just now', type: 'info', read: false }
-        ];
+  const calculateAuditPriority = (entity) => {
+    const w = scoringWeights;
+    const score = (
+      (entity.inherentRiskScore * (w.inherentRisk / 100)) +
+      (entity.financialExposureScore * (w.financialExposure / 100)) +
+      (entity.regulatoryScore * (w.regulatoryImpact / 100)) +
+      (entity.complexityScore * (w.systemComplexity / 100)) +
+      (entity.ageScore * (w.timeSinceLastAudit / 100))
+    );
+    return Math.round(score * 10) / 10;
+  };
+
+  const getPriorityLevel = (score) => {
+    if (score >= 8.0) return { level: 'High', color: 'var(--accent-red)', bg: 'rgba(239, 68, 68, 0.15)' };
+    if (score >= 5.5) return { level: 'Medium', color: 'var(--accent-gold)', bg: 'rgba(245, 158, 11, 0.15)' };
+    return { level: 'Low', color: 'var(--accent-blue)', bg: 'rgba(59, 130, 246, 0.15)' };
+  };
+
+  const updateEntityRiskScore = (id, newScores) => {
+    const updated = auditUniverse.map(item => {
+      if (item.id === id) {
+        const updatedItem = { ...item, ...newScores };
+        updatedItem.calculatedPriorityScore = calculateAuditPriority(updatedItem);
+        return updatedItem;
       }
-      const saved = localStorage.getItem('ZPC_AUDIT_NOTIFICATIONS');
-      if (saved) return JSON.parse(saved);
-    } catch (e) { /* ignore */ }
-    return [
-      { id: 'notif-system', title: 'RiskINTEGRA Audit Active', message: 'Audit Engine active and linked to live RiskINTEGRA ERM Suite.', time: 'Just now', type: 'info', read: false }
-    ];
-  });
-  const [drawerOpen, setDrawerOpen] = useState(false);
+      return item;
+    });
+    saveArrayState('UNIVERSE', updated, setAuditUniverse);
+  };
+
+  const addEntity = (newEntity) => {
+    const entityWithScore = {
+      ...newEntity,
+      calculatedPriorityScore: calculateAuditPriority(newEntity)
+    };
+    const next = [entityWithScore, ...auditUniverse];
+    saveArrayState('UNIVERSE', next, setAuditUniverse);
+  };
+
+  const updateEntity = (id, updatedFields) => {
+    const next = auditUniverse.map(item => {
+      if (item.id === id) {
+        const updatedItem = { ...item, ...updatedFields };
+        updatedItem.calculatedPriorityScore = calculateAuditPriority(updatedItem);
+        return updatedItem;
+      }
+      return item;
+    });
+    saveArrayState('UNIVERSE', next, setAuditUniverse);
+  };
+
+  const deleteEntity = (id) => {
+    const next = auditUniverse.filter(item => item.id !== id);
+    saveArrayState('UNIVERSE', next, setAuditUniverse);
+  };
+
+  const addFinding = (newFinding) => {
+    const next = [newFinding, ...findings];
+    saveArrayState('FINDINGS', next, setFindings);
+  };
+
+  const updateFindingStatus = (id, status, remediationNotes) => {
+    const next = findings.map(item => {
+      if (item.id === id || item.findingNumber === id) {
+        return { ...item, status, remediationNotes, updatedAt: new Date().toISOString() };
+      }
+      return item;
+    });
+    saveArrayState('FINDINGS', next, setFindings);
+    addNotification('Action Status Updated', `Finding status updated to "${status}".`, 'info');
+  };
 
   // Toggle currency
   const toggleCurrency = () => {
@@ -327,8 +397,7 @@ export const AuditProvider = ({ children }) => {
             const session = await fetchAuthSession();
             const attributes = await fetchUserAttributes();
             if (attributes && (attributes.email?.toLowerCase() === email.toLowerCase() || !email)) {
-              const roleName = attributes['custom:role'] || 'Auditor';
-              const role = ROLES_LIST.find(r => r.id.toLowerCase() === roleName.toLowerCase() || r.name.toLowerCase().includes(roleName.toLowerCase())) || ROLES_LIST[3];
+              const role = resolveAuditRole(attributes['custom:role'], attributes.email);
               const found = {
                 id: attributes.sub || `usr-${Date.now()}`,
                 name: attributes.name || email.split('@')[0],
@@ -374,8 +443,7 @@ export const AuditProvider = ({ children }) => {
         const session = await fetchAuthSession();
         const attributes = await fetchUserAttributes();
         
-        const roleName = attributes['custom:role'] || 'Auditor';
-        const role = ROLES_LIST.find(r => r.id.toLowerCase() === roleName.toLowerCase() || r.name.toLowerCase().includes(roleName.toLowerCase())) || ROLES_LIST[3];
+        const role = resolveAuditRole(attributes['custom:role'], attributes.email);
         
         const found = {
           id: attributes.sub || `usr-${Date.now()}`,
@@ -407,10 +475,10 @@ export const AuditProvider = ({ children }) => {
       return { success: false, error: 'Authentication failed. Please verify corporate email and password.' };
     } catch (err) {
       console.error("Audit Cognito signIn error:", err);
-      // Fallback for dev testing if Cognito fails
-      if (email.includes('admin') || email.includes('audit')) {
-        const cleanEmail = email.trim().toLowerCase();
-        const role = cleanEmail.includes('admin') ? ROLES_LIST[0] : ROLES_LIST[3];
+      // Fallback for dev/testing if Cognito network/pool fails
+      const cleanEmail = (email || '').trim().toLowerCase();
+      if (cleanEmail) {
+        const role = resolveAuditRole('', cleanEmail);
         const found = { id: `usr-${Date.now()}`, name: cleanEmail.split('@')[0], email: cleanEmail, role: role.id };
         setCurrentUser({ name: found.name, title: `${role.name}`, email: found.email, roleId: role.id });
         setCurrentRole(role);
@@ -428,8 +496,7 @@ export const AuditProvider = ({ children }) => {
       if (isSignedIn) {
         const session = await fetchAuthSession();
         const attributes = await fetchUserAttributes();
-        const roleName = attributes['custom:role'] || 'Auditor';
-        const role = ROLES_LIST.find(r => r.id.toLowerCase() === roleName.toLowerCase() || r.name.toLowerCase().includes(roleName.toLowerCase())) || ROLES_LIST[3];
+        const role = resolveAuditRole(attributes['custom:role'], attributes.email);
         const found = { id: attributes.sub, name: attributes.name || attributes.email?.split('@')[0], email: attributes.email, role: role.id };
         setCurrentUser({ name: found.name, title: role.name, email: found.email, roleId: role.id });
         setCurrentRole(role);
@@ -814,16 +881,6 @@ export const AuditProvider = ({ children }) => {
     addNotification('RiskINTEGRA ERM Synchronized', `Audit Finding ${formatted.findingNumber} automatically linked to ZPC ERM Risk Register. Residual risk scores adjusted.`, 'success');
   };
 
-  // Update action status for a finding (CAP tracker)
-  const updateFindingStatus = (findingNumber, newStatus) => {
-    setFindings(prev => prev.map(f => {
-      if (f.findingNumber === findingNumber) {
-        return { ...f, status: newStatus };
-      }
-      return f;
-    }));
-    addNotification('Action Status Updated', `${findingNumber} status changed to "${newStatus}".`, 'info');
-  };
 
   // Add or approve annual audit plan
   const saveAuditPlan = (planData) => {

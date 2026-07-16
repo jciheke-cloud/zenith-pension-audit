@@ -28,7 +28,7 @@ const LoginScreen = () => {
   };
 
   if (challengeEmail) {
-    return <ForceChangePassword email={challengeEmail} onComplete={() => window.location.reload()} />;
+    return <ForceChangePassword email={challengeEmail} onComplete={() => setChallengeEmail(null)} />;
   }
 
   return (
