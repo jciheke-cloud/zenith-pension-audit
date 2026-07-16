@@ -100,48 +100,45 @@ export const AuditProvider = ({ children }) => {
       );
     }
 
-    // V8 Backend Protection Guard: Enterprise storage schema guard, zero-mock enforcement & quota write protection
-    if (!localStorage.getItem('ZPC_AUDIT_BACKEND_GUARD_V8')) {
-      const keysToWipe = ['PLANS', 'PROGRAMS', 'PAPERS', 'FINDINGS', 'CONTROLS', 'REVIEWS', 'FRAUD', 'CONTINUOUS', 'UNIVERSE'];
+    // V12 Zero-Mock Protection Guard: Complete institutional storage cleanup on upgrade
+    if (!localStorage.getItem('ZPC_AUDIT_CLEAN_GUARD_V12_ZERO_MOCK')) {
+      const keysToWipe = ['BUSINESS_UNITS', 'PLANS', 'PROGRAMS', 'PAPERS', 'FINDINGS', 'CONTROLS', 'REVIEWS', 'FRAUD', 'CONTINUOUS', 'UNIVERSE'];
       keysToWipe.forEach(k => localStorage.removeItem(`ZPC_AUDIT_STATE_${k}`));
-      localStorage.setItem('ZPC_AUDIT_BACKEND_GUARD_V8', 'true');
-      localStorage.setItem('ZPC_AUDIT_WIPED_MOCKS_V8', 'true');
-      localStorage.setItem('ZPC_AUDIT_MOCK_REMOVED', 'true');
-      syncFromErmSuite(true);
+      localStorage.removeItem('ZPC_AUDIT_NOTIFICATIONS');
+      localStorage.removeItem('ZPC_AUDIT_BOOTSTRAPPED_ERM_V8');
+      localStorage.removeItem('ZPC_AUDIT_BACKEND_GUARD_V8');
+      localStorage.removeItem('ZPC_ERM_RISK_REGISTER');
+      localStorage.setItem('ZPC_AUDIT_CLEAN_GUARD_V12_ZERO_MOCK', 'true');
       window.location.reload();
-    } else {
-      // Auto-bootstrap ERM bridge data if missing or corrupted
-      const isBootstrapped = localStorage.getItem('ZPC_AUDIT_BOOTSTRAPPED_ERM_V8');
-      if (!isBootstrapped) {
-        setTimeout(() => {
-          syncFromErmSuite(false);
-          localStorage.setItem('ZPC_AUDIT_BOOTSTRAPPED_ERM_V8', 'true');
-        }, 100);
-      }
     }
   }, []);
   
-  // V8 Backend Schema Guard: Validates structure and ensures no legacy dummy items infiltrate live state
+  // V12 Backend Schema Guard: Ensures zero mock items or old cached state persist
   const loadState = (key, initial) => {
     try {
+      if (!localStorage.getItem('ZPC_AUDIT_CLEAN_GUARD_V12_ZERO_MOCK')) {
+        localStorage.removeItem(`ZPC_AUDIT_STATE_${key}`);
+        return initial;
+      }
       const saved = localStorage.getItem(`ZPC_AUDIT_STATE_${key}`);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          // Under V8 zero-mock protection, strip out any residual legacy dummy items (au-101, au-107, etc.)
-          if (localStorage.getItem('ZPC_AUDIT_BACKEND_GUARD_V8') === 'true' && key !== 'BUSINESS_UNITS') {
-            const cleaned = parsed.filter(item => {
-              const id = String(item.id || item.findingNumber || item.code || '');
-              const isLegacyDummy = id.startsWith('au-10') || id.startsWith('au-11') || id.startsWith('INITIAL_');
-              return !isLegacyDummy;
-            });
-            return cleaned.length > 0 ? cleaned : initial;
+          // Check for any legacy or mock patterns anywhere across any cached items
+          const hasLegacyMocks = parsed.some(item => {
+            const id = String(item.id || item.findingNumber || item.code || item.unitId || '');
+            const name = String(item.name || item.title || item.processName || item.observation || item.auditName || '');
+            return id.startsWith('au-10') || id.startsWith('au-11') || id.startsWith('bu-') || id.startsWith('INITIAL_') || id.startsWith('ERM-UNIV-') || id.startsWith('FND-2026-00') || id.startsWith('FND-ERM-00') || id.startsWith('PLAN-2026-00') || id.startsWith('PLAN-ERM-') || id.startsWith('PROG-2026-00') || id.startsWith('WP-2026-00') || id.startsWith('CTRL-2026-00') || id.startsWith('REV-2026-00') || id.startsWith('FRD-2026-00') || id.startsWith('CONT-2026-00') || name.includes('Mock') || name.includes('Demo') || name.includes('Sample') || name.includes('Delayed dividend') || name.includes('Unreconciled Cash Sweep');
+          });
+          if (hasLegacyMocks) {
+            localStorage.removeItem(`ZPC_AUDIT_STATE_${key}`);
+            return initial;
           }
           return parsed;
         }
       }
     } catch (e) {
-      console.warn(`[V8 Storage Guard] State recovery initiated for ${key}:`, e);
+      console.warn(`[V12 Storage Guard] State recovery initiated for ${key}:`, e);
     }
     return initial;
   };
@@ -205,6 +202,12 @@ export const AuditProvider = ({ children }) => {
   // Notifications drawer / alerts
   const [notifications, setNotifications] = useState(() => {
     try {
+      if (!localStorage.getItem('ZPC_AUDIT_CLEAN_GUARD_V12_ZERO_MOCK')) {
+        localStorage.removeItem('ZPC_AUDIT_NOTIFICATIONS');
+        return [
+          { id: 'notif-system', title: 'RiskINTEGRA Audit Active', message: 'Audit Engine active and linked to live RiskINTEGRA ERM Suite.', time: 'Just now', type: 'info', read: false }
+        ];
+      }
       const saved = localStorage.getItem('ZPC_AUDIT_NOTIFICATIONS');
       if (saved) return JSON.parse(saved);
     } catch (e) { /* ignore */ }
