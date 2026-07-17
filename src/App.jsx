@@ -26,7 +26,15 @@ import UserGuidePage from './pages/UserGuidePage';
 import CbnDmoMacroTicker from './components/CbnDmoMacroTicker';
 
 const App = () => {
-  const { isAuthenticated } = useContext(AuditContext);
+  const { isAuthenticated, loading } = useContext(AuditContext);
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark, #0f172a)', color: 'white', fontFamily: "'Inter', sans-serif" }}>
+        Loading Internal Audit Suite...
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
