@@ -11,7 +11,7 @@ const AppSwitcherDropdown = () => {
   const [ermUrl, setErmUrl] = useState(() => {
     const fromStorage = localStorage.getItem('ZPC_ERM_URL_OVERRIDE');
     if (fromStorage && !fromStorage.includes('localhost') && !fromStorage.includes('127.0.0.1')) return fromStorage;
-    return import.meta.env.VITE_ERM_APP_URL || window.location.origin;
+    return import.meta.env.VITE_ERM_APP_URL || 'https://zpc.riskintegra-erm.nayandjoerisktechconsulting.com/';
   });
   const [inputUrl, setInputUrl] = useState(ermUrl);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -43,7 +43,7 @@ const AppSwitcherDropdown = () => {
   const handleSwitchToErm = () => {
     let targetBase = ermUrl;
     if (!targetBase || targetBase.includes('localhost') || targetBase.includes('127.0.0.1')) {
-      targetBase = import.meta.env.VITE_ERM_APP_URL || window.location.origin;
+      targetBase = import.meta.env.VITE_ERM_APP_URL || 'https://zpc.riskintegra-erm.nayandjoerisktechconsulting.com/';
     }
     const roleId = currentUser?.roleId || currentRole?.id || 'cae';
     const target = `${targetBase}?sso_role=${encodeURIComponent(roleId)}&sso_token=riskintegra_auth_bridge&source=audit#/`;
