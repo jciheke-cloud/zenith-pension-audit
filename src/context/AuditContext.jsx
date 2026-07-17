@@ -98,7 +98,10 @@ export const AuditProvider = ({ children }) => {
   const [activeModule, setActiveModule] = useState('dashboard');
   const [notifications, setNotifications] = useState([]);
 
-  // Sync with active AWS Cognito session on startup
+  // Helper: small delay for Amplify v6 token persistence race condition
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  // Sync with active AWS Cognito session on startup (silent)
   useEffect(() => {
     const checkCognitoSession = async () => {
       console.log("[AuditContext] Starting Cognito session check...");
@@ -106,16 +109,26 @@ export const AuditProvider = ({ children }) => {
         const session = await fetchAuthSession();
         if (session && session.tokens && session.tokens.accessToken) {
           console.log("[AuditContext] Cognito session token retrieved. Fetching user attributes...");
-          const attributes = await fetchUserAttributes();
-          const role = resolveAuditRole(attributes['custom:role'], attributes.email);
+          let attributes = {};
+          try {
+            attributes = await fetchUserAttributes();
+          } catch (attrErr) {
+            console.warn("[AuditContext] fetchUserAttributes failed on startup, using token payload:", attrErr);
+          }
+
+          const payload = session.tokens.idToken?.payload || session.tokens.accessToken?.payload || {};
+          const userEmail = attributes.email || payload.email || payload['cognito:username'] || '';
+          const rawRole = attributes['custom:role'] || (session.tokens.accessToken?.payload?.['cognito:groups'] || [])[0] || '';
+          const role = resolveAuditRole(rawRole, userEmail);
+
           const found = {
-            id: attributes.sub || `usr-${Date.now()}`,
-            name: attributes.name || attributes.email?.split('@')[0] || 'User',
-            email: attributes.email,
+            id: attributes.sub || payload.sub || `usr-${Date.now()}`,
+            name: attributes.name || payload.name || userEmail.split('@')[0] || 'User',
+            email: userEmail,
             role: role.id,
             department: attributes['custom:department'] || 'Internal Audit & Governance',
             appScope: attributes['custom:app_scope'] || 'both',
-            cognitoSub: attributes.sub
+            cognitoSub: attributes.sub || payload.sub
           };
           const userObj = {
             name: found.name,
@@ -142,11 +155,7 @@ export const AuditProvider = ({ children }) => {
         console.log("[AuditContext] Completed checkCognitoSession. loading set to false.");
       }
     };
-    if (!isAuthenticated) {
-      checkCognitoSession();
-    } else {
-      setLoading(false);
-    }
+    checkCognitoSession();
   }, []);
 
   // Intercept Cross-App SSO URL parameters or listen for storage sync on mount
@@ -409,7 +418,11 @@ export const AuditProvider = ({ children }) => {
     try {
       let signInResult;
       try {
-        signInResult = await signIn({ username: email, password });
+        signInResult = await signIn({ 
+          username: email, 
+          password,
+          options: { authFlowType: 'USER_PASSWORD_AUTH' }
+        });
       } catch (err) {
         if (err.name === 'UserAlreadyAuthenticatedException' || err.message?.includes('already a signed in user')) {
           try {
@@ -461,19 +474,36 @@ export const AuditProvider = ({ children }) => {
       }
 
       if (isSignedIn || nextStep?.signInStep === 'DONE') {
-        const session = await fetchAuthSession();
-        const attributes = await fetchUserAttributes();
-        
-        const role = resolveAuditRole(attributes['custom:role'], attributes.email);
+        // Small delay for Amplify v6 token persistence race condition
+        await delay(150);
+
+        let session = null;
+        let attributes = {};
+        for (let attempt = 0; attempt < 3; attempt++) {
+          try {
+            session = await fetchAuthSession();
+            if (session?.tokens?.accessToken) {
+              try { attributes = await fetchUserAttributes(); } catch (attrErr) { /* fallback to token payload */ }
+              break;
+            }
+          } catch (sessionErr) {
+            if (attempt < 2) await delay(400 * (attempt + 1));
+          }
+        }
+
+        const payload = session?.tokens?.idToken?.payload || session?.tokens?.accessToken?.payload || {};
+        const userEmail = attributes.email || payload.email || payload['cognito:username'] || email;
+        const rawRole = attributes['custom:role'] || (session?.tokens?.accessToken?.payload?.['cognito:groups'] || [])[0] || '';
+        const role = resolveAuditRole(rawRole, userEmail);
         
         const found = {
-          id: attributes.sub || `usr-${Date.now()}`,
-          name: attributes.name || email.split('@')[0],
-          email: attributes.email || email,
+          id: attributes.sub || payload.sub || `usr-${Date.now()}`,
+          name: attributes.name || payload.name || userEmail.split('@')[0] || 'User',
+          email: userEmail,
           role: role.id,
           department: attributes['custom:department'] || 'Internal Audit & Governance',
           appScope: attributes['custom:app_scope'] || 'both',
-          cognitoSub: attributes.sub
+          cognitoSub: attributes.sub || payload.sub
         };
 
         const userObj = {
@@ -486,7 +516,7 @@ export const AuditProvider = ({ children }) => {
         setCurrentRole(role);
         setIsAuthenticated(true);
         const sessionPayload = {
-          token: session.tokens?.accessToken?.toString() || `jwt-cognito-${found.cognitoSub}`,
+          token: session?.tokens?.accessToken?.toString() || `jwt-cognito-${found.cognitoSub}`,
           user: found
         };
         localStorage.setItem('zpc_auth_session', JSON.stringify(sessionPayload));
