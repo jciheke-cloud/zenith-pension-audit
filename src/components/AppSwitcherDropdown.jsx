@@ -11,10 +11,7 @@ const AppSwitcherDropdown = () => {
   const [ermUrl, setErmUrl] = useState(() => {
     const fromStorage = localStorage.getItem('ZPC_ERM_URL_OVERRIDE');
     if (fromStorage) return fromStorage;
-    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-      return window.location.origin;
-    }
-    return import.meta.env.VITE_ERM_APP_URL || 'http://localhost:5173';
+    return import.meta.env.VITE_ERM_APP_URL || window.location.origin;
   });
   const [inputUrl, setInputUrl] = useState(ermUrl);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -44,8 +41,7 @@ const AppSwitcherDropdown = () => {
   };
 
   const handleSwitchToErm = () => {
-    const isRem = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-    const targetBase = ermUrl || (isRem ? window.location.origin + '/index.html' : 'http://localhost:5173');
+    const targetBase = ermUrl || import.meta.env.VITE_ERM_APP_URL || window.location.origin;
     const roleId = currentUser?.roleId || currentRole?.id || 'cae';
     const target = `${targetBase}?sso_role=${encodeURIComponent(roleId)}&sso_token=riskintegra_auth_bridge&source=audit#/`;
     window.location.href = target;

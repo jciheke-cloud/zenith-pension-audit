@@ -460,7 +460,11 @@ export const AuditProvider = ({ children }) => {
           } catch (attrErr) { /* ignore and sign out */ }
           
           await signOut();
-          signInResult = await signIn({ username: email, password });
+          signInResult = await signIn({ 
+            username: email, 
+            password,
+            options: { authFlowType: 'USER_PASSWORD_AUTH' }
+          });
         } else {
           throw err;
         }
