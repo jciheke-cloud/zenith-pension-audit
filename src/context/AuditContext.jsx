@@ -106,6 +106,26 @@ export const AuditProvider = ({ children }) => {
     const checkCognitoSession = async () => {
       console.log("[AuditContext] Starting Cognito session check...");
       try {
+        const saved = localStorage.getItem('zpc_auth_session');
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            if (parsed?.user) {
+              const role = resolveAuditRole(parsed.user.role || '', parsed.user.email || '');
+              const userObj = {
+                name: parsed.user.name,
+                title: `${parsed.user.department || 'Internal Audit & Governance'} (${role.name})`,
+                email: parsed.user.email,
+                roleId: role.id
+              };
+              setCurrentUser(userObj);
+              setCurrentRole(role);
+              setIsAuthenticated(true);
+              setLoading(false);
+            }
+          } catch (e) { /* ignore */ }
+        }
+
         const session = await fetchAuthSession();
         if (session && session.tokens && session.tokens.accessToken) {
           console.log("[AuditContext] Cognito session token retrieved. Fetching user attributes...");
@@ -136,14 +156,14 @@ export const AuditProvider = ({ children }) => {
             email: found.email,
             roleId: role.id
           };
-          setCurrentUser(userObj);
-          setCurrentRole(role);
-          setIsAuthenticated(true);
           const sessionPayload = {
             token: session.tokens.accessToken.toString(),
             user: found
           };
           localStorage.setItem('zpc_auth_session', JSON.stringify(sessionPayload));
+          setCurrentUser(userObj);
+          setCurrentRole(role);
+          setIsAuthenticated(true);
           console.log("[AuditContext] Cognito session active. User authenticated:", found.email);
         } else {
           console.log("[AuditContext] No active Cognito token found.");
@@ -414,7 +434,6 @@ export const AuditProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    setLoading(true);
     try {
       let signInResult;
       try {
@@ -445,15 +464,14 @@ export const AuditProvider = ({ children }) => {
                 email: found.email,
                 roleId: role.id
               };
-              setCurrentUser(userObj);
-              setCurrentRole(role);
-              setIsAuthenticated(true);
               const sessionPayload = {
                 token: session.tokens?.accessToken?.toString() || `jwt-cognito-${found.cognitoSub}`,
                 user: found
               };
               localStorage.setItem('zpc_auth_session', JSON.stringify(sessionPayload));
-              addNotification('SSO Authentication Successful', `Welcome back, ${found.name}. Active Cognito RBAC session initialized.`, 'success');
+              setCurrentUser(userObj);
+              setCurrentRole(role);
+              setIsAuthenticated(true);
               setLoading(false);
               return { success: true };
             }
@@ -473,7 +491,6 @@ export const AuditProvider = ({ children }) => {
       const { isSignedIn, nextStep } = signInResult;
       
       if (nextStep?.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED') {
-        setLoading(false);
         return { success: false, challenge: 'NEW_PASSWORD_REQUIRED', email };
       }
 
@@ -516,32 +533,29 @@ export const AuditProvider = ({ children }) => {
           email: found.email,
           roleId: role.id
         };
-        setCurrentUser(userObj);
-        setCurrentRole(role);
-        setIsAuthenticated(true);
         const sessionPayload = {
           token: session?.tokens?.accessToken?.toString() || `jwt-cognito-${found.cognitoSub}`,
           user: found
         };
         localStorage.setItem('zpc_auth_session', JSON.stringify(sessionPayload));
+        setCurrentUser(userObj);
+        setCurrentRole(role);
+        setIsAuthenticated(true);
         addNotification('SSO Authentication Successful', `Welcome back, ${found.name}. Active Cognito RBAC session initialized.`, 'success');
-        setLoading(false);
         return { success: true };
       }
-      setLoading(false);
       return { success: false, error: 'Authentication failed. Please verify corporate email and password.' };
     } catch (err) {
       console.error("Audit Cognito signIn error:", err);
-      setLoading(false);
       // Fallback for dev/testing if Cognito network/pool fails
       const cleanEmail = (email || '').trim().toLowerCase();
       if (cleanEmail) {
         const role = resolveAuditRole('', cleanEmail);
         const found = { id: `usr-${Date.now()}`, name: cleanEmail.split('@')[0], email: cleanEmail, role: role.id };
+        localStorage.setItem('zpc_auth_session', JSON.stringify({ token: 'mock', user: found }));
         setCurrentUser({ name: found.name, title: `${role.name}`, email: found.email, roleId: role.id });
         setCurrentRole(role);
         setIsAuthenticated(true);
-        localStorage.setItem('zpc_auth_session', JSON.stringify({ token: 'mock', user: found }));
         return { success: true };
       }
       return { success: false, error: err.message || 'Authentication failed' };
