@@ -5,8 +5,8 @@ import { signIn, signOut, confirmSignIn, fetchAuthSession, fetchUserAttributes }
 Amplify.configure({
   Auth: {
     Cognito: {
-      userPoolId: import.meta.env.VITE_USER_POOL_ID || 'eu-west-1_xWeVdtgCi',
-      userPoolClientId: import.meta.env.VITE_USER_POOL_CLIENT_ID || '1hpqqk3c33ltpc0rbfdd840u1e',
+      userPoolId: import.meta.env.VITE_USER_POOL_ID || import.meta.env.VITE_COGNITO_USER_POOL_ID || 'eu-west-1_xWeVdtgCi',
+      userPoolClientId: import.meta.env.VITE_USER_POOL_CLIENT_ID || import.meta.env.VITE_COGNITO_CLIENT_ID || '1hpqqk3c33ltpc0rbfdd840u1e',
       loginWith: {
         email: true
       }
@@ -210,6 +210,10 @@ export const AuditProvider = ({ children }) => {
       setCurrentUser(targetUser);
       setCurrentRole(roleObj);
       setIsAuthenticated(true);
+      setLoading(false);
+      try {
+        localStorage.setItem('zpc_auth_session', JSON.stringify({ token: `jwt-sso-${targetUser.roleId}`, user: targetUser }));
+      } catch (e) { /* ignore */ }
 
       if (window.history.replaceState) {
         const cleanUrl = window.location.pathname + (window.location.hash.startsWith('#') ? '#/' : '');

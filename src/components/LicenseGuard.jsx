@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 
 const AUTHORIZED_DOMAINS = [
   'zpc.riskintegra-erm.nayandjoerisktechconsulting.com',
+  'zpc.riskintegra-audit.nayandjoerisktechconsulting.com',
   'nayandjoerisktechconsulting.com',
+  'd1hu5w191lkh53.cloudfront.net',
+  'cloudfront.net',
   'zpc-audit.aws.amazon.com',
   'aws.amazon.com',
   'netlify.app',
