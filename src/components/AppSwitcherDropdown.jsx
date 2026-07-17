@@ -7,10 +7,10 @@ const AppSwitcherDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
   
-  // Dynamic Companion App URL state (checks localStorage first, then env variable, then default)
+  // Dynamic Companion App URL state (checks localStorage first, ignoring legacy localhost overrides)
   const [ermUrl, setErmUrl] = useState(() => {
     const fromStorage = localStorage.getItem('ZPC_ERM_URL_OVERRIDE');
-    if (fromStorage) return fromStorage;
+    if (fromStorage && !fromStorage.includes('localhost') && !fromStorage.includes('127.0.0.1')) return fromStorage;
     return import.meta.env.VITE_ERM_APP_URL || window.location.origin;
   });
   const [inputUrl, setInputUrl] = useState(ermUrl);
@@ -41,13 +41,16 @@ const AppSwitcherDropdown = () => {
   };
 
   const handleSwitchToErm = () => {
-    const targetBase = ermUrl || import.meta.env.VITE_ERM_APP_URL || window.location.origin;
+    let targetBase = ermUrl;
+    if (!targetBase || targetBase.includes('localhost') || targetBase.includes('127.0.0.1')) {
+      targetBase = import.meta.env.VITE_ERM_APP_URL || window.location.origin;
+    }
     const roleId = currentUser?.roleId || currentRole?.id || 'cae';
     const target = `${targetBase}?sso_role=${encodeURIComponent(roleId)}&sso_token=riskintegra_auth_bridge&source=audit#/`;
     window.location.href = target;
   };
 
-  const isRemote = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+  const isRemote = true; // Always active cloud bridge on AWS / GitHub resources
 
   return (
     <div style={{ position: 'relative' }} ref={dropdownRef}>

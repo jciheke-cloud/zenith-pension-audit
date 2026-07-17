@@ -129,7 +129,7 @@ const ErmSyncPage = () => {
             </div>
             <div className="flex-between">
               <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Target ERM Endpoint</span>
-              <span style={{ fontSize: '0.78rem', color: '#60a5fa', fontWeight: 600 }}>zenith_pensions_erm (Port 5173)</span>
+              <span style={{ fontSize: '0.78rem', color: '#60a5fa', fontWeight: 600 }}>RiskINTEGRA™ ERM Cloud Bridge (AWS/Netlify)</span>
             </div>
           </div>
         </div>

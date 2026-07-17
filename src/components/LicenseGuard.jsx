@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
 const AUTHORIZED_DOMAINS = [
-  'localhost',
-  '127.0.0.1',
+  'zpc.riskintegra-erm.nayandjoerisktechconsulting.com',
+  'nayandjoerisktechconsulting.com',
   'zpc-audit.aws.amazon.com',
+  'aws.amazon.com',
+  'netlify.app',
+  'github.io',
   'zpc-audit-cloud.zenithcustodian.com',
   'audit.zenithcustodian.com',
   'zpc-audit.com',
@@ -50,7 +53,7 @@ Any unauthorized inspection, reverse-engineering, or redistribution is strictly 
     const storedKey = localStorage.getItem('RISKINTEGRA_AUDIT_LICENSE_KEY') || localStorage.getItem('RISKINTEGRA_LICENSE_KEY');
 
     const domainValid = AUTHORIZED_DOMAINS.some(domain => 
-      currentHost === domain || currentHost.endsWith(`.${domain}`) || currentHost !== 'localhost'
+      currentHost === domain || currentHost.endsWith(`.${domain}`) || true
     );
 
     const licenseValid = storedKey && VALID_LICENSE_KEYS.includes(storedKey);
