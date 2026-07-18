@@ -253,7 +253,10 @@ export const AuditProvider = ({ children }) => {
 
     const handleActivity = () => {
       if (timeoutId) clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
+      timeoutId = setTimeout(async () => {
+        try {
+          await signOut();
+        } catch (e) { /* ignore */ }
         setIsAuthenticated(false);
         setCurrentUser(null);
         localStorage.removeItem('zpc_auth_session');
@@ -276,7 +279,7 @@ export const AuditProvider = ({ children }) => {
     try {
       if (!localStorage.getItem('ZPC_ERM_CLEAN_GUARD_V14_PENCOM_PURGE')) {
         localStorage.removeItem(`ZPC_AUDIT_STATE_${key}`);
-        return initial;
+        return initial || [];
       }
       const saved = localStorage.getItem(`ZPC_AUDIT_STATE_${key}`);
       if (saved) {
@@ -290,7 +293,7 @@ export const AuditProvider = ({ children }) => {
           });
           if (hasLegacyMocks) {
             localStorage.removeItem(`ZPC_AUDIT_STATE_${key}`);
-            return initial;
+            return initial || [];
           }
           return parsed;
         }
@@ -298,7 +301,7 @@ export const AuditProvider = ({ children }) => {
     } catch (e) {
       console.warn(`[V12 Storage Guard] State recovery initiated for ${key}:`, e);
     }
-    return initial;
+    return initial || [];
   };
 
   const [businessUnits, setBusinessUnits] = useState(() => loadState('BUSINESS_UNITS', INITIAL_BUSINESS_UNITS));

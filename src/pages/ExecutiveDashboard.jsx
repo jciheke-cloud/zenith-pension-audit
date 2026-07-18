@@ -9,7 +9,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 const ExecutiveDashboard = () => {
-  const { auditPlans, findings, auditUniverse, businessUnits, currency } = useContext(AuditContext);
+  const { auditPlans = [], findings = [], auditUniverse = [], businessUnits = [], currency } = useContext(AuditContext);
   const navigate = useNavigate();
 
   // Calculate 10 Executive KPIs
