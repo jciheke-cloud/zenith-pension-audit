@@ -21,7 +21,20 @@ import { AuditContext } from '../context/AuditContext';
 
 const Sidebar = () => {
   const { currentRole } = useContext(AuditContext);
-  const roleId = currentRole?.id || 'cae';
+  
+  const getNormalizedRole = (roleStr) => {
+    const clean = (roleStr || '').toLowerCase();
+    if (clean.includes('admin') || clean.includes('cae') || clean.includes('chief_audit')) return 'cae';
+    if (clean.includes('audit_manager') || clean.includes('manager')) return 'manager';
+    if (clean.includes('auditor') || clean.includes('senior')) return 'senior';
+    if (clean.includes('owner') || clean.includes('dept') || clean.includes('department')) return 'owner';
+    if (clean.includes('external') || clean.includes('qa')) return 'qa';
+    if (clean.includes('risk_manager') || clean.includes('compliance') || clean.includes('erm')) return 'erm';
+    if (clean.includes('viewer') || clean.includes('cro') || clean.includes('committee') || clean.includes('executive')) return 'committee';
+    return clean;
+  };
+
+  const roleId = getNormalizedRole(currentRole?.id || 'cae');
 
   // Role categorization flags
   const isExecutive = roleId === 'cae' || roleId === 'manager';

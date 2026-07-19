@@ -66,7 +66,7 @@ export const AuditProvider = ({ children }) => {
     try {
       const session = JSON.parse(localStorage.getItem('zpc_auth_session'));
       if (session?.user) {
-        return resolveAuditRole(session.user.role, session.user.email);
+        return resolveAuditRole(session.user.role || '', session.user.email || '', session.user.auditRole || '');
       }
     } catch (e) { /* ignore */ }
     return ROLES_LIST.find(r => r.id === 'Chief_Audit_Executive') || ROLES_LIST[3]; // Chief Audit Executive by default
@@ -91,11 +91,12 @@ export const AuditProvider = ({ children }) => {
     try {
       const session = JSON.parse(localStorage.getItem('zpc_auth_session'));
       if (session?.user) {
+        const role = resolveAuditRole(session.user.role || '', session.user.email || '', session.user.auditRole || '');
         return {
           name: session.user.name,
-          title: `${session.user.department} (${session.user.role?.toUpperCase()})`,
+          title: `${session.user.department || 'Internal Audit & Governance'} (${role.name})`,
           email: session.user.email,
-          roleId: session.user.role === 'auditor' || session.user.role === 'admin' ? 'cae' : 'manager'
+          roleId: role.id
         };
       }
     } catch (e) { /* ignore */ }
@@ -666,7 +667,19 @@ export const AuditProvider = ({ children }) => {
 
   // RBAC Permission Checkers
   const checkRbacPermission = (action, moduleName = 'general') => {
-    const roleId = currentRole?.id || 'cae';
+    const getNormalizedRole = (roleStr) => {
+      const clean = (roleStr || '').toLowerCase();
+      if (clean.includes('admin') || clean.includes('cae') || clean.includes('chief_audit')) return 'cae';
+      if (clean.includes('audit_manager') || clean.includes('manager')) return 'manager';
+      if (clean.includes('auditor') || clean.includes('senior')) return 'senior';
+      if (clean.includes('owner') || clean.includes('dept') || clean.includes('department')) return 'owner';
+      if (clean.includes('external') || clean.includes('qa')) return 'qa';
+      if (clean.includes('risk_manager') || clean.includes('compliance') || clean.includes('erm')) return 'erm';
+      if (clean.includes('viewer') || clean.includes('cro') || clean.includes('committee') || clean.includes('executive')) return 'committee';
+      return clean;
+    };
+
+    const roleId = getNormalizedRole(currentRole?.id || 'cae');
     // 'cae' and 'manager' have full write/delete across all modules
     if (roleId === 'cae' || roleId === 'manager') return true;
     // 'senior' and 'qa' can edit/update status on testing, working papers, controls, findings, but NOT delete master universe or programs
