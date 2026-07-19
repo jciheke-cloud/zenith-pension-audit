@@ -85,7 +85,7 @@ const LoginScreen = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', textAlign: 'left' }}>
+        <form onSubmit={handleSubmit} autoComplete="off" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', textAlign: 'left' }}>
           <div>
             <label style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '0.4rem', fontWeight: '500' }}>
               Corporate Email / RBAC Role
@@ -96,6 +96,7 @@ const LoginScreen = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter corporate email"
               required
+              autoComplete="off"
               style={{
                 width: '100%',
                 padding: '0.75rem 1rem',
@@ -119,6 +120,7 @@ const LoginScreen = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
+              autoComplete="new-password"
               style={{
                 width: '100%',
                 padding: '0.75rem 1rem',

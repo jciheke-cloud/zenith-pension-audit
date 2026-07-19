@@ -57,7 +57,7 @@ const ErmSyncPage = () => {
     if (!csvInput.trim()) return;
     const lines = csvInput.trim().split('\n');
     if (lines.length < 2) {
-      alert('Please provide at least one header row and one data row in CSV format.');
+      addNotification('CSV Processing Failure', 'Please provide at least one header row and one data row in CSV format.', 'warning');
       return;
     }
     const headers = lines[0].split(',').map(h => h.trim());
@@ -74,7 +74,7 @@ const ErmSyncPage = () => {
       bulkUploadRecords && bulkUploadRecords(uploadType, parsedRecords);
       setCsvInput('');
     } else {
-      alert('Could not parse valid CSV records. Please check format against the template.');
+      addNotification('CSV Parsing Failure', 'Could not parse valid CSV records. Please check format against the template.', 'danger');
     }
   };
 

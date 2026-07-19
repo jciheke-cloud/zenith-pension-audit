@@ -22,7 +22,7 @@ const RiskBasedPlanning = () => {
 
   const applyWeights = () => {
     if (totalWeight !== 100) {
-      alert('Total weights must sum strictly to 100% before applying.');
+      addNotification('Invalid Weight Formulation', 'Total weights must sum strictly to 100% before applying.', 'warning');
       return;
     }
     const saver = updateScoringWeights || setScoringWeights;

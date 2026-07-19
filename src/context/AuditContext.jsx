@@ -591,7 +591,15 @@ export const AuditProvider = ({ children }) => {
     try { await signOut(); } catch (e) { /* ignore */ }
     setIsAuthenticated(false);
     setCurrentUser(null);
-    localStorage.removeItem('zpc_auth_session');
+    
+    // Wipe all tokens, cognito user pool cache and session storage to avoid caching credentials
+    const ermUrlOverride = localStorage.getItem('ZPC_ERM_URL_OVERRIDE');
+    const cleanGuardPurge = localStorage.getItem('ZPC_AUDIT_CLEAN_GUARD_V13_TOTAL_PURGE');
+    localStorage.clear();
+    sessionStorage.clear();
+    if (ermUrlOverride) localStorage.setItem('ZPC_ERM_URL_OVERRIDE', ermUrlOverride);
+    if (cleanGuardPurge) localStorage.setItem('ZPC_AUDIT_CLEAN_GUARD_V13_TOTAL_PURGE', cleanGuardPurge);
+    
     addNotification('Session Terminated', `Securely logged out of ZPC institutional audit portal.`, 'info');
   };
 
@@ -608,6 +616,16 @@ export const AuditProvider = ({ children }) => {
       removeToast(id);
     }, 4500);
   };
+
+  useEffect(() => {
+    const handleCustomToast = (e) => {
+      if (e.detail && e.detail.message) {
+        addToast(e.detail.message, e.detail.type || 'success', e.detail.title || '');
+      }
+    };
+    window.addEventListener('zpc_add_toast', handleCustomToast);
+    return () => window.removeEventListener('zpc_add_toast', handleCustomToast);
+  }, []);
 
   // Add notification helper
   const addNotification = (title, message, type = 'info') => {
