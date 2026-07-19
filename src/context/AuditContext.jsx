@@ -95,6 +95,7 @@ export const AuditProvider = ({ children }) => {
     return null;
   });
 
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeModule, setActiveModule] = useState('dashboard');
   const [notifications, setNotifications] = useState([]);
 
