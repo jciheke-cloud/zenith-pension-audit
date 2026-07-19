@@ -6,6 +6,7 @@ import Topbar from './components/Topbar';
 import NotificationDrawer from './components/NotificationDrawer';
 import LoginScreen from './components/LoginScreen';
 import LicenseGuard from './components/LicenseGuard';
+import ToastContainer from './components/ToastContainer';
 
 // Pages
 import ExecutiveDashboard from './pages/ExecutiveDashboard';
@@ -53,6 +54,7 @@ const App = () => {
           <div className="main-content">
             <Topbar />
             <NotificationDrawer />
+            <ToastContainer />
             <Routes>
               <Route path="/" element={<ExecutiveDashboard />} />
               <Route path="/index.html" element={<ExecutiveDashboard />} />

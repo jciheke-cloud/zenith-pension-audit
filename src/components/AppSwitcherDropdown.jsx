@@ -45,8 +45,15 @@ const AppSwitcherDropdown = () => {
     if (!targetBase || targetBase.includes('localhost') || targetBase.includes('127.0.0.1')) {
       targetBase = import.meta.env.VITE_ERM_APP_URL || '/';
     }
-    const roleId = currentUser?.roleId || currentRole?.id || 'cae';
-    const target = `${targetBase}?sso_role=${encodeURIComponent(roleId)}&sso_token=riskintegra_auth_bridge&source=audit#/`;
+    
+    let targetRole = 'maker';
+    const roleId = (currentUser?.roleId || currentRole?.id || '').toLowerCase();
+    if (roleId.includes('admin')) targetRole = 'admin';
+    else if (roleId.includes('audit') || roleId.includes('cae')) targetRole = 'auditor';
+    else if (roleId.includes('exec') || roleId.includes('viewer') || roleId.includes('cro')) targetRole = 'executive';
+    else if (roleId.includes('owner') || roleId.includes('manager') || roleId.includes('maker')) targetRole = 'maker';
+    
+    const target = `${targetBase}?sso_role=${encodeURIComponent(targetRole)}&sso_user=${encodeURIComponent(currentUser?.email || '')}&sso_token=riskintegra_auth_bridge&source=audit#/`;
     window.location.href = target;
   };
 

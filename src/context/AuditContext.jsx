@@ -184,6 +184,7 @@ export const AuditProvider = ({ children }) => {
     const searchString = window.location.search || (window.location.hash.includes('?') ? window.location.hash.split('?')[1] : '');
     const params = new URLSearchParams(searchString);
     const ssoRole = params.get('sso_role');
+    const ssoUser = params.get('sso_user');
     const ssoToken = params.get('sso_token');
     const source = params.get('source');
 
@@ -193,18 +194,14 @@ export const AuditProvider = ({ children }) => {
         users = JSON.parse(localStorage.getItem('zpc_users_directory')) || [];
       } catch (e) { /* ignore */ }
 
-      const foundDirUser = users.find(u => u.role?.toLowerCase() === ssoRole.toLowerCase() || u.email?.toLowerCase().includes(ssoRole.toLowerCase()));
+      const emailVal = ssoUser || `${ssoRole.toLowerCase()}@zenithcustodian.com`;
+      const foundDirUser = users.find(u => u.email?.toLowerCase() === emailVal.toLowerCase());
       const roleObj = ROLES_LIST.find(r => r.id.toLowerCase() === ssoRole.toLowerCase() || r.name.toLowerCase().includes(ssoRole.toLowerCase())) || ROLES_LIST.find(r => r.id === 'Chief_Audit_Executive') || ROLES_LIST[3];
       
-      const targetUser = foundDirUser ? {
-        name: foundDirUser.name,
-        title: `${foundDirUser.department} (${foundDirUser.role?.toUpperCase()})`,
-        email: foundDirUser.email,
-        roleId: roleObj.id
-      } : {
-        name: `${roleObj.name}`,
-        title: `Internal Audit & Governance (${roleObj.badge})`,
-        email: `${roleObj.id.toLowerCase()}@zenithcustodian.com`,
+      const targetUser = {
+        name: foundDirUser ? foundDirUser.name : emailVal.split('@')[0],
+        title: foundDirUser ? `${foundDirUser.department} (${roleObj.name})` : `Internal Audit & Governance (${roleObj.name})`,
+        email: emailVal,
         roleId: roleObj.id
       };
 
@@ -258,6 +255,7 @@ export const AuditProvider = ({ children }) => {
         try {
           await signOut();
         } catch (e) { /* ignore */ }
+        sessionStorage.setItem('zpc_inactivity_logged_out', 'true');
         setIsAuthenticated(false);
         setCurrentUser(null);
         localStorage.removeItem('zpc_auth_session');
@@ -597,6 +595,20 @@ export const AuditProvider = ({ children }) => {
     addNotification('Session Terminated', `Securely logged out of ZPC institutional audit portal.`, 'info');
   };
 
+  const [toasts, setToasts] = useState([]);
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
+
+  const addToast = (message, type = 'success', title = '') => {
+    const id = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+    setToasts(prev => [{ id, message, type, title }, ...prev]);
+    setTimeout(() => {
+      removeToast(id);
+    }, 4500);
+  };
+
   // Add notification helper
   const addNotification = (title, message, type = 'info') => {
     const newNotif = {
@@ -608,6 +620,7 @@ export const AuditProvider = ({ children }) => {
       read: false
     };
     setNotifications(prev => [newNotif, ...prev]);
+    addToast(message, type, title);
   };
 
   // RBAC Permission Checkers
@@ -1055,6 +1068,9 @@ export const AuditProvider = ({ children }) => {
         getAuditPriorityLabel,
         notifications,
         addNotification,
+        toasts,
+        addToast,
+        removeToast,
         drawerOpen,
         setDrawerOpen,
         markAllRead,

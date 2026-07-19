@@ -1,14 +1,23 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { ForceChangePassword } from './ForceChangePassword';
 
 const LoginScreen = () => {
-  const { login, clientProfile } = useContext(AuditContext);
+  const { login, clientProfile, addToast } = useContext(AuditContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [challengeEmail, setChallengeEmail] = useState(null);
+
+  useEffect(() => {
+    if (sessionStorage.getItem('zpc_inactivity_logged_out') === 'true') {
+      if (addToast) {
+        addToast('⚠️ Session timed out due to 30 minutes of inactivity.', 'warning');
+      }
+      sessionStorage.removeItem('zpc_inactivity_logged_out');
+    }
+  }, [addToast]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
