@@ -37,9 +37,16 @@ export const AuditProvider = ({ children }) => {
     localStorage.setItem('ZPC_AUDIT_CLEAN_GUARD_V16_COGNITO_ONLY', 'true');
   }
 
-  const resolveAuditRole = (roleStr, emailStr = '') => {
+  const resolveAuditRole = (roleStr, emailStr = '', auditRoleStr = '') => {
     const cleanRole = (roleStr || '').toLowerCase();
     const cleanEmail = (emailStr || '').toLowerCase();
+    const cleanAuditRole = (auditRoleStr || '').toLowerCase();
+    
+    if (cleanAuditRole) {
+      const foundExact = ROLES_LIST.find(r => r.id.toLowerCase() === cleanAuditRole || r.name.toLowerCase().includes(cleanAuditRole));
+      if (foundExact) return foundExact;
+    }
+    
     if (cleanRole.includes('admin') || cleanEmail.includes('admin') || cleanEmail.includes('jciheke')) {
       return ROLES_LIST.find(r => r.id === 'Platform_Administrator') || ROLES_LIST[0];
     }
@@ -112,7 +119,7 @@ export const AuditProvider = ({ children }) => {
           try {
             const parsed = JSON.parse(saved);
             if (parsed?.user) {
-              const role = resolveAuditRole(parsed.user.role || '', parsed.user.email || '');
+              const role = resolveAuditRole(parsed.user.role || '', parsed.user.email || '', parsed.user.auditRole || '');
               const userObj = {
                 name: parsed.user.name,
                 title: `${parsed.user.department || 'Internal Audit & Governance'} (${role.name})`,
@@ -140,13 +147,15 @@ export const AuditProvider = ({ children }) => {
           const payload = session.tokens.idToken?.payload || session.tokens.accessToken?.payload || {};
           const userEmail = attributes.email || payload.email || payload['cognito:username'] || '';
           const rawRole = attributes['custom:role'] || (session.tokens.accessToken?.payload?.['cognito:groups'] || [])[0] || '';
-          const role = resolveAuditRole(rawRole, userEmail);
+          const auditRoleVal = attributes['custom:audit_role'] || '';
+          const role = resolveAuditRole(rawRole, userEmail, auditRoleVal);
 
           const found = {
             id: attributes.sub || payload.sub || `usr-${Date.now()}`,
             name: attributes.name || payload.name || userEmail.split('@')[0] || 'User',
             email: userEmail,
-            role: role.id,
+            role: rawRole,
+            auditRole: auditRoleVal || 'Auditor',
             department: attributes['custom:department'] || 'Internal Audit & Governance',
             appScope: attributes['custom:app_scope'] || 'both',
             cognitoSub: attributes.sub || payload.sub
@@ -184,6 +193,7 @@ export const AuditProvider = ({ children }) => {
     const searchString = window.location.search || (window.location.hash.includes('?') ? window.location.hash.split('?')[1] : '');
     const params = new URLSearchParams(searchString);
     const ssoRole = params.get('sso_role');
+    const ssoErmRole = params.get('sso_erm_role') || 'maker';
     const ssoUser = params.get('sso_user');
     const ssoToken = params.get('sso_token');
     const source = params.get('source');
@@ -202,6 +212,8 @@ export const AuditProvider = ({ children }) => {
         name: foundDirUser ? foundDirUser.name : emailVal.split('@')[0],
         title: foundDirUser ? `${foundDirUser.department} (${roleObj.name})` : `Internal Audit & Governance (${roleObj.name})`,
         email: emailVal,
+        role: ssoErmRole,
+        auditRole: roleObj.id,
         roleId: roleObj.id
       };
 
@@ -454,12 +466,14 @@ export const AuditProvider = ({ children }) => {
             const session = await fetchAuthSession();
             const attributes = await fetchUserAttributes();
             if (attributes && (attributes.email?.toLowerCase() === email.toLowerCase() || !email)) {
-              const role = resolveAuditRole(attributes['custom:role'], attributes.email);
+              const auditRoleVal = attributes['custom:audit_role'] || '';
+              const role = resolveAuditRole(attributes['custom:role'], attributes.email, auditRoleVal);
               const found = {
                 id: attributes.sub || `usr-${Date.now()}`,
                 name: attributes.name || email.split('@')[0],
                 email: attributes.email || email,
-                role: role.id,
+                role: attributes['custom:role'],
+                auditRole: auditRoleVal || 'Auditor',
                 department: attributes['custom:department'] || 'Internal Audit & Governance',
                 appScope: attributes['custom:app_scope'] || 'both',
                 cognitoSub: attributes.sub
@@ -521,13 +535,15 @@ export const AuditProvider = ({ children }) => {
         const payload = session?.tokens?.idToken?.payload || session?.tokens?.accessToken?.payload || {};
         const userEmail = attributes.email || payload.email || payload['cognito:username'] || email;
         const rawRole = attributes['custom:role'] || (session?.tokens?.accessToken?.payload?.['cognito:groups'] || [])[0] || '';
-        const role = resolveAuditRole(rawRole, userEmail);
+        const auditRoleVal = attributes['custom:audit_role'] || '';
+        const role = resolveAuditRole(rawRole, userEmail, auditRoleVal);
         
         const found = {
           id: attributes.sub || payload.sub || `usr-${Date.now()}`,
           name: attributes.name || payload.name || userEmail.split('@')[0] || 'User',
           email: userEmail,
-          role: role.id,
+          role: rawRole,
+          auditRole: auditRoleVal || 'Auditor',
           department: attributes['custom:department'] || 'Internal Audit & Governance',
           appScope: attributes['custom:app_scope'] || 'both',
           cognitoSub: attributes.sub || payload.sub
@@ -557,7 +573,7 @@ export const AuditProvider = ({ children }) => {
       const cleanEmail = (email || '').trim().toLowerCase();
       if (cleanEmail) {
         const role = resolveAuditRole('', cleanEmail);
-        const found = { id: `usr-${Date.now()}`, name: cleanEmail.split('@')[0], email: cleanEmail, role: role.id };
+        const found = { id: `usr-${Date.now()}`, name: cleanEmail.split('@')[0], email: cleanEmail, role: 'maker', auditRole: role.id };
         localStorage.setItem('zpc_auth_session', JSON.stringify({ token: 'mock', user: found }));
         setCurrentUser({ name: found.name, title: `${role.name}`, email: found.email, roleId: role.id });
         setCurrentRole(role);
@@ -574,8 +590,15 @@ export const AuditProvider = ({ children }) => {
       if (isSignedIn) {
         const session = await fetchAuthSession();
         const attributes = await fetchUserAttributes();
-        const role = resolveAuditRole(attributes['custom:role'], attributes.email);
-        const found = { id: attributes.sub, name: attributes.name || attributes.email?.split('@')[0], email: attributes.email, role: role.id };
+        const auditRoleVal = attributes['custom:audit_role'] || '';
+        const role = resolveAuditRole(attributes['custom:role'], attributes.email, auditRoleVal);
+        const found = {
+          id: attributes.sub,
+          name: attributes.name || attributes.email?.split('@')[0],
+          email: attributes.email,
+          role: attributes['custom:role'],
+          auditRole: auditRoleVal || 'Auditor'
+        };
         setCurrentUser({ name: found.name, title: role.name, email: found.email, roleId: role.id });
         setCurrentRole(role);
         setIsAuthenticated(true);

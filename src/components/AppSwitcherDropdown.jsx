@@ -47,11 +47,25 @@ const AppSwitcherDropdown = () => {
     }
     
     let targetRole = 'maker';
-    const roleId = (currentUser?.roleId || currentRole?.id || '').toLowerCase();
-    if (roleId.includes('admin')) targetRole = 'admin';
-    else if (roleId.includes('audit') || roleId.includes('cae')) targetRole = 'auditor';
-    else if (roleId.includes('exec') || roleId.includes('viewer') || roleId.includes('cro')) targetRole = 'executive';
-    else if (roleId.includes('owner') || roleId.includes('manager') || roleId.includes('maker')) targetRole = 'maker';
+    try {
+      const session = JSON.parse(localStorage.getItem('zpc_auth_session'));
+      if (session?.user?.role) {
+        targetRole = session.user.role;
+      } else {
+        const roleId = (currentUser?.roleId || currentRole?.id || '').toLowerCase();
+        if (roleId.includes('admin')) targetRole = 'admin';
+        else if (roleId.includes('audit') || roleId.includes('cae')) targetRole = 'auditor';
+        else if (roleId.includes('exec') || roleId.includes('viewer') || roleId.includes('cro')) targetRole = 'executive';
+        else if (roleId.includes('owner') || roleId.includes('manager') || roleId.includes('maker')) targetRole = 'maker';
+      }
+    } catch (e) {
+      // Fallback dynamic mapping
+      const roleId = (currentUser?.roleId || currentRole?.id || '').toLowerCase();
+      if (roleId.includes('admin')) targetRole = 'admin';
+      else if (roleId.includes('audit') || roleId.includes('cae')) targetRole = 'auditor';
+      else if (roleId.includes('exec') || roleId.includes('viewer') || roleId.includes('cro')) targetRole = 'executive';
+      else if (roleId.includes('owner') || roleId.includes('manager') || roleId.includes('maker')) targetRole = 'maker';
+    }
     
     const target = `${targetBase}?sso_role=${encodeURIComponent(targetRole)}&sso_user=${encodeURIComponent(currentUser?.email || '')}&sso_token=riskintegra_auth_bridge&source=audit#/`;
     window.location.href = target;
