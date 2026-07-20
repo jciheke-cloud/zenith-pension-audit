@@ -14,34 +14,40 @@ const TEMPLATE_CONFIGS = {
   findings: {
     filename: 'ZPC_Audit_Findings_Template.xlsx',
     sheetName: 'AuditFindings',
-    headers: ['findingNumber','businessUnit','observation','criteria','rootCause','likelihood','impact','status','managementResponse','remediationDate','auditor'],
+    // Columns match audit_findings table exactly (snake_case)
+    // finding_number UNIQUE NOT NULL, business_unit NOT NULL, observation NOT NULL
+    headers: ['finding_number','business_unit','observation','criteria','root_cause','likelihood','impact','residual_risk','priority','severity','status','management_response','remediation_date','auditor'],
     label: 'Audit Findings',
     accent: '16,185,129',
     data: [
-      { findingNumber:'FND-2026-101', businessUnit:'Settlements & Corporate Actions', observation:'Unreconciled Dividend Sweep Variance of ₦12M across Fund II accounts', criteria:'PENCOM Section 63 Custody Guidelines', rootCause:'System timeout during clearing window', likelihood:7, impact:8, status:'Open', managementResponse:'Reviewing automated bridge failover logs.', remediationDate:'2026-09-30', auditor:'Chief Senior Auditor' },
-      { findingNumber:'FND-2026-102', businessUnit:'Contribution Reconciliation Dept', observation:'24h Employer Contribution Schedule Delay beyond SLA threshold', criteria:'SLA Breach Prevention Circular', rootCause:'Portal schedule ingestion lag during peak period', likelihood:6, impact:8, status:'Open', managementResponse:'Upgraded employer API gateway bandwidth.', remediationDate:'2026-08-15', auditor:'Lead Operations Auditor' },
+      { finding_number:'FND-2026-101', business_unit:'Settlements & Corporate Actions', observation:'Unreconciled Dividend Sweep Variance of ₦12M across Fund II accounts', criteria:'PENCOM Section 63 Custody Guidelines', root_cause:'System timeout during clearing window', likelihood:7, impact:8, residual_risk:56, priority:'High', severity:'High', status:'Open', management_response:'Reviewing automated bridge failover logs.', remediation_date:'2026-09-30', auditor:'Chief Senior Auditor' },
+      { finding_number:'FND-2026-102', business_unit:'Contribution Reconciliation Dept', observation:'24h Employer Contribution Schedule Delay beyond SLA threshold', criteria:'SLA Breach Prevention Circular', root_cause:'Portal schedule ingestion lag during peak period', likelihood:6, impact:8, residual_risk:48, priority:'High', severity:'High', status:'Open', management_response:'Upgraded employer API gateway bandwidth.', remediation_date:'2026-08-15', auditor:'Lead Operations Auditor' },
     ],
   },
   universe: {
     filename: 'ZPC_Audit_Universe_Template.xlsx',
     sheetName: 'AuditUniverse',
-    headers: ['unitId','department','processName','inherentRisk','financialExposure','regulatoryImpact','priority','lastAuditDate','leadAuditor'],
+    // Columns match audit_universe table exactly (snake_case)
+    // unit_id NOT NULL, department NOT NULL, process_name NOT NULL
+    headers: ['unit_id','department','process_name','inherent_risk','financial_exposure','regulatory_impact','priority','last_audit_date','lead_auditor'],
     label: 'Audit Universe',
     accent: '99,102,241',
     data: [
-      { unitId:'UNIV-101', department:'Treasury & Markets', processName:'Money Market Placement & Haircut Controls', inherentRisk:8, financialExposure:9, regulatoryImpact:8, priority:'High', lastAuditDate:'2025-11-30', leadAuditor:'Lead Treasury Auditor' },
-      { unitId:'UNIV-102', department:'IT & Cybersecurity', processName:'Core Banking & Custody DB Failover & BCP', inherentRisk:9, financialExposure:8, regulatoryImpact:9, priority:'Critical', lastAuditDate:'2025-10-15', leadAuditor:'Lead IT Auditor' },
+      { unit_id:'UNIV-101', department:'Treasury & Markets', process_name:'Money Market Placement & Haircut Controls', inherent_risk:8, financial_exposure:9, regulatory_impact:8, priority:'High', last_audit_date:'2025-11-30', lead_auditor:'Lead Treasury Auditor' },
+      { unit_id:'UNIV-102', department:'IT & Cybersecurity', process_name:'Core Banking & Custody DB Failover & BCP', inherent_risk:9, financial_exposure:8, regulatory_impact:9, priority:'Critical', last_audit_date:'2025-10-15', lead_auditor:'Lead IT Auditor' },
     ],
   },
   plans: {
     filename: 'ZPC_Annual_Audit_Plans_Template.xlsx',
     sheetName: 'AuditPlans',
-    headers: ['planId','auditName','department','plannedHours','actualHours','status','startDate','endDate','leadAuditor'],
+    // Columns match audit_plans table exactly (snake_case)
+    // plan_id UNIQUE NOT NULL, audit_name NOT NULL, department NOT NULL
+    headers: ['plan_id','audit_name','department','planned_hours','actual_hours','status','start_date','end_date','lead_auditor'],
     label: 'Annual Audit Plans',
     accent: '251,191,36',
     data: [
-      { planId:'PLAN-2026-01', auditName:'Annual Custody Operations Review', department:'Pension Operations', plannedHours:320, actualHours:0, status:'Approved', startDate:'2026-02-01', endDate:'2026-03-15', leadAuditor:'Chief Senior Auditor' },
-      { planId:'PLAN-2026-02', auditName:'RMAS Cybersecurity Penetration Test', department:'IT & Cybersecurity', plannedHours:240, actualHours:0, status:'Approved', startDate:'2026-04-10', endDate:'2026-05-20', leadAuditor:'Lead IT Auditor' },
+      { plan_id:'PLAN-2026-01', audit_name:'Annual Custody Operations Review', department:'Pension Operations', planned_hours:320, actual_hours:0, status:'Approved', start_date:'2026-02-01', end_date:'2026-03-15', lead_auditor:'Chief Senior Auditor' },
+      { plan_id:'PLAN-2026-02', audit_name:'RMAS Cybersecurity Penetration Test', department:'IT & Cybersecurity', planned_hours:240, actual_hours:0, status:'Approved', start_date:'2026-04-10', end_date:'2026-05-20', lead_auditor:'Lead IT Auditor' },
     ],
   },
 };
