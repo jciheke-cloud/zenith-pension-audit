@@ -1,154 +1,249 @@
-# RiskINTEGRA Internal Audit Management Suite™
-## Executive User Guide & Operations Manual
-**Zenith Pension Custodian Limited (ZPC)**  
-*Approved for Chief Audit Executive (CAE), Board Audit & Risk Committee (BARC), and Internal Audit Teams*  
-*Compliant with PENCOM Guidelines, Section 63 PRA 2014, and IIA Global Standards*
+# 📋 RiskINTEGRA Internal Audit Suite™ — Zenith Pensions Custodian
+## Institutional User & Audit Governance Guide (PENCOM / IIA Standards)
+
+Welcome to **RiskINTEGRA Internal Audit Suite™**, the specialized internal audit management platform built for **Zenith Pensions Custodian Limited (ZPC)**. This guide explains every module, the step-by-step workflow for each function, the data architecture, and the role-based access model.
 
 ---
 
-## 1. Executive Summary & Core Philosophy
+## 🗄️ 1. Data Architecture — Zero Browser Storage
 
-**RiskINTEGRA Internal Audit™** is a continuous, risk-based internal audit and governance platform built specifically for Pension Fund Custodians operating under the **National Pension Commission (PENCOM)** and **Central Bank of Nigeria (CBN)** regulatory frameworks.
+> **IMPORTANT: All institutional audit data is stored exclusively in the PostgreSQL database hosted on AWS RDS.**
+> No audit findings, plans, universe records, working papers, or control data are stored in your browser's localStorage. Your browser only stores a **Cognito session token** in `sessionStorage`, which is automatically cleared when the browser tab closes.
 
-Unlike static auditing tools, RiskINTEGRA actively bridges **Enterprise Risk Management (ERM)** with **Internal Audit**, ensuring that audit plans dynamically align with custodial loss ledgers, key risk indicators (KRIs), and sovereign market fluctuations.
-
----
-
-## 2. Role-Based Access Control & User Directory
-
-When accessing the system, your capabilities and approval permissions are governed by your assigned institutional profile:
-
-| Executive Profile | Key Capabilities & Authorization Levels |
-| :--- | :--- |
-| **Chief Audit Executive (CAE)** | Full executive override, approval of Annual Audit Plans, sign-off on Working Papers, Board Report Deck generation, and cross-system ERM bridge authorization. |
-| **Security Administrator** | Manage identity settings, user roles, and security policies. |
-| **Audit Manager** | Plan and oversee audits, assign team members, and manage audit programs. |
-| **Auditor** | Conduct audits, execute tests, document working papers, and draft findings. |
-| **Control / Risk Owner** | First-line business owners who verify control implementations and execute remediation plans. |
-| **Executive Viewer** | Read-only access across board reports, compliance scorecards, and dashboards. |
+This means:
+- Your audit data is accessible from **any authorised device** without transferring files.
+- **No data loss** when clearing browser history or switching machines.
+- All findings, plans, and records are **instantly persisted** to the central database.
+- Every action is logged to the immutable **Zero-Trust Audit Log** table.
 
 ---
 
-## 3. Navigation & Core Modules
+## 🔐 2. Authentication & Role-Based Access
 
-The application is structured into **14 Specialized Modules** accessible via the left sidebar:
+### Step-by-Step: Logging In
+1. Open the Audit Portal URL in your browser.
+2. Enter your **corporate email address** and **password** issued by your ZPC System Administrator.
+3. Click **Sign In**. The system authenticates via **AWS Cognito** and establishes a secure session.
+4. If this is your **first login**, you will be prompted to set a new personal password before proceeding.
+5. Your role and permissions are automatically applied based on your Cognito user profile.
 
-### 📊 1. Executive Dashboard
-* **Purpose**: High-level real-time overview of the audit universe.
-* **Key Metrics Displayed**:
-  * **Total Assets Under Custody (AUC) Audited**: Continuous tracking of institutional custody assets (e.g., ₦18.45 Trillion).
-  * **PFC Statutory Capital Adequacy**: Live tracking against PENCOM capital requirements.
-  * **Audit Plan Completion Rate**: Percentage of scheduled vs. executed engagements across Q1–Q4.
-  * **Open Audit Findings & Exceptions**: Breakdown by severity (Critical, High, Medium, Low).
-* **Interactive Elements**: Live charts for audit coverage across departments (Settlements, Fixed Income Custody, Contribution Reconciliation, IT Security, Regulatory Legal).
+### Step-by-Step: Password Reset
+1. On the login screen, click **Forgot Password?**
+2. Enter your corporate email address.
+3. You will receive a **6-digit OTP code** by email from the AWS Cognito system.
+4. Enter the code and your new password on the confirmation screen.
+5. You are automatically logged in after a successful reset.
 
-### 🏛️ 2. Master Data & Audit Universe
-* **Purpose**: Comprehensive repository of all auditable entities within Zenith Pension Custodian.
-* **Key Actions**: View custodial risk ratings, inherent risk scores, and historical audit frequency for each operational unit.
-
-### 📅 3. Annual Audit Plan (Risk-Based)
-* **Purpose**: Dynamic scheduling and resource allocation across the calendar year.
-* **Key Actions**: Filter engagements by quarter (Q1–Q4) or department. Add new engagements directly into the timeline based on shifting risk profiles.
-
-### 🎯 4. Risk-Based Audit Planning & Scoring
-* **Purpose**: Quantitative risk assessment engine that prioritizes audit focus.
-* **Algorithm**: Uses a weighted matrix combining **Impact (1–5)**, **Likelihood (1–5)**, **Control Effectiveness (1–5)**, and **Regulatory Scrutiny** to generate a priority score.
-
-### 📋 5. Audit Engagements & Fieldwork
-* **Purpose**: Execution lifecycle for individual audit engagements.
-* **Workflow Statuses**: Planned ➔ In Progress ➔ Under Review ➔ Completed.
-* **Features**: Assign team leads, allocate budgeted audit hours vs. actual hours spent, and attach terms of reference.
-
-### 📝 6. Audit Programs & Test Procedures
-* **Purpose**: Step-by-step testing scripts for field auditors.
-* **Actions**: Mark procedures as *Passed*, *Failed*, or *Not Applicable*. Link failed procedures directly to formal audit findings.
-
-### 📁 7. Working Papers & Evidence Vault
-* **Purpose**: Secure digital binder for audit documentation, reconciliation snapshots, and audit evidence.
-* **Security**: Sign-off workflow where Field Auditors submit, Team Leads verify, and the CAE approves.
-
-### 🚩 8. Findings Management & Exception Log
-* **Purpose**: Tracking and adjudication of audit exceptions and internal control deficiencies.
-* **Fields**: Finding Title, Risk Rating, Root Cause Analysis, Management Response, and Agreed Implementation Date.
-
-### ⏳ 9. Action Tracking & Verification
-* **Purpose**: Post-audit monitoring of management remediation commitments.
-* **Status Tracking**: Monitor open remediation items, request progress updates, and execute closure verification tests.
-
-### 🛡️ 10. Internal Controls Library
-* **Purpose**: Centralized catalog of custodial internal controls across COSO domains.
-* **Mapping**: Links controls directly to specific custodial risks (e.g., Dual-authorization on inter-bank settlement instructions).
-
-### ⚖️ 11. Compliance & PENCOM Regs
-* **Purpose**: Statutory regulatory checklist ensuring adherence to:
-  * **PENCOM Section 63 minimum capital adequacy guidelines**.
-  * **CBN Circulars & Guidelines** on Foreign Exchange and Money Market settlement operations.
-
-### ⚡ 12. Continuous Auditing & Fraud Prevention
-* **Purpose**: Automated anomaly detection and continuous custodial monitoring.
-* **Alerts**: Flags unusual after-hours settlement instructions, duplicate payment references, or sudden reconciliatory variance spikes.
-
-### 📄 13. Reports & Committee Decks
-* **Purpose**: Automated generation of Board Audit & Risk Committee (BARC) presentations.
-* **Export**: Instantly compile quarterly audit summaries, executive sign-off sheets, and exception heatmaps into presentation-ready decks.
-
-### 🔄 14. ERM Sync & Bi-Directional Bridge
-* **Purpose**: Real-time integration with the **RiskINTEGRA Enterprise Risk Management (ERM)** platform.
-* **Action**: Pull updated Key Risk Indicators (KRIs) and Custodial Loss Ledgers directly into the Audit Risk Universe to automatically adjust audit frequencies.
+### Available Roles
+| Role | Description |
+|---|---|
+| Platform Administrator | Full system access, user management, purge |
+| Chief Audit Executive (CAE) | Full read/write across all modules |
+| Audit Manager | Full read/write except platform admin actions |
+| Senior Auditor | Edit findings, working papers, controls, reviews |
+| Auditor | Log findings and working papers |
+| Quality Assurance | Review and edit testing and controls |
+| ERM Risk Manager | Edit KRI / risk sync, continuous monitoring |
+| Auditee / Department Head | Edit action plans on their own findings only |
+| Committee / Board Viewer | Read-only access, no edits |
 
 ---
 
-## 4. Interactive Tools & Analytical Engines Guide
+## 📊 3. Audit Dashboard
 
-RiskINTEGRA Internal Audit™ equips audit teams with specialized, interactive calculation engines and utilities designed to automate audit fieldwork, prioritization, and executive decision-making. Here is a guide to every interactive tool in the application:
+**Purpose:** Central command view of active audit workload, open findings, plans, and key risk indicators.
 
-### ⚡ 1. Quantitative Risk-Based Priority Matrix Engine (Module 4)
-* **What it does**: Dynamically calculates and ranks auditable units from highest risk (`CRITICAL`) to lowest risk (`LOW`) without subjective guesswork.
-* **How to use**: Adjust the interactive 1-5 sliders for Impact, Likelihood, and Control Deficit on any custodial department and click **Calculate Priority**. The system instantly recalculates priority rankings!
-
-### 💱 2. Multi-Currency Valuation & Live Exchange Ticker Tool (Topbar)
-* **What it does**: A real-time currency conversion tool integrated directly into the utility Topbar for executive reporting to international parent companies and regulatory bodies.
-* **How to use**: Click the currency button (e.g., **`💱 NGN`**) at any time. Every financial chart, Total Assets Under Custody figure, and statutory capital requirement instantly converts into **USD ($)**, **EUR (€)**, or **GBP (£)** using the live exchange rates!
-
-### 🛠️ 3. Findings & Risk Matrix Adjudicator (Module 8)
-* **What it does**: An interactive finding management tool that classifies internal control failures across a severity matrix and assigns corrective ownership.
-* **How to use**: Click any finding card to open the Root Cause Analyzer. Use the interactive buttons to change severity between *Critical*, *High*, *Medium*, and *Low*, and set the Agreed Implementation Date.
-
-### ⏱️ 4. Post-Audit Corrective Action Tracker (CAP Engine - Module 9)
-* **What it does**: A post-audit monitoring tool that prevents forgotten audit findings by tracking management remediation commitments and verifying closure.
-* **How to use**: Filter corrective action plans by status (`Open`, `In Progress`, `Overdue`, `Verified Closed`). Click **Request Update** to send an alert to the responsible departmental head, or click **Verify Closure** once field auditors have re-tested the control!
-
-### 🔒 5. Secure Working Papers Vault & Sign-Off Tool (Module 7)
-* **What it does**: A digital evidence binder allowing field auditors to attach reconciliation proofs and initiate multi-tier approvals.
-* **How to use**: Click **Attach Evidence** on any working paper to upload bank reconciliation snapshots. Once documented, initiate the 3-Tier Electronic Sign-Off flow.
-
-### 📊 6. One-Click BARC Executive Deck Generator (Module 13)
-* **What it does**: An automated presentation tool that eliminates hours of manual slide preparation before Board Audit & Risk Committee meetings.
-* **How to use**: Select your reporting quarter and click **Generate BARC Presentation Deck**. The tool compiles audit completion percentages, exception heatmaps, and statutory sign-offs into a presentation-ready executive deck!
-
-### 🛡️ 7. Automated Continuous Auditing & Fraud Sentinel (Module 12)
-* **What it does**: An automated monitoring engine running real-time custodial rule checks to detect operational anomalies or exceptions.
+**Step-by-Step:**
+1. After login, the dashboard loads automatically.
+2. Review the **Summary KPI Cards**: Open Findings, Active Plans, High-Priority Items, and Overdue Actions.
+3. Click any KPI card to navigate directly to the relevant module.
+4. Use the **ERM Sync** section to trigger a live synchronisation of risk data from the RiskINTEGRA ERM Suite into the Audit Library modules.
 
 ---
 
-## 5. How to Switch Between RiskINTEGRA Applications
+## 🗺️ 4. Audit Universe (Master Data)
 
-Zenith Pension Custodian (ZPC) operates two twin institutional governance platforms: the **RiskINTEGRA ERM Suite** and the **RiskINTEGRA Internal Audit Suite**. You can switch between both applications anytime without re-entering your login credentials.
+**Purpose:** Define and maintain the complete inventory of auditable business processes and units within ZPC.
 
-### Step 1: Locate the Ecosystem App Switcher
-In the top-right utility bar of your screen, click the **`Switch App`** button. This opens the RiskINTEGRA ecosystem drop-down menu.
+### Step-by-Step: Adding a Single Auditable Unit
+1. Navigate to **Master Data** from the left sidebar.
+2. Click **+ Add Auditable Unit**.
+3. Fill in the Department, Process Name, Inherent Risk Score (1-10), Financial Exposure Score (1-10), and Regulatory Impact Score (1-10).
+4. Click **Save**. The record is immediately persisted to the `audit_universe` database table.
+5. The system automatically calculates a weighted **Overall Audit Priority Score**.
 
-### Step 2: Click 'Launch ERM'
-Select the partner application. The switcher automatically grabs your active profile, signs you in, and transitions you instantly to the same profile on the partner application!
+### Step-by-Step: Bulk Importing Audit Universe
+1. Navigate to **Master Data**.
+2. Click the **📥 Bulk Import Units** button in the page header.
+3. Click **📄 Download CSV Template** to get the pre-formatted import template.
+4. Open the template in Excel or Google Sheets and populate your auditable units. Required columns:
+   - `department`, `processName`, `inherentRisk` (1-10), `financialExposure` (1-10), `regulatoryImpact` (1-10), `priority`, `lastAuditDate`, `leadAuditor`
+5. Save the file as `.csv` (Comma Separated Values).
+6. Drag and drop the file into the upload modal's drop zone, or click **Browse File** to select it.
+7. A **Data Preview Table** renders the parsed rows — review for any errors before committing.
+8. Click **✅ Import Records**. All rows are inserted into the database in a single atomic transaction.
+9. A success notification confirms the count of imported records.
 
-### Step 3: Customizing Your Target Link (Optional)
-If your partner application is hosted on a specific corporate address, click the **`Set Link`** button, paste the URL once into the box, and click **Link**. The app remembers this address across your sessions.
+### Step-by-Step: Editing / Deleting a Unit
+1. Click the **Edit (✏️)** icon on any row to update the unit's details inline.
+2. Click the **Delete (🗑️)** icon to permanently remove the unit (requires Audit Manager or higher role).
+3. All changes are logged to the audit trail.
 
 ---
 
-## 6. Support & Operations Helpdesk
+## 📋 5. Audit Findings Management
 
-For technical assistance, license key renewals, or custom regulatory reporting template requests, contact:
-* **Licensing Operations**: `licensing@zenithcustodian.com`
-* **Internal Audit System Admin**: `cae.office@zenithcustodian.com`
-* **Platform Version**: `v3.4.0 (2026 Release)`
+**Purpose:** Log, track, escalate, and close formal audit observations arising from executed engagements.
+
+### Step-by-Step: Logging a New Finding
+1. Navigate to **Findings Management** from the sidebar.
+2. Click **+ Log New Finding**.
+3. Fill in the required fields:
+   - **Business Unit / Department** (the auditee)
+   - **Observation** (describe the finding clearly)
+   - **Criteria** (the policy, standard, or regulation being breached)
+   - **Root Cause** (underlying reason for the finding)
+   - **Likelihood** (1-10 scale) and **Impact** (1-10 scale)
+4. The system automatically computes the **Residual Risk Score** (Likelihood × Impact, out of 100) and classifies the **Priority**: Critical (≥80), High (≥60), Medium (≥30), Low (<30).
+5. Enter the **Management Response** and target **Remediation Date**.
+6. Click **Save Finding**. The record is persisted to the `audit_findings` database table.
+7. An automatic **ERM Sync notification** is triggered to link the finding to the ZPC ERM Risk Register.
+
+### Step-by-Step: Bulk Importing Findings
+1. Navigate to **Findings Management**.
+2. Click the **📥 Bulk Import Findings** button.
+3. Click **📄 Download CSV Template**. Required columns:
+   - `findingNumber`, `businessUnit`, `observation`, `criteria`, `rootCause`, `likelihood` (1-10), `impact` (1-10), `status`, `managementResponse`, `remediationDate`, `auditor`
+4. Populate the template and save as `.csv`.
+5. Drag the file into the upload modal, review the data preview, and click **✅ Import Records**.
+6. All findings are inserted atomically into the database.
+
+### Step-by-Step: Updating a Finding Status
+1. Click on any finding row in the table to expand it.
+2. Change the **Status** field (Open → In Progress → Resolved → Closed).
+3. Add any remediation notes.
+4. Click **Update**. The change is immediately saved to the database.
+
+---
+
+## 📅 6. Annual Audit Plan
+
+**Purpose:** Plan, schedule, and track all audit engagements for the financial year in compliance with IIA and PENCOM audit planning standards.
+
+### Step-by-Step: Creating an Audit Engagement
+1. Navigate to **Annual Audit Plan** from the sidebar.
+2. Click **+ New Audit Engagement**.
+3. Fill in:
+   - **Engagement Name** (e.g., "Q1 Treasury & ALM Audit")
+   - **Department** (the auditee)
+   - **Start Date** and **End Date**
+   - **Planned Hours** (total budgeted audit hours)
+   - **Lead Auditor**
+   - **Status** (Draft, Approved, In Progress, Completed)
+4. Click **Save Plan**. The engagement is persisted to the `audit_plans` database table.
+
+### Step-by-Step: Bulk Importing Plans
+1. Navigate to **Annual Audit Plan**.
+2. Click **📥 Bulk Import Plans**.
+3. Download the CSV template. Required columns:
+   - `auditName`, `department`, `startDate`, `endDate`, `plannedHours`, `leadAuditor`, `status`
+4. Populate and upload — identical flow to other bulk import modules.
+
+### Step-by-Step: Updating a Plan
+1. Click **Edit** on an existing plan.
+2. Update the **Status**, **Actual Hours**, or any other field.
+3. Click **Update**. The change is saved to the database.
+
+---
+
+## 📁 7. Working Papers & Evidence
+
+**Purpose:** Upload, manage, and link audit evidence documentation to specific engagements or findings.
+
+### Step-by-Step: Uploading a Working Paper
+1. Navigate to **Working Papers** from the sidebar.
+2. Click **+ Upload Working Paper**.
+3. Enter the Paper Title, Reference Number, and link it to an Audit Plan or Finding.
+4. Upload the supporting file attachment.
+5. Click **Save**. The record is persisted to the database.
+
+---
+
+## 🔄 8. ERM Suite Synchronisation
+
+**Purpose:** Pull live risk data from the RiskINTEGRA ERM Suite directly into Audit Library modules.
+
+### Step-by-Step: Triggering an ERM Sync
+1. Navigate to **ERM Sync** from the sidebar.
+2. Click **🔄 Sync from ERM Suite**. The system fetches the latest enterprise risks from the backend database.
+3. Risks are automatically transformed into **Audit Universe entries** and grouped by department.
+4. Review the sync results in the module and click **Confirm & Save** to accept the imported data.
+
+---
+
+## 📊 9. Regulatory Reviews & Continuous Monitoring
+
+**Purpose:** Track PENCOM statutory regulatory reviews and manage continuous assurance monitoring exceptions.
+
+### Step-by-Step: Logging a Regulatory Review
+1. Navigate to **Regulatory Reviews**.
+2. Click **+ New Review**.
+3. Select the Regulation (PENCOM ICT Guidelines, COSO, ISO 31000, etc.), enter review scope, findings, and status.
+4. Click **Save**. The review is persisted to the database.
+
+### Step-by-Step: Logging a Continuous Exception
+1. Navigate to **Continuous Monitoring**.
+2. Click **+ Log Exception**.
+3. Enter the exception type, affected process, and severity.
+4. Assign an owner and due date for resolution.
+5. Click **Save**.
+
+---
+
+## 🛡️ 10. User Management (Platform Administrators Only)
+
+**Purpose:** Provision and manage user accounts for the Audit Portal.
+
+### Step-by-Step: Creating a New User
+1. Log in as a **Platform Administrator**.
+2. Navigate to **User Management**.
+3. Click **+ Create New User**.
+4. Enter name, corporate email, department, ERM Role, and Audit Role.
+5. Set **App Scope**: ERM only, Audit only, or Both.
+6. Click **Create Account**. The user is provisioned in AWS Cognito and can log in immediately.
+
+### Step-by-Step: Deactivating / Deleting a User
+1. Find the user in the directory table.
+2. Click the action dropdown → **Suspend Account** or **Delete Account**.
+3. The action is logged to the Zero-Trust Audit Logs.
+
+---
+
+## 🌐 11. Institutional Deployment
+
+| Item | Detail |
+|---|---|
+| **ERM Suite URL** | https://zpc.riskintegra-erm.nayandjoerisktechconsulting.com |
+| **Audit Portal URL** | https://zpc.riskintegra-audit.nayandjoerisktechconsulting.com/audit-portal/index.html#/ |
+| **API Gateway** | https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod/ |
+| **Database** | PostgreSQL on AWS RDS (eu-west-1) |
+| **Auth** | AWS Cognito User Pool: `eu-west-1_xWeVdtgCi` |
+
+---
+
+## 🔐 12. Security Architecture
+
+| Feature | Detail |
+|---|---|
+| Authentication | AWS Cognito with JWT access tokens |
+| Session storage | `sessionStorage` only — cleared on tab/browser close |
+| Data storage | PostgreSQL on AWS RDS (no browser storage for business data) |
+| Transmission | All API calls use HTTPS/TLS |
+| Audit trail | Immutable `system_audit_logs` table (WORM pattern) |
+| Role-based access | 14 Audit roles enforced at UI and API level |
+| Auto-logout | 30 minutes inactivity timeout |
+| Password policy | Enforced by AWS Cognito (complexity + OTP reset) |
+
+---
+
+*For support, contact your ZPC System Administrator or email `licensing@zenithcustodian.com`.*

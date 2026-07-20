@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuditContext } from '../context/AuditContext';
 import { Database, Plus, Search, Layers, ShieldCheck, Filter, Edit2, Trash2 } from 'lucide-react';
+import AuditDataUpload from '../components/AuditDataUpload';
 
 const MasterData = () => {
   const navigate = useNavigate();
@@ -154,9 +155,7 @@ const MasterData = () => {
           </p>
         </div>
         <div className="header-actions">
-          <button onClick={() => navigate('/erm-sync')} className="btn-secondary" style={{ borderColor: '#10B981', color: '#6ee7b7' }} title="Download templates and batch import CSV universe records">
-            <span>📦 Templates & Bulk CSV Upload</span>
-          </button>
+          <AuditDataUpload targetModule="universe" buttonText="Batch Universe Ingestion" />
           {activeTab === 'bus' ? (
             <button onClick={() => setIsBuModalOpen(true)} className="btn-primary">
               <Plus size={16} />

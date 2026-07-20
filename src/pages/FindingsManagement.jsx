@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { AlertOctagon, Plus, ShieldAlert, RefreshCw, CheckCircle, Search, Filter, Sliders, Award, Edit2, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import AuditDataUpload from '../components/AuditDataUpload';
 
 const FindingsManagement = () => {
   const { findings, saveFinding, setFindings, businessUnits, addNotification, checkRbacPermission, verifyRbacOrAlert } = useContext(AuditContext);
@@ -201,9 +202,7 @@ const FindingsManagement = () => {
           </p>
         </div>
         <div className="header-actions">
-          <button onClick={() => navigate('/erm-sync')} className="btn-secondary" style={{ borderColor: '#10B981', color: '#6ee7b7' }} title="Download templates and batch import CSV observations">
-            <span>📦 Templates & Bulk CSV Upload</span>
-          </button>
+          <AuditDataUpload targetModule="findings" buttonText="Batch Findings Ingestion" />
           <button onClick={() => navigate('/action-tracker')} className="btn-secondary">
             <span>View CAP Tracker ({findings.filter(f => f.status !== 'Closed').length} Open) ➔</span>
           </button>

@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { Share2, RefreshCw, ShieldCheck, CheckCircle, Database, Layers, ArrowRight, AlertOctagon } from 'lucide-react';
+import AuditDataUpload from '../components/AuditDataUpload';
 
 const ErmSyncPage = () => {
   const { auditUniverse, findings, clearAllMockData, syncFromErmSuite, bulkUploadRecords, addNotification } = useContext(AuditContext);
@@ -231,61 +232,24 @@ const ErmSyncPage = () => {
           </button>
         </div>
 
-        <form onSubmit={handleProcessCsv} style={{ background: 'rgba(15, 23, 42, 0.7)', padding: '1.25rem', borderRadius: '0.75rem', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-          <div className="flex-between" style={{ marginBottom: '0.75rem', flexWrap: 'wrap', gap: '1rem' }}>
-            <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#38bdf8' }}>
-              ⚡ PASTE CSV BATCH DATA TO UPLOAD:
-            </label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Target Entity:</span>
-              <select
-                value={uploadType}
-                onChange={(e) => setUploadType(e.target.value)}
-                style={{ padding: '0.35rem 0.6rem', background: 'rgba(18, 26, 41, 0.85)', color: 'white', border: '1px solid var(--border-color)', borderRadius: '0.35rem', fontSize: '0.8rem', fontWeight: 700 }}
-              >
-                <option value="findings">Audit Findings (10×10 Matrix)</option>
-                <option value="universe">Auditable Universe (Master Data)</option>
-                <option value="plans">Annual Audit Plans</option>
-              </select>
-            </div>
-          </div>
-          <textarea
-            value={csvInput}
-            onChange={(e) => setCsvInput(e.target.value)}
-            placeholder={`Paste your CSV rows here. Make sure row 1 matches the template header exactly:\ne.g. findingNumber,businessUnit,observation,criteria,rootCause,likelihood,impact,status`}
-            rows={5}
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              background: 'rgba(15, 23, 42, 0.75)',
-              border: '1px solid var(--border-color)',
-              borderRadius: '0.5rem',
-              color: 'white',
-              fontFamily: 'monospace',
-              fontSize: '0.8rem',
-              lineHeight: 1.5,
-              resize: 'vertical',
-              marginBottom: '0.85rem'
-            }}
-          />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-            <button
-              type="button"
-              onClick={() => setCsvInput('')}
-              className="btn-secondary"
-              style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }}
+        <div style={{ background: 'rgba(15, 23, 42, 0.7)', padding: '1.5rem', borderRadius: '0.75rem', border: '1px solid rgba(255, 255, 255, 0.1)', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>1. Select Target Ingestion Module:</span>
+            <select
+              value={uploadType}
+              onChange={(e) => setUploadType(e.target.value)}
+              style={{ padding: '0.45rem 0.85rem', background: 'rgba(18, 26, 41, 0.85)', color: 'white', border: '1px solid var(--border-color)', borderRadius: '0.35rem', fontSize: '0.85rem', fontWeight: 700 }}
             >
-              Clear Text
-            </button>
-            <button
-              type="submit"
-              className="btn-primary"
-              style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem', background: 'linear-gradient(135deg, #38bdf8, #0284c7)' }}
-            >
-              🚀 Process & Upload Batch Records
-            </button>
+              <option value="findings">Audit Findings (10×10 Matrix)</option>
+              <option value="universe">Auditable Universe (Master Data)</option>
+              <option value="plans">Annual Audit Plans</option>
+            </select>
           </div>
-        </form>
+          
+          <div style={{ marginTop: '0.5rem' }}>
+            <AuditDataUpload targetModule={uploadType} buttonText={`Launch Batch ${uploadType.toUpperCase()} Uploader`} />
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { Calendar, Plus, CheckCircle, Clock, AlertTriangle, FileText, Download, Sliders } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import AuditDataUpload from '../components/AuditDataUpload';
 
 const AnnualAuditPlan = () => {
   const { auditPlans, saveAuditPlan, businessUnits, currency, addNotification } = useContext(AuditContext);
@@ -84,9 +85,7 @@ const AnnualAuditPlan = () => {
           </p>
         </div>
         <div className="header-actions">
-          <button onClick={() => navigate('/erm-sync')} className="btn-secondary" style={{ borderColor: '#10B981', color: '#6ee7b7' }} title="Download templates and batch import CSV annual engagements">
-            <span>📦 Templates & Bulk CSV Upload</span>
-          </button>
+          <AuditDataUpload targetModule="plans" buttonText="Batch Plans Ingestion" />
           <button onClick={() => navigate('/risk-scoring')} className="btn-secondary">
             <Sliders size={16} />
             <span>Risk-Based Prioritization Engine</span>
