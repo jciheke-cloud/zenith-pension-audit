@@ -40,11 +40,13 @@ const ExecutiveDashboard = () => {
     { name: 'Low', value: findings.filter(f => f.priority === 'Low').length, color: '#10B981' }
   ];
 
-  // Chart Data: Findings by Business Unit
-  const buFindingsData = businessUnits.slice(0, 7).map(bu => ({
-    name: bu.code,
-    findings: findings.filter(f => f.businessUnit === bu.name).length,
-    highRisk: findings.filter(f => f.businessUnit === bu.name && (f.priority === 'Critical' || f.priority === 'High')).length
+  // Chart Data: Findings by Function/Area
+  const uniqueFunctions = Array.from(new Set(findings.map(f => f.businessUnit || f.department || 'Operations')));
+  const buFindingsData = uniqueFunctions.map(func => ({
+    name: func.length > 15 ? func.substring(0, 15) + '...' : func,
+    fullName: func,
+    findings: findings.filter(f => (f.businessUnit || f.department || 'Operations') === func).length,
+    highRisk: findings.filter(f => (f.businessUnit || f.department || 'Operations') === func && (f.priority === 'Critical' || f.priority === 'High')).length
   }));
 
   // Chart Data: Aging of Audit Issues
@@ -212,23 +214,20 @@ const ExecutiveDashboard = () => {
 
       {/* Charts Grid - 2x2 */}
       <div className="app-grid" style={{ padding: 0, gap: '1.75rem', marginBottom: '2rem' }}>
-        {/* Chart 1: Findings by Department */}
+        {/* Chart 1: Findings by Function/Area */}
         <div className="glass-card col-span-6">
-          <div className="section-header-bar">
-            <div>
-              <h3 className="section-title">Findings by Business Unit</h3>
-              <p className="section-subtitle">Total vs High-Risk / Critical findings across ZPC departments</p>
-            </div>
-          </div>
-          <div style={{ height: '280px', width: '100%' }}>
+          <h3 className="card-title-sm" style={{ marginBottom: '1.2rem', color: 'white', display: 'flex', justifyContent: 'space-between' }}>
+            <span>Findings by Function/Area</span>
+          </h3>
+          <div style={{ height: '260px', width: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={buFindingsData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                <XAxis dataKey="name" stroke="#94A3B8" fontSize={12} />
-                <YAxis stroke="#94A3B8" fontSize={12} />
-                <Tooltip contentStyle={{ background: '#0F172A', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }} />
+              <BarChart data={buFindingsData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <XAxis type="number" stroke="var(--text-muted)" fontSize={11} />
+                <YAxis dataKey="name" type="category" stroke="var(--text-muted)" fontSize={11} width={100} />
+                <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '8px' }} />
                 <Legend />
-                <Bar dataKey="findings" name="Total Findings" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="highRisk" name="Critical / High" fill="#C81E1E" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="findings" name="Total Findings" fill="#3B82F6" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="highRisk" name="High Risk & Critical" fill="#EF4444" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

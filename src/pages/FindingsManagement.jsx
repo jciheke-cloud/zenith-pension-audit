@@ -466,10 +466,11 @@ const FindingsManagement = () => {
             <form onSubmit={handleCreateFinding} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Business Unit</label>
-                  <select value={bu} onChange={e => setBu(e.target.value)} className="form-select">
-                    {businessUnits.map(b => <option key={b.id} value={b.name}>{b.name}</option>)}
-                  </select>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Function / Area (Dynamic)</label>
+                  <input list="buList" type="text" value={bu} onChange={e => setBu(e.target.value)} className="form-input" required placeholder="e.g. Settlement Operations" />
+                  <datalist id="buList">
+                    {businessUnits.map(b => <option key={b.id} value={b.name} />)}
+                  </datalist>
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Action Owner (Head of Dept)</label>

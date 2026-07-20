@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { Amplify } from 'aws-amplify';
-import { signIn, signOut, confirmSignIn, fetchAuthSession, fetchUserAttributes } from 'aws-amplify/auth';
+import { signIn, signOut, confirmSignIn, fetchAuthSession, fetchUserAttributes, resetPassword, confirmResetPassword } from 'aws-amplify/auth';
 
 Amplify.configure({
   Auth: {
@@ -611,6 +611,30 @@ export const AuditProvider = ({ children }) => {
     }
   };
 
+  const triggerPasswordReset = async (email) => {
+    try {
+      await resetPassword({ username: email });
+      return { success: true };
+    } catch (error) {
+      console.error("resetPassword error:", error);
+      return { success: false, error: error.message || 'Failed to initiate password reset' };
+    }
+  };
+
+  const completePasswordReset = async (email, code, newPassword) => {
+    try {
+      await confirmResetPassword({
+        username: email,
+        confirmationCode: code,
+        newPassword: newPassword
+      });
+      return { success: true };
+    } catch (error) {
+      console.error("confirmResetPassword error:", error);
+      return { success: false, error: error.message || 'Failed to complete password reset' };
+    }
+  };
+
   const logout = async () => {
     try { await signOut(); } catch (e) { /* ignore */ }
     setIsAuthenticated(false);
@@ -1088,6 +1112,8 @@ export const AuditProvider = ({ children }) => {
         login,
         completeNewPassword,
         logout,
+        triggerPasswordReset,
+        completePasswordReset,
         businessUnits,
         addBusinessUnit,
         setBusinessUnits,

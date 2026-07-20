@@ -5,6 +5,7 @@ export const ForceChangePassword = ({ email, onComplete }) => {
   const { completeNewPassword } = useContext(AuditContext);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -81,22 +82,32 @@ export const ForceChangePassword = ({ email, onComplete }) => {
             <label style={{ display: 'block', color: '#CBD5E1', fontSize: '0.82rem', fontWeight: 600, marginBottom: '0.4rem' }}>
               New Permanent Password
             </label>
-            <input
-              type="password"
-              required
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Minimum 8 characters..."
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                borderRadius: '0.5rem',
-                background: 'rgba(15, 23, 42, 0.6)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                color: 'white',
-                fontSize: '0.9rem'
-              }}
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Minimum 8 characters..."
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 2.2rem 0.75rem 0.75rem',
+                  borderRadius: '0.5rem',
+                  background: 'rgba(15, 23, 42, 0.6)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  color: 'white',
+                  fontSize: '0.9rem',
+                  boxSizing: 'border-box'
+                }}
+              />
+              <button 
+                type="button" 
+                onClick={() => setShowPassword(!showPassword)} 
+                style={{ position: 'absolute', right: '0.8rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}
+              >
+                {showPassword ? '👁' : '👁️‍🗨️'}
+              </button>
+            </div>
           </div>
 
           <div>
@@ -116,7 +127,8 @@ export const ForceChangePassword = ({ email, onComplete }) => {
                 background: 'rgba(15, 23, 42, 0.6)',
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 color: 'white',
-                fontSize: '0.9rem'
+                fontSize: '0.9rem',
+                boxSizing: 'border-box'
               }}
             />
           </div>
