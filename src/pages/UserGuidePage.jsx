@@ -12,6 +12,7 @@ const UserGuidePage = () => {
     { id: 'tools_guide', label: '🛠️ Interactive Tools Guide', icon: Wrench },
     { id: 'compliance', label: '⚖️ PENCOM & CBN Regs', icon: ShieldCheck },
     { id: 'switcher_guide', label: '🔀 Switching Between Apps', icon: ExternalLink },
+    { id: 'tutorial', label: '🚀 ERM to Audit Workflow', icon: CheckCircle2 },
     { id: 'faq', label: '❓ Troubleshooting & FAQs', icon: HelpCircle }
   ];
 
@@ -611,6 +612,88 @@ const UserGuidePage = () => {
                   <p style={{ margin: 0, fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6 }}>
                     If your partner application is hosted on a shared web link or cloud address (such as `https://zpc-erm.zenithcustodian.com`), click the small <strong>`⚙️ Set Link`</strong> button at the top-right inside the `Apps ⠿` menu, paste the URL once into the box, and click <strong>Link ✓</strong>. The app remembers this address across your sessions.
                   </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB: TUTORIAL */}
+          {activeTab === 'tutorial' && (
+            <div>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#3B82F6', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem', marginTop: 0 }}>
+                🚀 ERM to Audit Workflow Tutorial
+              </h2>
+              <div style={{ background: 'rgba(59, 130, 246, 0.05)', padding: '1.5rem', borderRadius: '0.6rem', border: '1px solid rgba(59, 130, 246, 0.2)', marginBottom: '1.5rem' }}>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0, lineHeight: '1.6' }}>
+                  RiskINTEGRA is divided into two distinct portals: The <strong>ERM Suite</strong> (First & Second Line of Defense) and the <strong>Audit Portal</strong> (Third Line of Defense). This tutorial walks you through a complete lifecycle—from logging a risk to auditing the controls.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {/* STEP 1 */}
+                <div style={{ display: 'flex', gap: '1.25rem' }}>
+                  <div style={{ background: '#3B82F6', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', flexShrink: 0 }}>1</div>
+                  <div>
+                    <h4 style={{ margin: '0 0 0.5rem', fontSize: '1.05rem', color: 'var(--text-main)' }}>Log a Risk in the ERM Register (1st Line)</h4>
+                    <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.5' }}>
+                      Navigate to the <strong>Risk Register</strong> in the ERM Suite. Click "Log New Risk". Identify the inherent risk event (e.g., "Settlement Delay") and assign it an Inherent Likelihood (1-5) and Impact (1-5). Assign a Risk Owner.
+                    </p>
+                  </div>
+                </div>
+
+                {/* STEP 2 */}
+                <div style={{ display: 'flex', gap: '1.25rem' }}>
+                  <div style={{ background: '#10B981', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', flexShrink: 0 }}>2</div>
+                  <div>
+                    <h4 style={{ margin: '0 0 0.5rem', fontSize: '1.05rem', color: 'var(--text-main)' }}>Attach Controls & Calculate Residual Risk (1st/2nd Line)</h4>
+                    <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.5' }}>
+                      Go to the <strong>Internal Controls</strong> module. Define the mitigating controls (e.g., "Automated SWIFT Reconciliation"). Return to the Risk Register and attach this control to your newly created risk. The system automatically calculates the <em>Residual Risk</em> by applying the control's mitigation discount (e.g., 40%).
+                    </p>
+                  </div>
+                </div>
+
+                {/* STEP 3 */}
+                <div style={{ display: 'flex', gap: '1.25rem' }}>
+                  <div style={{ background: '#F59E0B', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', flexShrink: 0 }}>3</div>
+                  <div>
+                    <h4 style={{ margin: '0 0 0.5rem', fontSize: '1.05rem', color: 'var(--text-main)' }}>Monitor the Executive Dashboards (2nd Line / CRO)</h4>
+                    <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.5' }}>
+                      The CRO checks the <strong>Executive Dashboard</strong> and <strong>MRI & Capital Allocation</strong> module. If the new Residual Risk pushes a department's aggregated score past the Board's Appetite limits, the system triggers an Early Warning System (EWS) alert and adjusts the Capital Buffer Ratio telemetry.
+                    </p>
+                  </div>
+                </div>
+
+                {/* STEP 4 */}
+                <div style={{ display: 'flex', gap: '1.25rem' }}>
+                  <div style={{ background: '#8B5CF6', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', flexShrink: 0 }}>4</div>
+                  <div>
+                    <h4 style={{ margin: '0 0 0.5rem', fontSize: '1.05rem', color: 'var(--text-main)' }}>Switch to the Audit Portal & Plan Audits (3rd Line)</h4>
+                    <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.5' }}>
+                      As the Chief Audit Executive, log into the separate <strong>Audit Portal</strong>. Go to <strong>Risk-Based Audit Planning</strong>. You will see the live ERM Residual Risks synced directly from the ERM Suite. Flag the "Settlement Delay" risk for inclusion in the Annual Audit Plan.
+                    </p>
+                  </div>
+                </div>
+
+                {/* STEP 5 */}
+                <div style={{ display: 'flex', gap: '1.25rem' }}>
+                  <div style={{ background: '#EC4899', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', flexShrink: 0 }}>5</div>
+                  <div>
+                    <h4 style={{ margin: '0 0 0.5rem', fontSize: '1.05rem', color: 'var(--text-main)' }}>Execute the Audit & Raise Findings (3rd Line)</h4>
+                    <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.5' }}>
+                      Auditors go to <strong>Audit Programs & Execution</strong> and document fieldwork testing the control ("Automated SWIFT Reconciliation"). If the control fails, they navigate to <strong>Findings & Observations Management</strong> to log a "High Risk" finding against that department.
+                    </p>
+                  </div>
+                </div>
+
+                {/* STEP 6 */}
+                <div style={{ display: 'flex', gap: '1.25rem' }}>
+                  <div style={{ background: '#EF4444', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', flexShrink: 0 }}>6</div>
+                  <div>
+                    <h4 style={{ margin: '0 0 0.5rem', fontSize: '1.05rem', color: 'var(--text-main)' }}>Assign Management Actions (CAPs) & Track Resolution</h4>
+                    <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.5' }}>
+                      The Head of the Department is assigned a Corrective Action Plan (CAP) in the Audit Portal. Simultaneously, they log into the ERM Suite to update the ERM Risk Register, acknowledging that their control is currently ineffective. Once they complete the CAP, the Auditor verifies the evidence and closes the finding, completing the governance loop!
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
