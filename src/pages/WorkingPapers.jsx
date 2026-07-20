@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { FolderOpen, Plus, FileText, Download, Eye, CheckCircle, Search, Filter, ShieldCheck, Edit2, Trash2 } from 'lucide-react';
+import AuditDataUpload from '../components/AuditDataUpload';
 
 const WorkingPapers = () => {
   const { workingPapers, addWorkingPaper, setWorkingPapers, auditPlans, checkRbacPermission, verifyRbacOrAlert, addNotification } = useContext(AuditContext);
@@ -78,6 +79,7 @@ const WorkingPapers = () => {
           </p>
         </div>
         <div className="header-actions">
+          <AuditDataUpload targetModule="findings" buttonText="Batch Import Papers" />
           <button onClick={() => setIsModalOpen(true)} className="btn-primary">
             <Plus size={16} />
             <span>Upload Working Paper / Evidence</span>

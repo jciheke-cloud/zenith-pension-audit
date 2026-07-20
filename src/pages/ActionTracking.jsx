@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { CheckSquare, AlertTriangle, Clock, ShieldCheck, ArrowRight, RefreshCw, Send } from 'lucide-react';
+import AuditDataUpload from '../components/AuditDataUpload';
 
 const ActionTracking = () => {
   const { findings, updateFindingStatus, addNotification } = useContext(AuditContext);
@@ -30,6 +31,9 @@ const ActionTracking = () => {
           <p className="module-subtitle">
             Lifecycle monitoring of management commitments, automated reminder escalations, and audit retesting sign-offs.
           </p>
+        </div>
+        <div className="header-actions">
+          <AuditDataUpload targetModule="findings" buttonText="Batch Import CAPs" />
         </div>
       </div>
 

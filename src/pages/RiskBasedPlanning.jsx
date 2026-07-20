@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { Sliders, RefreshCw, CheckCircle, ShieldAlert, AlertTriangle, Layers, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import AuditDataUpload from '../components/AuditDataUpload';
 
 const RiskBasedPlanning = () => {
   const { auditUniverse, scoringWeights, setScoringWeights, updateScoringWeights, calculateOverallScore, getAuditPriorityLabel, addNotification } = useContext(AuditContext);
@@ -69,6 +70,7 @@ const RiskBasedPlanning = () => {
           </p>
         </div>
         <div className="header-actions">
+          <AuditDataUpload targetModule="universe" buttonText="Batch Import Universe" />
           <button onClick={resetWeights} className="btn-secondary">
             <RefreshCw size={16} />
             <span>Reset Default Weights</span>

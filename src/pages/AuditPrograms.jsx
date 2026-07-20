@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { FileText, Plus, CheckSquare, Shield, Layers, Search, Filter, Edit2, Trash2 } from 'lucide-react';
+import AuditDataUpload from '../components/AuditDataUpload';
 import { useNavigate } from 'react-router-dom';
 
 const AuditPrograms = () => {
@@ -111,6 +112,7 @@ const AuditPrograms = () => {
           </p>
         </div>
         <div className="header-actions">
+          <AuditDataUpload targetModule="findings" buttonText="Batch Import Findings" />
           <button onClick={() => navigate('/engagements')} className="btn-secondary">
             <span>Go to Active Engagements ➔</span>
           </button>
