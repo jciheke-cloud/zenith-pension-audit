@@ -61,6 +61,7 @@ export default function AuditDataUpload({ targetModule = 'findings', buttonText 
   const [isDragOver, setIsDragOver]     = useState(false);
   const [uploadStatus, setUploadStatus] = useState('idle'); // idle | uploading | success | error
   const [uploadMsg, setUploadMsg]       = useState('');
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [fileName, setFileName]         = useState('');
 
   const cfg = TEMPLATE_CONFIGS[targetModule] || TEMPLATE_CONFIGS.findings;
@@ -104,13 +105,32 @@ export default function AuditDataUpload({ targetModule = 'findings', buttonText 
   const handleDrop       = (e) => { e.preventDefault(); setIsDragOver(false); if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); };
 
   /* ── DB commit — calls AuditContext.bulkUploadRecords → real API ── */
+  const CHUNK_SIZE = 1000;
+
   const commitIngest = async () => {
     if (!parsedData.length) return;
     setUploadStatus('uploading');
+    setUploadProgress(0);
     try {
-      const count = await bulkUploadRecords(targetModule, parsedData);
+      const totalRows = parsedData.length;
+
+      if (totalRows <= CHUNK_SIZE) {
+        setUploadMsg(`Writing ${totalRows.toLocaleString()} records…`);
+        await bulkUploadRecords(targetModule, parsedData);
+        setUploadProgress(100);
+      } else {
+        const totalChunks = Math.ceil(totalRows / CHUNK_SIZE);
+        for (let i = 0; i < totalChunks; i++) {
+          const chunk = parsedData.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+          const pct = Math.round(((i + 1) / totalChunks) * 100);
+          setUploadMsg(`Batch ${i + 1} of ${totalChunks} (${((i + 1) * CHUNK_SIZE > totalRows ? totalRows : (i + 1) * CHUNK_SIZE).toLocaleString()} / ${totalRows.toLocaleString()} rows)`);
+          await bulkUploadRecords(targetModule, chunk);
+          setUploadProgress(pct);
+        }
+      }
+
       setUploadStatus('success');
-      setUploadMsg(`✓ Successfully imported ${count ?? parsedData.length} records to the database`);
+      setUploadMsg(`✓ Successfully imported ${totalRows.toLocaleString()} records to the database`);
       setTimeout(closeModal, 1800);
     } catch {
       setUploadStatus('error');
@@ -123,6 +143,7 @@ export default function AuditDataUpload({ targetModule = 'findings', buttonText 
     setFileName('');
     setUploadStatus('idle');
     setUploadMsg('');
+    setUploadProgress(0);
   };
 
   /* ── Shared style helpers ───────────────────────────────────────── */
@@ -247,15 +268,27 @@ export default function AuditDataUpload({ targetModule = 'findings', buttonText 
                 </div>
               )}
 
-              {/* Step 4 — Status */}
+              {/* Step 4 — Status / Progress */}
               {uploadStatus !== 'idle' && (
                 <div style={{ borderRadius:10, overflow:'hidden', border:`1px solid ${uploadStatus === 'success' ? `rgba(${accentRgb},0.35)` : uploadStatus === 'error' ? 'rgba(239,68,68,0.3)' : `rgba(${accentRgb},0.25)`}` }}>
                   {uploadStatus === 'uploading' && (
-                    <div style={{ padding:'14px 16px', background:`rgba(${accentRgb},0.07)`, display:'flex', alignItems:'center', gap:10 }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={`rgb(${accentRgb})`} strokeWidth="2.5" style={{ animation:'auditSpin 1s linear infinite', flexShrink:0 }}><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>
-                      <div style={{ flex:1 }}>
-                        <div style={{ fontSize:'0.8rem', fontWeight:600, color:`rgb(${accentRgb})` }}>Writing audit records to database…</div>
-                        <div style={{ marginTop:6, height:3, borderRadius:2, background:`linear-gradient(90deg,rgb(${accentRgb}) 0%,rgba(${accentRgb},0.4) 50%,rgb(${accentRgb}) 100%)`, backgroundSize:'200% 100%', animation:'auditProgress 1.5s infinite' }} />
+                    <div style={{ padding:'14px 16px', background:`rgba(${accentRgb},0.08)` }}>
+                      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={`rgb(${accentRgb})`} strokeWidth="2.5" style={{ animation:'auditSpin 1s linear infinite', flexShrink:0 }}><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>
+                          <span style={{ fontSize:'0.78rem', fontWeight:600, color:`rgb(${accentRgb})` }}>{uploadMsg || 'Writing records to database…'}</span>
+                        </div>
+                        <span style={{ fontSize:'0.75rem', fontWeight:800, color:`rgb(${accentRgb})`, fontVariantNumeric:'tabular-nums' }}>{uploadProgress}%</span>
+                      </div>
+                      <div style={{ height:6, borderRadius:4, background:`rgba(${accentRgb},0.12)`, overflow:'hidden' }}>
+                        <div style={{
+                          height:'100%',
+                          borderRadius:4,
+                          width:`${uploadProgress}%`,
+                          background:`linear-gradient(90deg,rgb(${accentRgb}),rgba(${accentRgb},0.6),rgb(${accentRgb}))`,
+                          transition:'width 0.4s ease-out',
+                          boxShadow:`0 0 8px rgba(${accentRgb},0.5)`
+                        }} />
                       </div>
                     </div>
                   )}
