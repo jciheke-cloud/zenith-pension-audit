@@ -233,13 +233,13 @@ export const AuditProvider = ({ children }) => {
   const [businessUnits, setBusinessUnits] = useState([]);
   const [auditUniverse, setAuditUniverse] = useState([]);
   const [auditPlans, setAuditPlans] = useState([]);
-  const [auditPrograms, setAuditPrograms] = useState(() => loadState('PROGRAMS', INITIAL_AUDIT_PROGRAMS));
-  const [workingPapers, setWorkingPapers] = useState(() => loadState('PAPERS', INITIAL_WORKING_PAPERS));
+  const [auditPrograms, setAuditPrograms] = useState(INITIAL_AUDIT_PROGRAMS);
+  const [workingPapers, setWorkingPapers] = useState(INITIAL_WORKING_PAPERS);
   const [findings, setFindings] = useState([]);
-  const [controls, setControls] = useState(() => loadState('CONTROLS', INITIAL_INTERNAL_CONTROLS));
-  const [regulatoryReviews, setRegulatoryReviews] = useState(() => loadState('REVIEWS', INITIAL_REGULATORY_REVIEWS));
-  const [fraudCases, setFraudCases] = useState(() => loadState('FRAUD', INITIAL_FRAUD_CASES));
-  const [continuousExceptions, setContinuousExceptions] = useState(() => loadState('CONTINUOUS', INITIAL_CONTINUOUS_EXCEPTIONS));
+  const [controls, setControls] = useState(INITIAL_INTERNAL_CONTROLS);
+  const [regulatoryReviews, setRegulatoryReviews] = useState(INITIAL_REGULATORY_REVIEWS);
+  const [fraudCases, setFraudCases] = useState(INITIAL_FRAUD_CASES);
+  const [continuousExceptions, setContinuousExceptions] = useState(INITIAL_CONTINUOUS_EXCEPTIONS);
 
   // ── Real-time sync state ──────────────────────────────────────────
   const [isSyncing, setIsSyncing] = useState(false);
