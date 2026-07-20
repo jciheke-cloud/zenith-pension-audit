@@ -241,76 +241,98 @@ export const AuditProvider = ({ children }) => {
   const [fraudCases, setFraudCases] = useState(() => loadState('FRAUD', INITIAL_FRAUD_CASES));
   const [continuousExceptions, setContinuousExceptions] = useState(() => loadState('CONTINUOUS', INITIAL_CONTINUOUS_EXCEPTIONS));
 
-  // Fetch audit records from PostgreSQL database on mount
+  // ── Real-time sync state ──────────────────────────────────────────
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState(null);
+  const AUDIT_API = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
+
+  const fetchAuditData = async (silent = false) => {
+    if (!silent) setIsSyncing(true);
+    try {
+      const [universeData, findingsData, plansData] = await Promise.all([
+        fetch(`${AUDIT_API}/api/audit/universe`).then(r => r.ok ? r.json() : []).catch(() => []),
+        fetch(`${AUDIT_API}/api/audit/findings`).then(r => r.ok ? r.json() : []).catch(() => []),
+        fetch(`${AUDIT_API}/api/audit/plans`).then(r => r.ok ? r.json() : []).catch(() => []),
+      ]);
+
+      if (Array.isArray(universeData)) {
+        setAuditUniverse(universeData.map(u => ({
+          id: u.id,
+          unitId: u.unit_id,
+          department: u.department,
+          processName: u.process_name,
+          inherentRisk: Number(u.inherent_risk),
+          financialExposure: Number(u.financial_exposure),
+          regulatoryImpact: Number(u.regulatory_impact),
+          overallScore: Number(u.overall_score),
+          priority: u.priority,
+          lastAuditDate: u.last_audit_date,
+          leadAuditor: u.lead_auditor
+        })));
+      }
+
+      if (Array.isArray(findingsData)) {
+        setFindings(findingsData.map(f => ({
+          id: f.id,
+          findingNumber: f.finding_number,
+          businessUnit: f.business_unit,
+          observation: f.observation,
+          criteria: f.criteria,
+          rootCause: f.root_cause,
+          likelihood: Number(f.likelihood),
+          impact: Number(f.impact),
+          residualRisk: Number(f.residual_risk),
+          priority: f.priority,
+          severity: f.severity,
+          status: f.status,
+          managementResponse: f.management_response,
+          remediationDate: f.remediation_date,
+          auditor: f.auditor
+        })));
+      }
+
+      if (Array.isArray(plansData)) {
+        setAuditPlans(plansData.map(p => ({
+          id: p.id,
+          planId: p.plan_id,
+          auditName: p.audit_name,
+          department: p.department,
+          plannedHours: Number(p.planned_hours),
+          actualHours: Number(p.actual_hours),
+          status: p.status,
+          startDate: p.start_date,
+          endDate: p.end_date,
+          leadAuditor: p.lead_auditor
+        })));
+      }
+
+      setLastSyncedAt(new Date());
+    } catch (e) {
+      console.warn('Audit real-time sync error:', e);
+    } finally {
+      if (!silent) setIsSyncing(false);
+    }
+  };
+
+  // Fetch audit records from PostgreSQL on mount, then poll every 30s
   useEffect(() => {
-    const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
-    
-    // Fetch Universe
-    fetch(`${API_BASE}/api/audit/universe`)
-      .then(r => r.ok ? r.json() : [])
-      .then(data => {
-        if (Array.isArray(data)) {
-          setAuditUniverse(data.map(u => ({
-            id: u.id,
-            unitId: u.unit_id,
-            department: u.department,
-            processName: u.process_name,
-            inherentRisk: Number(u.inherent_risk),
-            financialExposure: Number(u.financial_exposure),
-            regulatoryImpact: Number(u.regulatory_impact),
-            overallScore: Number(u.overall_score),
-            priority: u.priority,
-            lastAuditDate: u.last_audit_date,
-            leadAuditor: u.lead_auditor
-          })));
-        }
-      }).catch(err => console.error("Error loading audit universe:", err));
+    fetchAuditData(false);
 
-    // Fetch Findings
-    fetch(`${API_BASE}/api/audit/findings`)
-      .then(r => r.ok ? r.json() : [])
-      .then(data => {
-        if (Array.isArray(data)) {
-          setFindings(data.map(f => ({
-            id: f.id,
-            findingNumber: f.finding_number,
-            businessUnit: f.business_unit,
-            observation: f.observation,
-            criteria: f.criteria,
-            rootCause: f.root_cause,
-            likelihood: Number(f.likelihood),
-            impact: Number(f.impact),
-            residualRisk: Number(f.residual_risk),
-            priority: f.priority,
-            severity: f.severity,
-            status: f.status,
-            managementResponse: f.management_response,
-            remediationDate: f.remediation_date,
-            auditor: f.auditor
-          })));
-        }
-      }).catch(err => console.error("Error loading findings:", err));
+    // 30-second polling for real-time multi-user sync
+    const pollInterval = setInterval(() => fetchAuditData(true), 30000);
 
-    // Fetch Plans
-    fetch(`${API_BASE}/api/audit/plans`)
-      .then(r => r.ok ? r.json() : [])
-      .then(data => {
-        if (Array.isArray(data)) {
-          setAuditPlans(data.map(p => ({
-            id: p.id,
-            planId: p.plan_id,
-            auditName: p.audit_name,
-            department: p.department,
-            plannedHours: Number(p.planned_hours),
-            actualHours: Number(p.actual_hours),
-            status: p.status,
-            startDate: p.start_date,
-            endDate: p.end_date,
-            leadAuditor: p.lead_auditor
-          })));
-        }
-      }).catch(err => console.error("Error loading audit plans:", err));
-  }, []);
+    // Instant refresh when user returns to this tab
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') fetchAuditData(true);
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(pollInterval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
 
   // Risk-based audit planning weights (in-memory only, no localStorage)
   const [scoringWeights, setScoringWeights] = useState({
