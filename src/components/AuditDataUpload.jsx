@@ -104,38 +104,73 @@ export default function AuditDataUpload({ targetModule = 'findings', buttonText 
   const handleDragLeave  = () => setIsDragOver(false);
   const handleDrop       = (e) => { e.preventDefault(); setIsDragOver(false); if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); };
 
-  /* ── DB commit — calls AuditContext.bulkUploadRecords → real API ── */
-  const CHUNK_SIZE = 1000;
+  /* ── DB commit via S3 pre-signed URL (IFRS 9 ECL pattern) ─────────
+   *  Phase 1 (0–10%):  Get a signed S3 PUT URL from backend
+   *  Phase 2 (10–80%): Upload full JSON directly to S3 (no API GW limit)
+   *  Phase 3 (80–100%): Tell backend the S3 key → it streams + inserts
+   * ──────────────────────────────────────────────────────────────────── */
+  const AUDIT_API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
+
+  const AUDIT_BULK_ENDPOINTS = {
+    findings: `${AUDIT_API_BASE}/api/audit/findings/bulk`,
+    universe: `${AUDIT_API_BASE}/api/audit/universe/bulk`,
+    plans:    `${AUDIT_API_BASE}/api/audit/plans/bulk`,
+  };
 
   const commitIngest = async () => {
     if (!parsedData.length) return;
     setUploadStatus('uploading');
-    setUploadProgress(0);
+    setUploadProgress(5);
+
     try {
-      const totalRows = parsedData.length;
+      // ── Phase 1: Get signed URL ──────────────────────────────────────
+      setUploadMsg(`Phase 1/3 — Obtaining secure upload URL…`);
+      const signedUrlRes = await fetch(`${AUDIT_API_BASE}/api/upload/signed-url`);
+      if (!signedUrlRes.ok) throw new Error('Failed to obtain secure upload URL from server');
+      const { url: s3PutUrl, key: s3Key } = await signedUrlRes.json();
+      setUploadProgress(10);
 
-      if (totalRows <= CHUNK_SIZE) {
-        setUploadMsg(`Writing ${totalRows.toLocaleString()} records…`);
-        await bulkUploadRecords(targetModule, parsedData);
-        setUploadProgress(100);
-      } else {
-        const totalChunks = Math.ceil(totalRows / CHUNK_SIZE);
-        for (let i = 0; i < totalChunks; i++) {
-          const chunk = parsedData.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
-          const pct = Math.round(((i + 1) / totalChunks) * 100);
-          setUploadMsg(`Batch ${i + 1} of ${totalChunks} (${((i + 1) * CHUNK_SIZE > totalRows ? totalRows : (i + 1) * CHUNK_SIZE).toLocaleString()} / ${totalRows.toLocaleString()} rows)`);
-          await bulkUploadRecords(targetModule, chunk);
-          setUploadProgress(pct);
-        }
-      }
+      // ── Phase 2: Upload JSON directly to S3 via XHR (with progress) ─
+      setUploadMsg(`Phase 2/3 — Uploading ${parsedData.length.toLocaleString()} records to secure storage…`);
+      const jsonBody = JSON.stringify(parsedData);
 
+      await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', s3PutUrl, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const pct = 10 + Math.round((e.loaded / e.total) * 70);
+            setUploadProgress(pct);
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) resolve();
+          else reject(new Error(`S3 upload failed with status ${xhr.status}`));
+        };
+        xhr.onerror = () => reject(new Error('S3 upload network error'));
+        xhr.send(jsonBody);
+      });
+
+      setUploadProgress(80);
+
+      // ── Phase 3: bulkUploadRecords reads from S3 key ─────────────────
+      setUploadMsg(`Phase 3/3 — Writing ${parsedData.length.toLocaleString()} records to database…`);
+      const inserted = await bulkUploadRecords(targetModule, parsedData, s3Key);
+
+      setUploadProgress(100);
       setUploadStatus('success');
-      setUploadMsg(`✓ Successfully imported ${totalRows.toLocaleString()} records to the database`);
+      setUploadMsg(`✓ Successfully imported ${(inserted || parsedData.length).toLocaleString()} records to the database`);
       setTimeout(closeModal, 1800);
-    } catch {
+    } catch (err) {
+      console.error('Audit bulk import error:', err);
       setUploadStatus('error');
+      setUploadMsg(err.message || 'Upload failed. Check your file format and retry.');
     }
   };
+
 
   const closeModal = () => {
     setIsOpen(false);

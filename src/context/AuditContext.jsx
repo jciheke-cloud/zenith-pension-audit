@@ -907,7 +907,7 @@ export const AuditProvider = ({ children }) => {
     }
   };
 
-  const bulkUploadRecords = async (type, records) => {
+  const bulkUploadRecords = async (type, records, s3Key = null) => {
     if (!records || !Array.isArray(records) || records.length === 0) return 0;
     const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
     
@@ -936,13 +936,16 @@ export const AuditProvider = ({ children }) => {
       });
       
       try {
+        // Use s3_key if available (large upload), else send body directly (small)
+        const body = s3Key ? { s3_key: s3Key } : processed;
         const response = await fetch(`${API_BASE}/api/audit/findings/bulk`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(processed)
+          body: JSON.stringify(body)
         });
         if (!response.ok) throw new Error('Bulk insert failed');
-        const inserted = await response.json();
+        const result = await response.json();
+        const inserted = Array.isArray(result) ? result : (result.records || []);
         
         // Map database format back to frontend
         const mapped = inserted.map(f => ({
@@ -969,6 +972,7 @@ export const AuditProvider = ({ children }) => {
       } catch (err) {
         console.error(err);
         addToast('❌ Bulk insert of findings failed.', 'danger');
+        throw err;
       }
     } else if (type === 'universe') {
       const processed = records.map((r, i) => ({
@@ -986,13 +990,15 @@ export const AuditProvider = ({ children }) => {
       }));
 
       try {
+        const body = s3Key ? { s3_key: s3Key } : processed;
         const response = await fetch(`${API_BASE}/api/audit/universe/bulk`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(processed)
+          body: JSON.stringify(body)
         });
         if (!response.ok) throw new Error('Bulk insert failed');
-        const inserted = await response.json();
+        const result = await response.json();
+        const inserted = Array.isArray(result) ? result : (result.records || []);
 
         const mapped = inserted.map(u => ({
           id: u.id,
@@ -1014,6 +1020,7 @@ export const AuditProvider = ({ children }) => {
       } catch (err) {
         console.error(err);
         addToast('❌ Bulk insert of universe units failed.', 'danger');
+        throw err;
       }
     } else if (type === 'plans') {
       const processed = records.map((r, i) => ({
@@ -1030,13 +1037,15 @@ export const AuditProvider = ({ children }) => {
       }));
 
       try {
+        const body = s3Key ? { s3_key: s3Key } : processed;
         const response = await fetch(`${API_BASE}/api/audit/plans/bulk`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(processed)
+          body: JSON.stringify(body)
         });
         if (!response.ok) throw new Error('Bulk insert failed');
-        const inserted = await response.json();
+        const result = await response.json();
+        const inserted = Array.isArray(result) ? result : (result.records || []);
 
         const mapped = inserted.map(p => ({
           id: p.id,
@@ -1057,10 +1066,12 @@ export const AuditProvider = ({ children }) => {
       } catch (err) {
         console.error(err);
         addToast('❌ Bulk insert of plans failed.', 'danger');
+        throw err;
       }
     }
     return 0;
   };
+
 
   // Mark all notifications read
   const markAllRead = () => {
