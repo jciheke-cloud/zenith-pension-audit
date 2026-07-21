@@ -104,10 +104,10 @@ export default function AuditDataUpload({ targetModule = 'findings', buttonText 
   const handleDragLeave  = () => setIsDragOver(false);
   const handleDrop       = (e) => { e.preventDefault(); setIsDragOver(false); if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); };
 
-  /* ── DB commit via S3 pre-signed URL (IFRS 9 ECL pattern) ─────────
-   *  Phase 1 (0–10%):  Get a signed S3 PUT URL from backend
-   *  Phase 2 (10–80%): Upload full JSON directly to S3 (no API GW limit)
-   *  Phase 3 (80–100%): Tell backend the S3 key → it streams + inserts
+  /* 🚀 3-phase bulk ingest
+   *  Phase 1 (0-10%):  Prepare secure transfer channel
+   *  Phase 2 (10-80%): Transfer data payload to staging
+   *  Phase 3 (80-100%): Validate and commit records to database
    * ──────────────────────────────────────────────────────────────────── */
   const AUDIT_API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
 
@@ -123,15 +123,15 @@ export default function AuditDataUpload({ targetModule = 'findings', buttonText 
     setUploadProgress(5);
 
     try {
-      // ── Phase 1: Get signed URL ──────────────────────────────────────
-      setUploadMsg(`Phase 1/3 — Obtaining secure upload URL…`);
+      // ── Phase 1: Prepare transfer ──────────────────────────────────────
+      setUploadMsg(`Step 1 of 3 — Preparing secure transfer…`);
       const signedUrlRes = await fetch(`${AUDIT_API_BASE}/api/upload/signed-url`);
-      if (!signedUrlRes.ok) throw new Error('Failed to obtain secure upload URL from server');
+      if (!signedUrlRes.ok) throw new Error('Failed to obtain secure upload channel from server');
       const { url: s3PutUrl, key: s3Key } = await signedUrlRes.json();
       setUploadProgress(10);
 
-      // ── Phase 2: Upload JSON directly to S3 via XHR (with progress) ─
-      setUploadMsg(`Phase 2/3 — Uploading ${parsedData.length.toLocaleString()} records to secure storage…`);
+      // ── Phase 2: Transfer data payload ───────────────────────────────
+      setUploadMsg(`Step 2 of 3 — Transferring ${parsedData.length.toLocaleString()} records…`);
       const jsonBody = JSON.stringify(parsedData);
 
       await new Promise((resolve, reject) => {
@@ -148,16 +148,16 @@ export default function AuditDataUpload({ targetModule = 'findings', buttonText 
 
         xhr.onload = () => {
           if (xhr.status >= 200 && xhr.status < 300) resolve();
-          else reject(new Error(`S3 upload failed with status ${xhr.status}`));
+          else reject(new Error(`Transfer failed with status ${xhr.status}`));
         };
-        xhr.onerror = () => reject(new Error('S3 upload network error'));
+        xhr.onerror = () => reject(new Error('Transfer network error'));
         xhr.send(jsonBody);
       });
 
       setUploadProgress(80);
 
-      // ── Phase 3: bulkUploadRecords reads from S3 key ─────────────────
-      setUploadMsg(`Phase 3/3 — Writing ${parsedData.length.toLocaleString()} records to database…`);
+      // ── Phase 3: Commit to database ──────────────────────────────────
+      setUploadMsg(`Step 3 of 3 — Saving ${parsedData.length.toLocaleString()} records to database…`);
       const inserted = await bulkUploadRecords(targetModule, parsedData, s3Key);
 
       setUploadProgress(100);
