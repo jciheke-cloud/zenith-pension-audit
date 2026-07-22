@@ -252,10 +252,7 @@ export const AuditProvider = ({ children }) => {
   const getApiBase = () => {
     if (import.meta.env.VITE_AWS_API_URL) return import.meta.env.VITE_AWS_API_URL.replace(/\/$/, '');
     if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL.replace(/\/$/, '');
-    if (typeof window !== 'undefined' && (window.location.port === '5173' || window.location.port === '5174' || window.location.port === '3000')) {
-      return 'http://localhost:5000';
-    }
-    return '';
+    return 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod';
   };
   const AUDIT_API = getApiBase();
 

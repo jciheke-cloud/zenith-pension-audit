@@ -7,10 +7,10 @@ const AppSwitcherDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
   
-  // Dynamic Companion App URL state (checks localStorage first, ignoring legacy localhost overrides)
+  // Dynamic Companion App URL state (AWS Cloud & Enterprise environment)
   const [ermUrl, setErmUrl] = useState(() => {
     const fromStorage = localStorage.getItem('ZPC_ERM_URL_OVERRIDE');
-    if (fromStorage && !fromStorage.includes('localhost') && !fromStorage.includes('127.0.0.1')) return fromStorage;
+    if (fromStorage) return fromStorage;
     return import.meta.env.VITE_ERM_APP_URL || '/';
   });
   const [inputUrl, setInputUrl] = useState(ermUrl);
@@ -41,10 +41,7 @@ const AppSwitcherDropdown = () => {
   };
 
   const handleSwitchToErm = () => {
-    let targetBase = ermUrl;
-    if (!targetBase || targetBase.includes('localhost') || targetBase.includes('127.0.0.1')) {
-      targetBase = import.meta.env.VITE_ERM_APP_URL || '/';
-    }
+    let targetBase = ermUrl || import.meta.env.VITE_ERM_APP_URL || '/';
     
     let targetRole = 'maker';
     try {

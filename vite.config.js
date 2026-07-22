@@ -18,9 +18,9 @@ export default defineConfig({
     port: 5174,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: process.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod',
         changeOrigin: true,
-        secure: false,
+        secure: true,
       }
     }
   },
