@@ -338,6 +338,80 @@ export const AuditProvider = ({ children }) => {
           id: f.id,
           findingNumber: f.finding_number || f.findingNumber || `FND-${f.id}`,
           businessUnit: f.business_unit || f.businessUnit || 'Operations',
+          managementResponse: f.management_response || f.managementResponse || 'Remediation under review',
+          remediationDate: f.remediation_date || f.remediationDate || '2026-08-30',
+          auditor: f.auditor || 'Lead Auditor'
+        })));
+      } else {
+        setFindings(INITIAL_FINDINGS);
+      }
+
+      if (Array.isArray(fetchedRisks)) setErmRisks(fetchedRisks);
+      if (Array.isArray(fetchedControls)) setErmControls(fetchedControls);
+      if (Array.isArray(fetchedActions)) setErmActions(fetchedActions);
+      if (Array.isArray(fetchedLosses)) setErmLosses(fetchedLosses);
+
+      // Sync Controls to Internal Controls State
+      if (Array.isArray(fetchedControls) && fetchedControls.length > 0) {
+        const mappedCtrls = fetchedControls.map(c => ({
+          id: c.id ? `CTRL-${c.id}` : `CTRL-${Date.now()}`,
+          code: c.reference_id || c.code || `CTRL-${c.id}`,
+          description: c.title || c.description || c.event || 'Internal Safeguard Control',
+          type: c.type || 'Preventive',
+          automation: normalizeAutomation(c.automation || c.automation_level || c.automation_type),
+          designEff: c.design_effectiveness || c.effectiveness || 'Effective',
+          operatingEff: c.operating_effectiveness || c.effectiveness || 'Effective',
+          owner: c.owner || 'Custody Operations Team',
+          lastTested: c.last_tested || new Date().toISOString().split('T')[0]
+        }));
+        setControls(prev => {
+          const existingCodes = new Set(prev.map(c => c.code));
+          const newCtrls = mappedCtrls.filter(m => !existingCodes.has(m.code));
+          return newCtrls.length > 0 ? [...newCtrls, ...prev] : (prev.length > 0 ? prev : DEFAULT_COSO_CONTROLS);
+        });
+      } else {
+        setControls(prev => prev.length > 0 ? prev : DEFAULT_COSO_CONTROLS);
+      }
+
+      // Sync ERM Risks & Universe Data
+      if (Array.isArray(universeData) && universeData.length > 0) {
+        setAuditUniverse(universeData.map(u => ({
+          id: u.id,
+          unitId: u.unit_id || u.unitId || `UNIV-${u.id}`,
+          department: u.department || 'Custody Operations',
+          processName: u.process_name || u.processName || u.title,
+          inherentRisk: Number(u.inherent_risk || u.inherentRisk || 8),
+          financialExposure: Number(u.financial_exposure || u.financialExposure || 7),
+          regulatoryImpact: Number(u.regulatory_impact || u.regulatoryImpact || 8),
+          overallScore: Number(u.overall_score || u.overallScore || 7.8),
+          priority: u.priority || 'High',
+          lastAuditDate: u.last_audit_date || u.lastAuditDate || '2025-11-30',
+          leadAuditor: u.lead_auditor || u.leadAuditor || 'Senior Auditor'
+        })));
+      } else if (Array.isArray(fetchedRisks) && fetchedRisks.length > 0) {
+        const ermMappedUniverse = fetchedRisks.map(r => ({
+          id: `ERM-RISK-${r.id}`,
+          unitId: r.code || `UNIV-${r.id}`,
+          department: r.department || 'Custody Operations',
+          processName: r.event || r.description || r.riskTitle || r.title || 'Enterprise Custody Process',
+          inherentRisk: Number(r.inherentRisk ?? r.inherent_score ?? 8),
+          financialExposure: Number(r.impact ?? 7),
+          regulatoryImpact: Number(r.likelihood ?? 8),
+          overallScore: Number(r.residualRisk ?? r.residual_score ?? 7.5),
+          priority: (r.residualRisk >= 15 || r.impact >= 4) ? 'High' : 'Medium',
+          lastAuditDate: new Date().toISOString().split('T')[0],
+          leadAuditor: r.owner || 'Risk Owner'
+        }));
+        setAuditUniverse(ermMappedUniverse);
+      } else {
+        setAuditUniverse(INITIAL_AUDIT_UNIVERSE);
+      }
+
+      if (Array.isArray(findingsData) && findingsData.length > 0) {
+        setFindings(findingsData.map(f => ({
+          id: f.id,
+          findingNumber: f.finding_number || f.findingNumber || `FND-${f.id}`,
+          businessUnit: f.business_unit || f.businessUnit || 'Operations',
           observation: f.observation || f.description || f.title,
           criteria: f.criteria || 'PENCOM Statutory Guidelines',
           rootCause: f.root_cause || f.rootCause || 'Process Gap',
@@ -380,8 +454,8 @@ export const AuditProvider = ({ children }) => {
     }
   };
 
-  const syncFromErmSuite = async () => {
-    setIsSyncing(true);
+  const syncFromErmSuite = async (silent = false) => {
+    if (!silent) setIsSyncing(true);
     try {
       const [fetchedRisks, fetchedControls, fetchedActions, fetchedLosses] = await Promise.all([
         fetch(`${AUDIT_API}/api/risks`).then(r => r.ok ? r.json() : []).catch(() => []),
@@ -411,7 +485,7 @@ export const AuditProvider = ({ children }) => {
         setAuditUniverse(prev => {
           const existingIds = new Set(prev.map(p => p.id));
           const newItems = ermUniverseItems.filter(u => !existingIds.has(u.id));
-          return [...newItems, ...prev];
+          return newItems.length > 0 ? [...newItems, ...prev] : prev;
         });
 
         // Map ERM risks to Audit Findings
@@ -436,7 +510,7 @@ export const AuditProvider = ({ children }) => {
         setFindings(prev => {
           const existingIds = new Set(prev.map(f => f.id));
           const newFindings = ermFindings.filter(f => !existingIds.has(f.id));
-          return [...newFindings, ...prev];
+          return newFindings.length > 0 ? [...newFindings, ...prev] : prev;
         });
 
         syncCount += fetchedRisks.length;
@@ -449,7 +523,7 @@ export const AuditProvider = ({ children }) => {
           code: c.reference_id || c.code || `CTRL-${c.id}`,
           description: c.title || c.description || c.event || 'Internal Safeguard Control',
           type: c.type || 'Preventive',
-          automation: c.automation || 'Automated',
+          automation: normalizeAutomation(c.automation || c.automation_level || c.automation_type),
           designEff: c.design_effectiveness || c.effectiveness || 'Effective',
           operatingEff: c.operating_effectiveness || c.effectiveness || 'Effective',
           owner: c.owner || 'Custody Operations Team',
@@ -459,7 +533,7 @@ export const AuditProvider = ({ children }) => {
         setControls(prev => {
           const existingCodes = new Set(prev.map(c => c.code));
           const newCtrls = mappedControls.filter(m => !existingCodes.has(m.code));
-          return [...newCtrls, ...prev];
+          return newCtrls.length > 0 ? [...newCtrls, ...prev] : (prev.length > 0 ? prev : DEFAULT_COSO_CONTROLS);
         });
         syncCount += fetchedControls.length;
       }
@@ -499,29 +573,41 @@ export const AuditProvider = ({ children }) => {
         setFraudCases(prev => {
           const existingIds = new Set(prev.map(fc => fc.id));
           const newCases = mappedFraudCases.filter(fc => !existingIds.has(fc.id));
-          return [...newCases, ...prev];
+          return newCases.length > 0 ? [...newCases, ...prev] : prev;
         });
         syncCount += fetchedLosses.length;
       }
 
       setLastSyncedAt(new Date());
-      addNotification('RiskINTEGRA ERM Sync Complete', `Successfully synced ERM Risk Register, Control Library, CAP Actions, and Loss Ledger (${syncCount} items processed).`, 'success');
+      if (!silent) {
+        addNotification('RiskINTEGRA ERM Sync Complete', `Successfully synced ERM Risk Register, Control Library, CAP Actions, and Loss Ledger (${syncCount} items processed).`, 'success');
+      }
     } catch (err) {
       console.error('Failed to sync from ERM:', err);
-      addNotification('ERM Sync Error', 'Failed to pull ERM live data. Check backend connection.', 'error');
+      if (!silent) {
+        addNotification('ERM Sync Error', 'Failed to pull ERM live data. Check backend connection.', 'error');
+      }
     } finally {
-      setIsSyncing(false);
+      if (!silent) setIsSyncing(false);
     }
   };
 
-  // Fetch audit records from PostgreSQL on mount, then poll every 30s
+  // Automatic real-time 30-second background polling engine (fetches DB + syncs ERM automatically)
   useEffect(() => {
-    fetchAuditData(false);
+    const runRealtimeSync = async (silentMode = false) => {
+      await fetchAuditData(silentMode);
+      await syncFromErmSuite(silentMode);
+    };
 
-    const pollInterval = setInterval(() => fetchAuditData(true), 30000);
+    // Run immediately on mount
+    runRealtimeSync(false);
 
+    // Poll automatically every 30 seconds
+    const pollInterval = setInterval(() => runRealtimeSync(true), 30000);
+
+    // Re-sync on window focus/tab switch
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') fetchAuditData(true);
+      if (document.visibilityState === 'visible') runRealtimeSync(true);
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
@@ -529,7 +615,7 @@ export const AuditProvider = ({ children }) => {
       clearInterval(pollInterval);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps // eslint-disable-line react-hooks/exhaustive-deps
 
 
   // Risk-based audit planning weights (in-memory only, no localStorage)
