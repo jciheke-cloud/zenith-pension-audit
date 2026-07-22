@@ -14,7 +14,7 @@ const AuditEngagement = () => {
 
   // Review Notes State
   const [reviewNotes, setReviewNotes] = useState([
-    { id: 'rn-1', author: 'Chief Audit Executive (CAE)', text: 'Verify that all PenCom Section 5.2 custody asset confirmation certificates are cross-checked against CBN RTGS statements.', status: 'Cleared', date: '2026-07-10' },
+    { id: 'rn-1', author: 'Chief Audit Executive (CAE)', text: 'Verify that all PenCom Section 5.2 custody asset confirmation certificates are cross-checked against interbank settlement statements.', status: 'Cleared', date: '2026-07-10' },
     { id: 'rn-2', author: 'Lead Reviewer', text: 'Procedure 3 in custody reconciliation requires deeper sample testing—expand sample size from 25 to 50 transactions.', status: 'Open', date: '2026-07-12' }
   ]);
   const [newNoteText, setNewNoteText] = useState('');
@@ -181,7 +181,7 @@ const AuditEngagement = () => {
             <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#fda4af', margin: '1rem 0 0.4rem' }}>Audit Criteria & Regulatory Standards</h4>
             <ul style={{ paddingLeft: '1.2rem', margin: 0, color: 'var(--text-secondary)', fontSize: '0.86rem', lineHeight: '1.6' }}>
               <li>National Pension Commission (PenCom) Guidelines on Custody of Pension Assets (2023 Revision).</li>
-              <li>Central Bank of Nigeria (CBN) Real-Time Gross Settlement (RTGS) reconciliation mandates.</li>
+              <li>PenCom Real-Time Gross Settlement (RTGS) reconciliation guidelines.</li>
               <li>IIA Global Internal Audit Standards (2024 Edition) - Performance & Assurance domains.</li>
               <li>ZPC Internal Operations Policy Manual - Custody Account Sweeping Section 4.2.</li>
             </ul>

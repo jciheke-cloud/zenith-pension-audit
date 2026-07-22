@@ -46,7 +46,7 @@ const ComplianceAndRegulatory = () => {
         <div>
           <h1 className="module-title">Compliance Testing & Regulatory Review Module</h1>
           <p className="module-subtitle">
-            Dedicated oversight portal tracking external examination observations from PenCom, CBN, and Statutory Auditors with Issue Validation retesting.
+            Dedicated oversight portal tracking external examination observations from PenCom and Statutory Auditors with Issue Validation retesting.
           </p>
         </div>
         <div className="header-actions">
@@ -66,7 +66,7 @@ const ComplianceAndRegulatory = () => {
               <span className="badge-chip-info" style={{ marginBottom: '0.4rem', display: 'inline-block' }}>External Assurance Tracking</span>
               <h3 style={{ margin: '0 0 0.4rem', fontSize: '1.35rem', fontWeight: 800 }}>Nigerian Pension Industry Regulatory Readiness</h3>
               <p style={{ margin: 0, fontSize: '0.86rem', color: 'var(--text-secondary)', maxWidth: '750px', lineHeight: '1.5' }}>
-                All observations raised during National Pension Commission (PenCom) Risk-Based Examinations and Central Bank of Nigeria (CBN) RTGS inspections must undergo mandatory internal audit validation before official closure with regulators.
+                All observations raised during National Pension Commission (PenCom) Risk-Based Examinations must undergo mandatory internal audit validation before official closure with regulators.
               </p>
             </div>
           </div>
@@ -87,12 +87,12 @@ const ComplianceAndRegulatory = () => {
 
       {/* Filter Tabs */}
       <div className="nav-tab-container" style={{ flexWrap: 'wrap' }}>
-        {['All', 'PenCom', 'CBN', 'Statutory / External Audit'].map(t => (
+        {['All', 'PenCom', 'Statutory / External Audit'].map(t => (
           <button
             key={t}
             onClick={() => setActiveTab(t)}
             className={`nav-tab-btn ${activeTab === t ? 'active' : ''}`}
-            title={`Filter regulatory examination findings by authority: ${t === 'All' ? 'All Regulatory Bodies (PenCom, CBN, External Audit)' : t}.`}
+            title={`Filter regulatory examination findings by authority: ${t === 'All' ? 'All Regulatory Bodies (PenCom, External Audit)' : t}.`}
           >
             <span style={{ fontWeight: 600 }}>{t === 'All' ? 'All Regulatory Bodies' : t}</span>
           </button>
@@ -128,9 +128,9 @@ const ComplianceAndRegulatory = () => {
                 return (
                   <tr key={rev.id}>
                     <td className="tabular-nums" style={{ fontWeight: 800, color: '#60a5fa' }}>{rev.id}</td>
-                    <td style={{ fontWeight: 700, fontSize: '0.95rem' }}>{rev.title || rev.reviewTitle || 'Statutory PenCom / CBN Examination'}</td>
+                    <td style={{ fontWeight: 700, fontSize: '0.95rem' }}>{rev.title || rev.reviewTitle || 'Statutory PenCom Examination'}</td>
                     <td>
-                      <span className="badge-chip-purple">{rev.regulatoryBody || 'PenCom / CBN'}</span>
+                      <span className="badge-chip-purple">{rev.regulatoryBody || 'PenCom'}</span>
                     </td>
                     <td className="tabular-nums" style={{ color: 'var(--text-muted)' }}>{rev.date || rev.inspectionDate || '2026-03-15'}</td>
                     <td className="tabular-nums" style={{ fontWeight: 800, fontSize: '1.05rem', color: issues > 0 ? '#F59E0B' : '#10B981' }}>
@@ -176,7 +176,6 @@ const ComplianceAndRegulatory = () => {
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Regulatory Authority</label>
                   <select value={body} onChange={e => setBody(e.target.value)} className="form-select">
                     <option value="PenCom (National Pension Commission)">PenCom (National Pension Commission)</option>
-                    <option value="CBN (Central Bank of Nigeria)">CBN (Central Bank of Nigeria)</option>
                     <option value="Statutory / External Audit (PwC/KPMG)">Statutory External Audit</option>
                     <option value="ISO Surveillance Body">ISO Surveillance Body</option>
                   </select>

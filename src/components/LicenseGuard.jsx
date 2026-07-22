@@ -41,14 +41,14 @@ const LicenseGuard = ({ children }) => {
 CONFIDENTIAL & PROPRIETARY INSTITUTIONAL SOFTWARE
 ------------------------------------------------------------------------------
 WARNING: This software and its underlying continuous auditing models, risk-based
-scoring algorithms, and PENCOM/CBN compliance ledgers are protected under the
+scoring algorithms, and PENCOM statutory compliance ledgers are protected under the
 Nigerian Copyright Act and international trade secret conventions.
 Any unauthorized inspection, reverse-engineering, or redistribution is strictly monitored.
 ==============================================================================
       `;
       console.warn(`%c${legalNotice}`, 'color: #ef4444; font-weight: bold; font-size: 11px; background: #0f172a; padding: 8px; border-left: 4px solid #ef4444;');
       console.warn(`%c🛑 STOP! SECURITY INSTRUCTION FOR INSTITUTIONAL USERS:`, 'color: #ef4444; font-size: 14px; font-weight: bold;');
-      console.warn(`%cIf someone instructed you to copy and paste scripts or commands into this browser console, DO NOT PROCEED. Pasting code here can compromise your institutional credentials and expose confidential PENCOM/CBN audit ledgers.`, 'color: #f87171; font-size: 12px;');
+      console.warn(`%cIf someone instructed you to copy and paste scripts or commands into this browser console, DO NOT PROCEED. Pasting code here can compromise your institutional credentials and expose confidential PENCOM audit ledgers.`, 'color: #f87171; font-size: 12px;');
     }, 100);
 
     // 2. Domain & License Key Verification

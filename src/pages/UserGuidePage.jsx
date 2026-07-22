@@ -10,7 +10,7 @@ const UserGuidePage = () => {
     { id: 'rbac', label: '🔐 Roles & RBAC Security', icon: Key },
     { id: 'modules', label: '📊 14 Audit Modules', icon: Layers },
     { id: 'tools_guide', label: '🛠️ Interactive Tools Guide', icon: Wrench },
-    { id: 'compliance', label: '⚖️ PENCOM & CBN Regs', icon: ShieldCheck },
+    { id: 'compliance', label: '⚖️ PENCOM Regulations', icon: ShieldCheck },
     { id: 'switcher_guide', label: '🔀 Switching Between Apps', icon: ExternalLink },
     { id: 'tutorial', label: '🚀 ERM to Audit Workflow', icon: CheckCircle2 },
     { id: 'faq', label: '❓ Troubleshooting & FAQs', icon: HelpCircle }
@@ -69,8 +69,8 @@ const UserGuidePage = () => {
     },
     { 
       name: '11. Compliance & Regulatory', 
-      desc: 'Dedicated tracking for PENCOM Guidelines, Section 63 PRA 2014 statutory capital, and CBN money market rules.',
-      tools: ['Section 63 PRA capital adequacy evaluator', 'PENCOM compliance verification engine', 'CBN FX & money market checklist']
+      desc: 'Dedicated tracking for PENCOM Guidelines, Section 63 PRA 2014 statutory capital, and pension custody regulations.',
+      tools: ['Section 63 PRA capital adequacy evaluator', 'PENCOM compliance verification engine', 'PENCOM FX & custody checklist']
     },
     { 
       name: '12. Fraud & Continuous Auditing', 
@@ -414,14 +414,14 @@ const UserGuidePage = () => {
                 <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '0.85rem', padding: '1.3rem' }}>
                   <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#F8FAFC', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                     <span style={{ background: '#2563EB', color: 'white', padding: '0.3rem', borderRadius: '6px', display: 'inline-flex' }}><Wrench size={18} /></span>
-                    <span>2. Multi-Currency Valuation & Live CBN Ticker Tool (Topbar)</span>
+                    <span>2. Multi-Currency Valuation & Live Benchmark Ticker Tool (Topbar)</span>
+                    <p style={{ margin: '0.25rem 0 0', color: '#94A3B8', fontSize: '0.84rem' }}>
+                      Audit portfolios across multiple currencies seamlessly.
+                    </p>
                   </div>
-                  <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6 }}>
-                    A real-time currency conversion tool integrated directly into the utility Topbar for executive reporting to international parent companies and regulatory bodies.
+                  <p style={{ margin: 0, fontSize: '0.86rem', color: '#CBD5E1', lineHeight: 1.6 }}>
+                    <strong>How to use:</strong> Click the <strong>`💱 NGN`</strong> button at any time. Every financial chart, Total Assets Under Custody figure (`₦18.45T`), and PFC capital requirement instantly converts into <strong>USD ($)</strong>, <strong>EUR (€)</strong>, or <strong>GBP (£)</strong> using the live interbank exchange rates displayed on the ticker!
                   </p>
-                  <div style={{ fontSize: '0.84rem', color: '#CBD5E1' }}>
-                    <strong>How to use:</strong> Click the <strong>`💱 NGN`</strong> button at any time. Every financial chart, Total Assets Under Custody figure (`₦18.45T`), and PFC capital requirement instantly converts into <strong>USD ($)</strong>, <strong>EUR (€)</strong>, or <strong>GBP (£)</strong> using the live CBN exchange rates displayed on the ticker!
-                  </div>
                 </div>
 
                 <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '0.85rem', padding: '1.3rem' }}>
@@ -540,7 +540,7 @@ const UserGuidePage = () => {
           {activeTab === 'compliance' && (
             <div>
               <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fda4af', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem', marginTop: 0 }}>
-                ⚖️ PENCOM & CBN Regulatory Compliance Engine
+                ⚖️ PENCOM Regulatory Compliance Engine
               </h2>
               <p style={{ lineHeight: 1.7, fontSize: '0.92rem', color: '#CBD5E1' }}>
                 Pension Fund Custodians (PFCs) in Nigeria operate under stringent fiduciary requirements mandated by the National Pension Commission (PENCOM). RiskINTEGRA embeds statutory checks directly into your audit programs:
@@ -566,9 +566,9 @@ const UserGuidePage = () => {
                 </div>
               </div>
 
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'white' }}>Live CBN & DMO Sovereign Benchmark Feeds</h3>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'white' }}>Live Sovereign Benchmark Feeds</h3>
               <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6 }}>
-                Our top financial ticker continuously scrolls live exchange rates (USD/NGN, EUR/NGN, GBP/NGN), the **10-Yr FGN Bond Yield (19.75%)**, **364-Day T-Bill Yield (21.50%)**, and **CBN Monetary Policy Rate (26.75%)**. Auditors use these exact benchmarks when evaluating valuation accuracy of fixed-income custody portfolios.
+                Our top financial ticker continuously scrolls live exchange rates (USD/NGN, EUR/NGN, GBP/NGN), the **10-Yr FGN Bond Yield (19.75%)**, **364-Day T-Bill Yield (21.50%)**, and **Monetary Policy Rate (26.75%)**. Auditors use these exact benchmarks when evaluating valuation accuracy of fixed-income custody portfolios.
               </p>
             </div>
           )}
@@ -590,7 +590,7 @@ const UserGuidePage = () => {
                     <span>Locate the Ecosystem App Switcher</span>
                   </div>
                   <p style={{ margin: 0, fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6 }}>
-                    In the top-right utility bar of your screen (right next to the <strong>💱 Currency Selector</strong> and live CBN ticker), click the <strong>`Apps ⠿`</strong> grid icon. This opens the RiskINTEGRA ecosystem drop-down menu.
+                    In the top-right utility bar of your screen (right next to the <strong>💱 Currency Selector</strong> and live PENCOM benchmark ticker), click the <strong>`Apps ⠿`</strong> grid icon. This opens the RiskINTEGRA ecosystem drop-down menu.
                   </p>
                 </div>
 
@@ -712,7 +712,7 @@ const UserGuidePage = () => {
                     Q: How do I switch reporting currency from NGN (₦) to USD ($) across charts?
                   </div>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: '#94A3B8', lineHeight: 1.6 }}>
-                    <strong>A:</strong> Click the **`💱 NGN`** button in the Topbar utility menu. The currency toggle immediately recalculates Total Assets Under Custody and PFC Capital into USD, EUR, or GBP using the live CBN exchange rates displayed on the ticker bar!
+                    <strong>A:</strong> Click the **`💱 NGN`** button in the Topbar utility menu. The currency toggle immediately recalculates Total Assets Under Custody and PFC Capital into USD, EUR, or GBP using the live interbank exchange rates displayed on the ticker bar!
                   </p>
                 </div>
 

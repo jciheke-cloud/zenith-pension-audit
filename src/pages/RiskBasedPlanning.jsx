@@ -167,7 +167,7 @@ const RiskBasedPlanning = () => {
               style={{ width: '100%', accentColor: '#3B82F6', cursor: 'pointer' }}
             />
             <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.3rem' }}>
-              PenCom & CBN regulatory examination scrutiny and compliance mandates
+              PENCOM regulatory examination scrutiny and compliance mandates
             </span>
           </div>
 

@@ -25,6 +25,7 @@ import ReportsAndCommittee from './pages/ReportsAndCommittee';
 import ErmSyncPage from './pages/ErmSyncPage';
 import UserGuidePage from './pages/UserGuidePage';
 import CbnDmoMacroTicker from './components/CbnDmoMacroTicker';
+import PortalLanding from './pages/PortalLanding';
 
 const App = () => {
   const { isAuthenticated, loading } = useContext(AuditContext);
@@ -35,6 +36,10 @@ const App = () => {
         Loading Internal Audit Suite...
       </div>
     );
+  }
+
+  if (window.location.pathname === '/portal') {
+    return <PortalLanding />;
   }
 
   if (!isAuthenticated) {
@@ -56,6 +61,7 @@ const App = () => {
             <NotificationDrawer />
             <ToastContainer />
             <Routes>
+              <Route path="/portal" element={<PortalLanding />} />
               <Route path="/" element={<ExecutiveDashboard />} />
               <Route path="/index.html" element={<ExecutiveDashboard />} />
               <Route path="/master-data" element={<MasterData />} />

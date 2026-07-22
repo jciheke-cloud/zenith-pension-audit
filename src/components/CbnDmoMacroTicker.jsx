@@ -130,11 +130,11 @@ const CbnDmoMacroTicker = () => {
   const timerRef = useRef(null);
 
   const [macroItems, setMacroItems] = useState([
-    { id: 'cbn-mpr',      category: 'CBN MPR',        label: 'Monetary Policy Rate',       value: `${FALLBACK.mpr}%`,       change: '+50 bps', trend: 'up',      iconType: 'Landmark',    iconColor: '#F87171' },
+    { id: 'cbn-mpr',      category: 'POLICY RATE',    label: 'Monetary Policy Rate',       value: `${FALLBACK.mpr}%`,       change: '+50 bps', trend: 'up',      iconType: 'Landmark',    iconColor: '#F87171' },
     { id: 'dmo-10yr',     category: 'DMO FGN BOND',   label: '10-Yr Benchmark Yield',      value: `${FALLBACK.bond10yr}%`,  change: '+15 bps', trend: 'up',      iconType: 'FileText',    iconColor: '#34D399' },
     { id: 'dmo-t-bill',   category: 'DMO T-BILLS',    label: '364-Day Cut-Off Yield',      value: `${FALLBACK.tbill364}%`,  change: 'Stable',  trend: 'neutral', iconType: 'FileText',    iconColor: '#60A5FA' },
-    { id: 'cbn-fx',       category: 'CBN NAFEX',      label: 'Official USD/NGN Window',    value: `₦${FALLBACK.usdNgn.toFixed(2)}/$`, change: '–',  trend: 'neutral', iconType: 'DollarSign', iconColor: '#38BDF8' },
-    { id: 'cbn-cpi',      category: 'CBN INFLATION',  label: 'Headline Inflation (YoY)',   value: `${FALLBACK.cpi}%`,       change: '–',       trend: 'neutral', iconType: 'Activity',    iconColor: '#FBBF24' },
+    { id: 'cbn-fx',       category: 'OFFICIAL FX',    label: 'Official USD/NGN Window',    value: `₦${FALLBACK.usdNgn.toFixed(2)}/$`, change: '–',  trend: 'neutral', iconType: 'DollarSign', iconColor: '#38BDF8' },
+    { id: 'cbn-cpi',      category: 'HEADLINE CPI',   label: 'Headline Inflation (YoY)',   value: `${FALLBACK.cpi}%`,       change: '–',       trend: 'neutral', iconType: 'Activity',    iconColor: '#FBBF24' },
     { id: 'pencom-floor', category: 'PENCOM STAT.',   label: 'Custodial Paid-Up Floor',    value: '₦25B + 0.1% AUC',       change: 'Enforced',trend: 'neutral', iconType: 'Landmark',    iconColor: '#A855F7' },
     { id: 'fgn-spread',   category: 'SOVEREIGN CURVE',label: '10Y vs 1Y Yield Spread',     value: `${FALLBACK.spread} bps`, change: 'Inverted',trend: 'down',    iconType: 'TrendingDown',iconColor: '#FB7185' },
   ]);
@@ -269,7 +269,7 @@ const CbnDmoMacroTicker = () => {
             display: 'inline-block',
             animation: fetchStatus === 'live' ? 'tickerPulse 2s ease-in-out infinite' : 'none',
           }} />
-          CBN / DMO MACRO PULSE
+          PENCOM & MACRO PULSE
         </div>
 
         {/* ── Scrolling ticker ───────────────────────────────────────────── */}
@@ -345,7 +345,7 @@ const CbnDmoMacroTicker = () => {
           <button
             onClick={fetchLiveData}
             disabled={isRefreshing}
-            title="Sync live rates now from CBN, DMO and FX sources"
+            title="Sync live rates now from PENCOM, DMO and FX sources"
             style={{
               display: 'flex', alignItems: 'center', gap: '0.3rem',
               background: isRefreshing ? 'rgba(255,255,255,0.04)' : 'rgba(99,102,241,0.12)',

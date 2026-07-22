@@ -1,8 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuditContext } from '../context/AuditContext';
-import { Database, Plus, Search, Layers, ShieldCheck, Filter, Edit2, Trash2 } from 'lucide-react';
+import { Database, Plus, Search, Layers, ShieldCheck, Filter, Edit2, Trash2, Users } from 'lucide-react';
 import AuditDataUpload from '../components/AuditDataUpload';
+import AuditUserManagementModal from '../components/AuditUserManagementModal';
 
 const MasterData = () => {
   const navigate = useNavigate();
@@ -27,6 +28,9 @@ const MasterData = () => {
   const [procCode, setProcCode] = useState('');
   const [procLead, setProcLead] = useState('Lead Senior Auditor');
   const [procFreq, setProcFreq] = useState('Quarterly');
+
+  // Audit User Management Modal State
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
 
   const handleStartEditBu = (bu) => {
     if (!verifyRbacOrAlert('edit', 'universe')) return;
@@ -167,6 +171,14 @@ const MasterData = () => {
           </p>
         </div>
         <div className="header-actions">
+          <button 
+            onClick={() => setIsUserModalOpen(true)} 
+            className="btn-secondary"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#6ee7b7' }}
+          >
+            <Users size={16} />
+            <span>Audit User Management</span>
+          </button>
           <AuditDataUpload targetModule="universe" buttonText="Batch Universe Ingestion" />
           {activeTab === 'bus' ? (
             <button onClick={() => setIsBuModalOpen(true)} className="btn-primary">
@@ -475,6 +487,11 @@ const MasterData = () => {
           </div>
         </div>
       )}
+      {/* Audit User Management Modal */}
+      <AuditUserManagementModal 
+        isOpen={isUserModalOpen} 
+        onClose={() => setIsUserModalOpen(false)} 
+      />
     </div>
   );
 };
