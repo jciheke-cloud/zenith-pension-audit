@@ -249,7 +249,15 @@ export const AuditProvider = ({ children }) => {
   const [ermActions, setErmActions] = useState([]);
   const [ermLosses, setErmLosses] = useState([]);
 
-  const AUDIT_API = (import.meta.env.VITE_AWS_API_URL || '').replace(/\/$/, '');
+  const getApiBase = () => {
+    if (import.meta.env.VITE_AWS_API_URL) return import.meta.env.VITE_AWS_API_URL.replace(/\/$/, '');
+    if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL.replace(/\/$/, '');
+    if (typeof window !== 'undefined' && (window.location.port === '5173' || window.location.port === '5174' || window.location.port === '3000')) {
+      return 'http://localhost:5000';
+    }
+    return '';
+  };
+  const AUDIT_API = getApiBase();
 
   const fetchAuditData = async (silent = false) => {
     if (!silent) setIsSyncing(true);
@@ -269,6 +277,29 @@ export const AuditProvider = ({ children }) => {
       if (Array.isArray(fetchedActions)) setErmActions(fetchedActions);
       if (Array.isArray(fetchedLosses)) setErmLosses(fetchedLosses);
 
+      // Sync Controls to Internal Controls State
+      if (Array.isArray(fetchedControls) && fetchedControls.length > 0) {
+        const mappedCtrls = fetchedControls.map(c => ({
+          id: c.id ? `CTRL-${c.id}` : `CTRL-${Date.now()}`,
+          code: c.reference_id || c.code || `CTRL-${c.id}`,
+          description: c.title || c.description || c.event || 'Internal Safeguard Control',
+          type: c.type || 'Preventive',
+          automation: c.automation || 'Automated',
+          designEff: c.design_effectiveness || c.effectiveness || 'Effective',
+          operatingEff: c.operating_effectiveness || c.effectiveness || 'Effective',
+          owner: c.owner || 'Custody Operations Team',
+          lastTested: c.last_tested || new Date().toISOString().split('T')[0]
+        }));
+        setControls(prev => {
+          const existingCodes = new Set(prev.map(c => c.code));
+          const newCtrls = mappedCtrls.filter(m => !existingCodes.has(m.code));
+          return newCtrls.length > 0 ? [...newCtrls, ...prev] : (prev.length > 0 ? prev : INITIAL_INTERNAL_CONTROLS);
+        });
+      } else {
+        setControls(prev => prev.length > 0 ? prev : INITIAL_INTERNAL_CONTROLS);
+      }
+
+      // Sync ERM Risks & Universe Data
       if (Array.isArray(universeData) && universeData.length > 0) {
         setAuditUniverse(universeData.map(u => ({
           id: u.id,
@@ -288,7 +319,7 @@ export const AuditProvider = ({ children }) => {
           id: `ERM-RISK-${r.id}`,
           unitId: r.code || `UNIV-${r.id}`,
           department: r.department || 'Custody Operations',
-          processName: r.event || r.description || r.title || 'Enterprise Custody Process',
+          processName: r.event || r.description || r.riskTitle || r.title || 'Enterprise Custody Process',
           inherentRisk: Number(r.inherentRisk ?? r.inherent_score ?? 8),
           financialExposure: Number(r.impact ?? 7),
           regulatoryImpact: Number(r.likelihood ?? 8),

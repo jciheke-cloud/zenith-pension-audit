@@ -14,6 +14,16 @@ const legalBanner = `/*!
 export default defineConfig({
   base: './',
   plugins: [react()],
+  server: {
+    port: 5174,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  },
   build: {
     sourcemap: false, // Prevent source reconstruction via DevTools
     minify: 'terser',
