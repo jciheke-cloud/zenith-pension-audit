@@ -63,17 +63,27 @@ const MasterData = () => {
     addNotification('Process Deleted', `Auditable process "${procCodeVal}" removed from Master Universe.`, 'info');
   };
 
-  const filteredBus = businessUnits.filter(bu => 
-    bu.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    bu.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    bu.head.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const getItemBu = (item) => item.businessUnit || item.department || item.business_unit || 'Custody Operations';
+  const getItemCode = (item) => item.code || item.unitId || item.unit_id || `PROC-${item.id}`;
+  const getItemName = (item) => item.processName || item.process_name || item.title || item.name || 'Custody Process';
+  const getItemLead = (item) => item.leadAuditor || item.lead_auditor || item.owner || 'Senior Lead Auditor';
 
-  const filteredUniverse = auditUniverse.filter(item => {
-    const matchesSearch = item.processName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          item.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          item.leadAuditor.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesBu = filterBu === 'All' || item.businessUnit === filterBu;
+  const filteredBus = (businessUnits || []).filter(bu => {
+    const name = (bu.name || bu.department || '').toLowerCase();
+    const code = (bu.code || bu.id || '').toLowerCase();
+    const head = (bu.head || bu.owner || '').toLowerCase();
+    const query = searchTerm.toLowerCase();
+    return name.includes(query) || code.includes(query) || head.includes(query);
+  });
+
+  const filteredUniverse = (auditUniverse || []).filter(item => {
+    const name = getItemName(item).toLowerCase();
+    const code = getItemCode(item).toLowerCase();
+    const lead = getItemLead(item).toLowerCase();
+    const bu = getItemBu(item);
+    const query = searchTerm.toLowerCase();
+    const matchesSearch = name.includes(query) || code.includes(query) || lead.includes(query);
+    const matchesBu = filterBu === 'All' || bu === filterBu || bu.includes(filterBu) || filterBu.includes(bu);
     return matchesSearch && matchesBu;
   });
 
@@ -337,12 +347,12 @@ const MasterData = () => {
               <tbody>
                 {filteredUniverse.map(item => (
                   <tr key={item.id}>
-                    <td className="tabular-nums" style={{ fontWeight: 800, color: '#3B82F6' }}>{item.code || item.id || 'PROC-001'}</td>
-                    <td style={{ fontWeight: 700 }}>{item.processName || item.title || 'Core Auditable Process Review'}</td>
-                    <td><span className="badge-chip-purple">{item.businessUnit || item.department || 'Operations'}</span></td>
-                    <td className="tabular-nums">{item.frequency || 'Annual'}</td>
-                    <td className="tabular-nums" style={{ color: 'var(--text-muted)' }}>{item.lastAudited || item.lastAuditDate || '2025-11-15'}</td>
-                    <td style={{ fontSize: '0.84rem' }}>{item.leadAuditor || item.owner || 'Lead Senior Auditor'}</td>
+                    <td className="tabular-nums" style={{ fontWeight: 800, color: '#3B82F6' }}>{getItemCode(item)}</td>
+                    <td style={{ fontWeight: 700 }}>{getItemName(item)}</td>
+                    <td><span className="badge-chip-purple">{getItemBu(item)}</span></td>
+                    <td className="tabular-nums">{item.frequency || 'Quarterly'}</td>
+                    <td className="tabular-nums" style={{ color: 'var(--text-muted)' }}>{item.lastAuditDate || item.lastAudited || '2026-03-31'}</td>
+                    <td style={{ fontSize: '0.84rem' }}>{getItemLead(item)}</td>
                     <td>
                       <span className="badge-success">Auditable Unit</span>
                     </td>
@@ -357,7 +367,7 @@ const MasterData = () => {
                           <Edit2 size={13} />
                         </button>
                         <button
-                          onClick={() => handleDeleteProc(item.id, item.code || item.processName)}
+                          onClick={() => handleDeleteProc(item.id, getItemCode(item))}
                           className="btn-secondary"
                           style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('delete', 'universe') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('delete', 'universe') ? '#F87171' : 'var(--text-muted)' }}
                           title={checkRbacPermission('delete', 'universe') ? "Delete Auditable Process (🗑️)" : "🔒 RBAC Restricted"}
