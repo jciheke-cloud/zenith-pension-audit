@@ -82,12 +82,7 @@ export const AuditProvider = ({ children }) => {
       return !!session?.user;
     } catch (e) { return false; }
   });
-  const [loading, setLoading] = useState(() => {
-    try {
-      const session = JSON.parse(sessionStorage.getItem('zpc_auth_session'));
-      return !session?.user;
-    } catch (e) { return true; }
-  });
+  const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const session = JSON.parse(sessionStorage.getItem('zpc_auth_session'));
