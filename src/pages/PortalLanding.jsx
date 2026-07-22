@@ -114,7 +114,7 @@ const PortalLanding = () => {
           </h1>
 
           <p style={{ fontSize: '1rem', color: '#94a3b8', margin: 0, lineHeight: 1.6 }}>
-            Select your department portal below. Strict departmental segregation of duties and independence standards enforced.
+            Select your department portal below.
           </p>
         </div>
 
