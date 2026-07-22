@@ -38,7 +38,8 @@ const App = () => {
     );
   }
 
-  if (window.location.pathname === '/portal') {
+  const currentPath = window.location.pathname.toLowerCase();
+  if (currentPath.includes('/portal') || currentPath.includes('/landing')) {
     return <PortalLanding />;
   }
 
