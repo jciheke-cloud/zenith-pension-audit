@@ -41,11 +41,23 @@ const AppSwitcherDropdown = () => {
   };
 
   const handleSwitchToErm = () => {
-    let targetBase = ermUrl || import.meta.env.VITE_ERM_APP_URL || '/';
+    // Clear any stale local storage override that points to audit-portal
+    const stored = localStorage.getItem('ZPC_ERM_URL_OVERRIDE');
+    if (stored && (stored.includes('audit-portal') || stored.includes('localhost'))) {
+      localStorage.removeItem('ZPC_ERM_URL_OVERRIDE');
+    }
+
+    let targetBase = '/';
+    if (window.location.pathname.includes('/audit-portal')) {
+      targetBase = window.location.origin + '/';
+    } else if (ermUrl && !ermUrl.includes('audit-portal')) {
+      targetBase = ermUrl;
+    }
+    if (!targetBase.endsWith('/')) targetBase += '/';
     
     let targetRole = 'maker';
     try {
-      const session = JSON.parse(localStorage.getItem('zpc_auth_session'));
+      const session = JSON.parse(localStorage.getItem('zpc_auth_session') || sessionStorage.getItem('zpc_auth_session') || '{}');
       if (session?.user?.role) {
         targetRole = session.user.role;
       } else {
@@ -56,7 +68,6 @@ const AppSwitcherDropdown = () => {
         else if (roleId.includes('owner') || roleId.includes('manager') || roleId.includes('maker')) targetRole = 'maker';
       }
     } catch (e) {
-      // Fallback dynamic mapping
       const roleId = (currentUser?.roleId || currentRole?.id || '').toLowerCase();
       if (roleId.includes('admin')) targetRole = 'admin';
       else if (roleId.includes('audit') || roleId.includes('cae')) targetRole = 'auditor';

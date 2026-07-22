@@ -30,6 +30,18 @@ import {
 
 export const AuditContext = createContext();
 
+export const normalizeAutomation = (val) => {
+  if (!val) return 'Automated';
+  const str = String(val).toLowerCase();
+  if (str.includes('auto') || str.includes('full') || str.includes('system') || str === 'true' || str === '1') {
+    return 'Automated';
+  }
+  if (str.includes('semi') || str.includes('hybrid') || str.includes('part')) {
+    return 'Semi-Automated';
+  }
+  return 'Manual';
+};
+
 export const AuditProvider = ({ children }) => {
 
   const resolveAuditRole = (roleStr, emailStr = '', auditRoleStr = '') => {
