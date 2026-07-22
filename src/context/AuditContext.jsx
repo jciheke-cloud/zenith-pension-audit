@@ -361,12 +361,13 @@ export const AuditProvider = ({ children }) => {
 
       let syncCount = 0;
 
+      // 1. Sync ERM Risks -> Audit Universe & Audit Findings
       if (Array.isArray(fetchedRisks) && fetchedRisks.length > 0) {
         const ermUniverseItems = fetchedRisks.map(r => ({
           id: `ERM-RISK-${r.id}`,
           unitId: r.code || `UNIV-ERM-${r.id}`,
           department: r.department || 'Custody Operations',
-          processName: r.event || r.description || r.title || 'Enterprise Risk Process',
+          processName: r.event || r.riskTitle || r.description || r.title || 'Enterprise Risk Process',
           inherentRisk: Number(r.inherentRisk ?? r.inherent_score ?? 8),
           financialExposure: Number(r.impact ?? 7),
           regulatoryImpact: Number(r.likelihood ?? 8),
@@ -381,29 +382,58 @@ export const AuditProvider = ({ children }) => {
           const newItems = ermUniverseItems.filter(u => !existingIds.has(u.id));
           return [...newItems, ...prev];
         });
+
+        // Map ERM risks to Audit Findings
+        const ermFindings = fetchedRisks.map(r => ({
+          id: `FND-ERM-${r.id}`,
+          findingNumber: `FND-ERM-${r.id}`,
+          businessUnit: r.department || 'Custody Operations',
+          observation: `ERM Flagged Risk: ${r.event || r.riskTitle || r.description}`,
+          criteria: 'PENCOM Prudential & Section 63 Regulatory Guidelines',
+          rootCause: r.category ? `Risk Category Gap: ${r.category}` : 'Operational Control Deficiency',
+          likelihood: Number(r.likelihood || 5),
+          impact: Number(r.impact || 6),
+          residualRisk: Number(r.residualRisk || 30),
+          priority: (r.residualRisk >= 15 || r.impact >= 4) ? 'High' : 'Medium',
+          severity: (r.residualRisk >= 15 || r.impact >= 4) ? 'High' : 'Medium',
+          status: 'Open',
+          managementResponse: 'Assigned for immediate internal audit control testing.',
+          remediationDate: '2026-09-30',
+          auditor: r.owner || 'Lead Risk Auditor'
+        }));
+
+        setFindings(prev => {
+          const existingIds = new Set(prev.map(f => f.id));
+          const newFindings = ermFindings.filter(f => !existingIds.has(f.id));
+          return [...newFindings, ...prev];
+        });
+
         syncCount += fetchedRisks.length;
       }
 
+      // 2. Sync ERM Controls -> Internal Controls Register
       if (Array.isArray(fetchedControls) && fetchedControls.length > 0) {
+        const mappedControls = fetchedControls.map(c => ({
+          id: c.id ? `CTRL-${c.id}` : `CTRL-${Date.now()}`,
+          code: c.reference_id || c.code || `CTRL-${c.id}`,
+          description: c.title || c.description || c.event || 'Internal Safeguard Control',
+          type: c.type || 'Preventive',
+          automation: c.automation || 'Automated',
+          designEff: c.design_effectiveness || c.effectiveness || 'Effective',
+          operatingEff: c.operating_effectiveness || c.effectiveness || 'Effective',
+          owner: c.owner || 'Custody Operations Team',
+          lastTested: c.last_tested || new Date().toISOString().split('T')[0]
+        }));
+
         setControls(prev => {
           const existingCodes = new Set(prev.map(c => c.code));
-          const mapped = fetchedControls.map(c => ({
-            id: c.id || `CTRL-${Date.now()}`,
-            code: c.reference_id || c.code || `CTRL-${c.id}`,
-            name: c.title || c.description,
-            domain: c.category || 'Governance & Oversight',
-            type: c.type || 'Preventive',
-            frequency: c.frequency || 'Continuous',
-            owner: c.owner || 'Custody Ops',
-            effectiveness: c.design_effectiveness || c.effectiveness || 'Strong',
-            rating: Number(c.overall_rating || c.rating || 90)
-          }));
-          const newCtrls = mapped.filter(m => !existingCodes.has(m.code));
+          const newCtrls = mappedControls.filter(m => !existingCodes.has(m.code));
           return [...newCtrls, ...prev];
         });
         syncCount += fetchedControls.length;
       }
 
+      // 3. Sync ERM Actions -> Audit Finding Remediation Status
       if (Array.isArray(fetchedActions) && fetchedActions.length > 0) {
         setFindings(prev => prev.map(f => {
           const matchingAction = fetchedActions.find(a => 
@@ -422,11 +452,32 @@ export const AuditProvider = ({ children }) => {
         syncCount += fetchedActions.length;
       }
 
+      // 4. Sync ERM Custodial Losses -> Audit Fraud & Forensic Cases
+      if (Array.isArray(fetchedLosses) && fetchedLosses.length > 0) {
+        const mappedFraudCases = fetchedLosses.map(l => ({
+          id: `FRD-LOSS-${l.id}`,
+          title: `Custodial Loss Ingestion: ${l.event || l.description}`,
+          department: l.department || 'Custody Operations',
+          reportedDate: l.date || new Date().toISOString().split('T')[0],
+          financialImpact: Number(l.amount || 0),
+          recoveredAmount: Number(l.recovered_amount || 0),
+          leadInvestigator: l.owner || 'Forensic Audit Lead',
+          status: l.status === 'Resolved' ? 'Closed - Remediated' : 'Under Forensic Audit'
+        }));
+
+        setFraudCases(prev => {
+          const existingIds = new Set(prev.map(fc => fc.id));
+          const newCases = mappedFraudCases.filter(fc => !existingIds.has(fc.id));
+          return [...newCases, ...prev];
+        });
+        syncCount += fetchedLosses.length;
+      }
+
       setLastSyncedAt(new Date());
-      addNotification('RiskINTEGRA ERM Sync Complete', `Successfully ingested live data from ERM (${syncCount} records processed).`, 'success');
+      addNotification('RiskINTEGRA ERM Sync Complete', `Successfully synced ERM Risk Register, Control Library, CAP Actions, and Loss Ledger (${syncCount} items processed).`, 'success');
     } catch (err) {
       console.error('Failed to sync from ERM:', err);
-      addToast('❌ Failed to pull ERM live data.', 'danger');
+      addNotification('ERM Sync Error', 'Failed to pull ERM live data. Check backend connection.', 'error');
     } finally {
       setIsSyncing(false);
     }
