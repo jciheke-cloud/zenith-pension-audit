@@ -374,7 +374,7 @@ export const AuditProvider = ({ children }) => {
           code: c.reference_id || c.code || `CTRL-${c.id}`,
           description: c.title || c.description || c.event || 'Internal Safeguard Control',
           type: c.type || 'Preventive',
-          automation: normalizeAutomation(c.automation || c.automation_level || c.automation_type),
+          automation: (typeof normalizeAutomation === 'function' ? normalizeAutomation(c.automation || c.automation_level || c.automation_type) : 'Automated'),
           designEff: c.design_effectiveness || c.effectiveness || 'Effective',
           operatingEff: c.operating_effectiveness || c.effectiveness || 'Effective',
           owner: c.owner || 'Custody Operations Team',
