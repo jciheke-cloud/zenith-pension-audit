@@ -1,4 +1,4 @@
-name: Build & Verify Audit Portal
+name: Build, Verify & Deploy Audit Portal
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,3 +28,22 @@ jobs:
 
       - name: Verify Dist Output
         run: test -f dist/index.html && echo "✅ Audit App production bundle successfully generated!"
+
+      - name: Configure AWS Credentials
+        if: github.ref == 'refs/heads/main' && secrets.AWS_ACCESS_KEY_ID != ''
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Deploy Audit Portal to AWS S3
+        if: github.ref == 'refs/heads/main' && secrets.AWS_ACCESS_KEY_ID != ''
+        run: |
+          aws s3 sync dist/ s3://riskintegra-erm-frontend-frontendbucket-xz3sjsennvjl/audit-portal/ --delete --cache-control "no-cache"
+          aws s3 cp dist/index.html s3://riskintegra-erm-frontend-frontendbucket-xz3sjsennvjl/audit-portal/index.html --cache-control "no-cache, no-store, must-revalidate, max-age=0" --content-type "text/html"
+
+      - name: Invalidate CloudFront Cache
+        if: github.ref == 'refs/heads/main' && secrets.AWS_ACCESS_KEY_ID != ''
+        run: |
+          aws cloudfront create-invalidation --distribution-id E211U490INF7V3 --paths "/audit-portal/*" "/*"
