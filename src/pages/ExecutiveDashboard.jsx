@@ -100,7 +100,9 @@ const ExecutiveDashboard = () => {
   const medCount = findings.filter(f => (f.priority || f.severity || '').toLowerCase() === 'medium').length;
   const lowCount = findings.filter(f => (f.priority || f.severity || '').toLowerCase() === 'low').length;
 
-  const severityData = (totalFindings > 0) ? [
+  const sumSeverity = critCount + highCount + medCount + lowCount;
+
+  const severityData = (sumSeverity > 0) ? [
     { name: 'Critical', value: critCount, color: '#EF4444' },
     { name: 'High', value: highCount, color: '#F59E0B' },
     { name: 'Medium', value: medCount, color: '#3B82F6' },

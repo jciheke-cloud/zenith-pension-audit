@@ -287,82 +287,7 @@ export const AuditProvider = ({ children }) => {
       if (Array.isArray(fetchedLosses)) setErmLosses(fetchedLosses);
 
       // Sync Controls to Internal Controls State
-      if (Array.isArray(fetchedControls) && fetchedControls.length > 0) {
-        const mappedCtrls = fetchedControls.map(c => ({
-          id: c.id ? `CTRL-${c.id}` : `CTRL-${Date.now()}`,
-          code: c.reference_id || c.code || `CTRL-${c.id}`,
-          description: c.title || c.description || c.event || 'Internal Safeguard Control',
-          type: c.type || 'Preventive',
-          automation: c.automation || 'Automated',
-          designEff: c.design_effectiveness || c.effectiveness || 'Effective',
-          operatingEff: c.operating_effectiveness || c.effectiveness || 'Effective',
-          owner: c.owner || 'Custody Operations Team',
-          lastTested: c.last_tested || new Date().toISOString().split('T')[0]
-        }));
-        setControls(prev => {
-          const existingCodes = new Set(prev.map(c => c.code));
-          const newCtrls = mappedCtrls.filter(m => !existingCodes.has(m.code));
-          return newCtrls.length > 0 ? [...newCtrls, ...prev] : (prev.length > 0 ? prev : INITIAL_INTERNAL_CONTROLS);
-        });
-      } else {
-        setControls(prev => prev.length > 0 ? prev : INITIAL_INTERNAL_CONTROLS);
-      }
 
-      // Sync ERM Risks & Universe Data
-      if (Array.isArray(universeData) && universeData.length > 0) {
-        setAuditUniverse(universeData.map(u => ({
-          id: u.id,
-          unitId: u.unit_id || u.unitId || `UNIV-${u.id}`,
-          department: u.department || 'Custody Operations',
-          processName: u.process_name || u.processName || u.title,
-          inherentRisk: Number(u.inherent_risk || u.inherentRisk || 8),
-          financialExposure: Number(u.financial_exposure || u.financialExposure || 7),
-          regulatoryImpact: Number(u.regulatory_impact || u.regulatoryImpact || 8),
-          overallScore: Number(u.overall_score || u.overallScore || 7.8),
-          priority: u.priority || 'High',
-          lastAuditDate: u.last_audit_date || u.lastAuditDate || '2025-11-30',
-          leadAuditor: u.lead_auditor || u.leadAuditor || 'Senior Auditor'
-        })));
-      } else if (Array.isArray(fetchedRisks) && fetchedRisks.length > 0) {
-        const ermMappedUniverse = fetchedRisks.map(r => ({
-          id: `ERM-RISK-${r.id}`,
-          unitId: r.code || `UNIV-${r.id}`,
-          department: r.department || 'Custody Operations',
-          processName: r.event || r.description || r.riskTitle || r.title || 'Enterprise Custody Process',
-          inherentRisk: Number(r.inherentRisk ?? r.inherent_score ?? 8),
-          financialExposure: Number(r.impact ?? 7),
-          regulatoryImpact: Number(r.likelihood ?? 8),
-          overallScore: Number(r.residualRisk ?? r.residual_score ?? 7.5),
-          priority: (r.residualRisk >= 15 || r.impact >= 4) ? 'High' : 'Medium',
-          lastAuditDate: new Date().toISOString().split('T')[0],
-          leadAuditor: r.owner || 'Risk Owner'
-        }));
-        setAuditUniverse(ermMappedUniverse);
-      } else {
-        setAuditUniverse(INITIAL_AUDIT_UNIVERSE);
-      }
-
-      if (Array.isArray(findingsData) && findingsData.length > 0) {
-        setFindings(findingsData.map(f => ({
-          id: f.id,
-          findingNumber: f.finding_number || f.findingNumber || `FND-${f.id}`,
-          businessUnit: f.business_unit || f.businessUnit || 'Operations',
-          observation: f.observation || f.description || f.title,
-          criteria: f.criteria || 'PENCOM Statutory Guidelines',
-          rootCause: f.root_cause || f.rootCause || 'Process Gap',
-          likelihood: Number(f.likelihood || 5),
-          impact: Number(f.impact || 6),
-          residualRisk: Number(f.residual_risk || f.residualRisk || 30),
-          priority: f.priority || 'High',
-          severity: f.severity || 'High',
-          status: f.status || 'Open',
-          managementResponse: f.management_response || f.managementResponse || 'Remediation under review',
-          remediationDate: f.remediation_date || f.remediationDate || '2026-08-30',
-          auditor: f.auditor || 'Lead Auditor'
-        })));
-      } else {
-        setFindings(INITIAL_FINDINGS);
-      }
 
       // Business Units Initialization
       setBusinessUnits(prev => prev.length > 0 && prev !== INITIAL_BUSINESS_UNITS ? prev : INITIAL_BUSINESS_UNITS);
@@ -1314,9 +1239,11 @@ export const AuditProvider = ({ children }) => {
       if (findingData.isExisting) {
         setFindings(prev => prev.map(f => f.id === formatted.id ? formatted : f));
         addNotification('Finding Updated', `Finding ${formatted.findingNumber} residual risk updated to ${residualRisk}/100.`, 'info');
+        logAuditAction('EDIT_AUDIT_FINDING', 'Audit Findings Register', `Chief Auditor edited finding record ${formatted.findingNumber}`);
       } else {
         setFindings(prev => [formatted, ...prev]);
         addNotification('New Audit Finding Added', `${formatted.findingNumber} (${formatted.priority} Priority) logged for ${formatted.businessUnit}.`, 'warning');
+        logAuditAction('CREATE_AUDIT_FINDING', 'Audit Findings Register', `Chief Auditor logged finding ${formatted.findingNumber}`);
       }
       addNotification('RiskINTEGRA ERM Synchronized', `Audit Finding ${formatted.findingNumber} automatically linked to ZPC ERM Risk Register.`, 'success');
     } catch (err) {
@@ -1478,7 +1405,7 @@ export const AuditProvider = ({ children }) => {
         markAllRead,
         checkRbacPermission,
         verifyRbacOrAlert,
-        logAuditAction
+        logAuditAction,
       }}
     >
       {children}

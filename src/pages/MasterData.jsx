@@ -6,7 +6,7 @@ import AuditDataUpload from '../components/AuditDataUpload';
 
 const MasterData = () => {
   const navigate = useNavigate();
-  const { businessUnits, addBusinessUnit, setBusinessUnits, auditUniverse, setAuditUniverse, addNotification, checkRbacPermission, verifyRbacOrAlert } = useContext(AuditContext);
+  const { businessUnits, addBusinessUnit, setBusinessUnits, auditUniverse, setAuditUniverse, addNotification, checkRbacPermission, verifyRbacOrAlert, logAuditAction } = useContext(AuditContext);
   const [activeTab, setActiveTab] = useState('bus'); // 'bus' or 'universe'
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBu, setFilterBu] = useState('All');
@@ -100,6 +100,7 @@ const MasterData = () => {
         riskLevel: newBuRisk
       } : bu));
       addNotification('Business Unit Updated', `Business Unit "${newBuName}" updated successfully.`, 'success');
+      logAuditAction('EDIT_BUSINESS_UNIT', 'Master Data', `Chief Auditor updated Business Unit: ${newBuName}`);
     } else {
       addBusinessUnit({
         name: newBuName,
@@ -130,6 +131,7 @@ const MasterData = () => {
         leadAuditor: procLead
       } : item));
       addNotification('Audit Universe Updated', `Auditable process "${procName}" updated successfully.`, 'success');
+      logAuditAction('EDIT_AUDIT_UNIVERSE_PROCESS', 'Master Data', `Chief Auditor updated Auditable Process: ${procName}`);
     } else {
       const newProc = {
         id: `au-${Date.now()}`,

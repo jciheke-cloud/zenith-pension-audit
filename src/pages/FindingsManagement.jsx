@@ -70,8 +70,10 @@ const FindingsManagement = () => {
     if (!observation) return;
     if (editingFindingId) {
       if (!verifyRbacOrAlert('edit', 'findings')) return;
-      setFindings(prev => prev.map(f => f.id === editingFindingId ? {
+      const f = findings.find(x => x.id === editingFindingId);
+      saveFinding({
         ...f,
+        isExisting: true,
         businessUnit: bu,
         observation,
         rootCause,
@@ -82,8 +84,7 @@ const FindingsManagement = () => {
         managementResponse: mgmtResponse,
         actionOwner,
         targetDate,
-        priority: calculatedTier
-      } : f));
+      });
       addNotification('Finding Updated', `Finding updated successfully.`, 'success');
     } else {
       saveFinding({
