@@ -12,7 +12,7 @@ const legalBanner = `/*!
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: './',
+  base: '/audit-portal/',
   plugins: [react()],
   server: {
     port: 5174,
