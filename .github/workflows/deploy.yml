@@ -1,3 +1,4 @@
+# Trigger automated CI/CD deployment to AWS S3 & CloudFront
 name: Build, Verify & Deploy Audit Portal
 
 on:
