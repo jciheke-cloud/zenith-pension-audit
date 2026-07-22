@@ -15,7 +15,8 @@ import {
   Eye,
   FileCheck,
   Share2,
-  BookOpen
+  BookOpen,
+  Users
 } from 'lucide-react';
 import { AuditContext } from '../context/AuditContext';
 
@@ -175,6 +176,10 @@ const Sidebar = () => {
             <span style={{ color: '#fda4af', fontWeight: 800 }}>ERM Sync Bridge™</span>
           </NavLink>
         )}
+        <NavLink to="/user-management" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <Users />
+          <span style={{ color: '#f472b6', fontWeight: 700 }}>User Management & RBAC</span>
+        </NavLink>
         <NavLink to="/user-guide" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <BookOpen />
           <span style={{ color: '#38BDF8', fontWeight: 700 }}>User Guide & Manual</span>

@@ -24,6 +24,7 @@ import FraudAndContinuous from './pages/FraudAndContinuous';
 import ReportsAndCommittee from './pages/ReportsAndCommittee';
 import ErmSyncPage from './pages/ErmSyncPage';
 import UserGuidePage from './pages/UserGuidePage';
+import UserManagement from './pages/UserManagement';
 import CbnDmoMacroTicker from './components/CbnDmoMacroTicker';
 import PortalLanding from './pages/PortalLanding';
 
@@ -82,6 +83,7 @@ const App = () => {
               <Route path="/reports-committee" element={<ReportsAndCommittee />} />
               <Route path="/erm-sync" element={<ErmSyncPage />} />
               <Route path="/user-guide" element={<UserGuidePage />} />
+              <Route path="/user-management" element={<UserManagement />} />
               <Route path="*" element={<ExecutiveDashboard />} />
             </Routes>
             <footer style={{
