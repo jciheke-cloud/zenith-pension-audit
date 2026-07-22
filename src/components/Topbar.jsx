@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { Bell, Shield, UserCheck } from 'lucide-react';
-import AppSwitcherDropdown from './AppSwitcherDropdown';
 
 const Topbar = () => {
   const {
@@ -64,9 +63,6 @@ const Topbar = () => {
 
       {/* Right side controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
-        {/* Unified 9-Dot App Switcher */}
-        <AppSwitcherDropdown />
-
         {/* Currency Selector */}
         <button
           onClick={toggleCurrency}

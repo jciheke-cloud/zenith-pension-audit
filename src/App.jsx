@@ -39,14 +39,17 @@ const App = () => {
   }
 
   const currentPath = window.location.pathname.toLowerCase();
-  if (currentPath.includes('/portal') || currentPath.includes('/landing')) {
+  if (currentPath === '/portal' || currentPath === '/landing' || currentPath === '/portal/' || currentPath === '/landing/') {
     return <PortalLanding />;
   }
 
   if (!isAuthenticated) {
     return (
       <LicenseGuard>
-        <LoginScreen />
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
+          <CbnDmoMacroTicker />
+          <LoginScreen />
+        </div>
       </LicenseGuard>
     );
   }
