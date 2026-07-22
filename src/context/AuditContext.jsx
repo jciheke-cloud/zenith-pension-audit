@@ -365,7 +365,7 @@ export const AuditProvider = ({ children }) => {
       }
 
       // Business Units Initialization
-      setBusinessUnits(prev => prev.length > 0 && prev !== INITIAL_BUSINESS_UNITS ? prev : DEFAULT_BUSINESS_UNITS);
+      setBusinessUnits(prev => prev.length > 0 && prev !== INITIAL_BUSINESS_UNITS ? prev : INITIAL_BUSINESS_UNITS);
 
       // Sync Controls to Internal Controls State
       if (Array.isArray(fetchedControls) && fetchedControls.length > 0) {
@@ -383,10 +383,10 @@ export const AuditProvider = ({ children }) => {
         setControls(prev => {
           const existingCodes = new Set(prev.map(c => c.code));
           const newCtrls = mappedCtrls.filter(m => !existingCodes.has(m.code));
-          return newCtrls.length > 0 ? [...newCtrls, ...prev] : (prev.length > 0 ? prev : DEFAULT_COSO_CONTROLS);
+          return newCtrls.length > 0 ? [...newCtrls, ...prev] : (prev.length > 0 ? prev : INITIAL_INTERNAL_CONTROLS);
         });
       } else {
-        setControls(prev => prev.length > 0 ? prev : DEFAULT_COSO_CONTROLS);
+        setControls(prev => prev.length > 0 ? prev : INITIAL_INTERNAL_CONTROLS);
       }
 
       // Sync ERM Risks & Universe Data
@@ -430,10 +430,10 @@ export const AuditProvider = ({ children }) => {
         setAuditUniverse(prev => {
           const existingIds = new Set(prev.map(p => p.id));
           const newItems = ermMappedUniverse.filter(u => !existingIds.has(u.id));
-          return newItems.length > 0 ? [...newItems, ...prev] : (prev.length > 0 ? prev : DEFAULT_AUDIT_UNIVERSE);
+          return newItems.length > 0 ? [...newItems, ...prev] : (prev.length > 0 ? prev : INITIAL_AUDIT_UNIVERSE);
         });
       } else {
-        setAuditUniverse(prev => prev.length > 0 ? prev : DEFAULT_AUDIT_UNIVERSE);
+        setAuditUniverse(prev => prev.length > 0 ? prev : INITIAL_AUDIT_UNIVERSE);
       }
 
       if (Array.isArray(findingsData) && findingsData.length > 0) {
@@ -562,7 +562,7 @@ export const AuditProvider = ({ children }) => {
         setControls(prev => {
           const existingCodes = new Set(prev.map(c => c.code));
           const newCtrls = mappedControls.filter(m => !existingCodes.has(m.code));
-          return newCtrls.length > 0 ? [...newCtrls, ...prev] : (prev.length > 0 ? prev : DEFAULT_COSO_CONTROLS);
+          return newCtrls.length > 0 ? [...newCtrls, ...prev] : (prev.length > 0 ? prev : INITIAL_INTERNAL_CONTROLS);
         });
         syncCount += fetchedControls.length;
       }
