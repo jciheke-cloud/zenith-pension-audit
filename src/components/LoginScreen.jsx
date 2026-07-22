@@ -99,7 +99,8 @@ const LoginScreen = () => {
 
   return (
     <div style={{
-      minHeight: '100vh',
+      flex: 1,
+      minHeight: 'calc(100vh - 40px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
