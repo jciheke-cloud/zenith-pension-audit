@@ -34,7 +34,7 @@ export default defineConfig({
         passes: 2,
       },
       mangle: {
-        toplevel: true,
+        toplevel: false,
         safari10: true,
       },
       format: {
