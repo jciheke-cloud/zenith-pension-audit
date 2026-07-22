@@ -284,7 +284,6 @@ export const AuditProvider = ({ children }) => {
           leadAuditor: u.lead_auditor || u.leadAuditor || 'Senior Auditor'
         })));
       } else if (Array.isArray(fetchedRisks) && fetchedRisks.length > 0) {
-        // Automatically sync ERM risks into Audit Universe if audit universe table is empty
         const ermMappedUniverse = fetchedRisks.map(r => ({
           id: `ERM-RISK-${r.id}`,
           unitId: r.code || `UNIV-${r.id}`,
@@ -299,6 +298,8 @@ export const AuditProvider = ({ children }) => {
           leadAuditor: r.owner || 'Risk Owner'
         }));
         setAuditUniverse(ermMappedUniverse);
+      } else {
+        setAuditUniverse(INITIAL_AUDIT_UNIVERSE);
       }
 
       if (Array.isArray(findingsData) && findingsData.length > 0) {
@@ -319,6 +320,8 @@ export const AuditProvider = ({ children }) => {
           remediationDate: f.remediation_date || f.remediationDate || '2026-08-30',
           auditor: f.auditor || 'Lead Auditor'
         })));
+      } else {
+        setFindings(INITIAL_FINDINGS);
       }
 
       if (Array.isArray(plansData) && plansData.length > 0) {
@@ -334,6 +337,8 @@ export const AuditProvider = ({ children }) => {
           endDate: p.end_date || p.endDate || '2026-03-31',
           leadAuditor: p.lead_auditor || p.leadAuditor || 'Lead Auditor'
         })));
+      } else {
+        setAuditPlans(INITIAL_ANNUAL_AUDIT_PLANS);
       }
 
       setLastSyncedAt(new Date());
