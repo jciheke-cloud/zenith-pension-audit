@@ -76,7 +76,10 @@ const ExecutiveDashboard = () => {
             Real-time oversight of the Zenith Pension Custodian internal audit lifecycle, regulatory readiness, and 10×10 risk findings.
           </p>
         </div>
-        <div className="header-actions">
+        <div className="header-actions" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <button onClick={() => navigate('/guide')} className="btn-secondary" style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.3)', fontWeight: 600 }}>
+            📖 Quick Start Guide & SOP
+          </button>
           <button onClick={() => navigate('/annual-plan')} className="btn-secondary">
             <FileSpreadsheet size={16} />
             <span>View Annual Plan</span>
@@ -86,6 +89,21 @@ const ExecutiveDashboard = () => {
             <span>Log Audit Finding</span>
           </button>
         </div>
+      </div>
+
+      {/* Interactive Quick Start Tutorial Card */}
+      <div className="glass-card" style={{ padding: '1.2rem 1.5rem', marginBottom: '1.5rem', borderLeft: '4px solid #38bdf8', background: 'rgba(56, 189, 248, 0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h3 style={{ margin: '0 0 0.3rem 0', fontSize: '1.05rem', color: '#38bdf8', fontWeight: 800 }}>
+            🚀 New to Zenith Pension Custodian Audit App?
+          </h3>
+          <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+            Follow the 5-step audit lifecycle: 1. Audit Universe ➔ 2. Annual Planning ➔ 3. Fieldwork & Working Papers ➔ 4. Findings & CAP Remediation ➔ 5. BARC Board Deck.
+          </p>
+        </div>
+        <button onClick={() => navigate('/guide')} className="btn-secondary" style={{ fontSize: '0.8rem', padding: '0.45rem 1rem', background: '#38bdf8', color: '#0f172a', fontWeight: 800, border: 'none' }}>
+          Open Full User Guide →
+        </button>
       </div>
 
       {/* Repeat Finding Flag Banner */}

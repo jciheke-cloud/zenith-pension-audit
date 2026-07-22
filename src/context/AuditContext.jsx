@@ -244,65 +244,95 @@ export const AuditProvider = ({ children }) => {
   // ── Real-time sync state ──────────────────────────────────────────
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncedAt, setLastSyncedAt] = useState(null);
-  const AUDIT_API = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
+  const [ermRisks, setErmRisks] = useState([]);
+  const [ermControls, setErmControls] = useState([]);
+  const [ermActions, setErmActions] = useState([]);
+  const [ermLosses, setErmLosses] = useState([]);
+
+  const AUDIT_API = (import.meta.env.VITE_AWS_API_URL || '').replace(/\/$/, '');
 
   const fetchAuditData = async (silent = false) => {
     if (!silent) setIsSyncing(true);
     try {
-      const [universeData, findingsData, plansData] = await Promise.all([
+      const [universeData, findingsData, plansData, fetchedRisks, fetchedControls, fetchedActions, fetchedLosses] = await Promise.all([
         fetch(`${AUDIT_API}/api/audit/universe`).then(r => r.ok ? r.json() : []).catch(() => []),
         fetch(`${AUDIT_API}/api/audit/findings`).then(r => r.ok ? r.json() : []).catch(() => []),
         fetch(`${AUDIT_API}/api/audit/plans`).then(r => r.ok ? r.json() : []).catch(() => []),
+        fetch(`${AUDIT_API}/api/risks`).then(r => r.ok ? r.json() : []).catch(() => []),
+        fetch(`${AUDIT_API}/api/controls`).then(r => r.ok ? r.json() : []).catch(() => []),
+        fetch(`${AUDIT_API}/api/actions`).then(r => r.ok ? r.json() : []).catch(() => []),
+        fetch(`${AUDIT_API}/api/losses`).then(r => r.ok ? r.json() : []).catch(() => []),
       ]);
 
-      if (Array.isArray(universeData)) {
+      if (Array.isArray(fetchedRisks)) setErmRisks(fetchedRisks);
+      if (Array.isArray(fetchedControls)) setErmControls(fetchedControls);
+      if (Array.isArray(fetchedActions)) setErmActions(fetchedActions);
+      if (Array.isArray(fetchedLosses)) setErmLosses(fetchedLosses);
+
+      if (Array.isArray(universeData) && universeData.length > 0) {
         setAuditUniverse(universeData.map(u => ({
           id: u.id,
-          unitId: u.unit_id,
-          department: u.department,
-          processName: u.process_name,
-          inherentRisk: Number(u.inherent_risk),
-          financialExposure: Number(u.financial_exposure),
-          regulatoryImpact: Number(u.regulatory_impact),
-          overallScore: Number(u.overall_score),
-          priority: u.priority,
-          lastAuditDate: u.last_audit_date,
-          leadAuditor: u.lead_auditor
+          unitId: u.unit_id || u.unitId || `UNIV-${u.id}`,
+          department: u.department || 'Custody Operations',
+          processName: u.process_name || u.processName || u.title,
+          inherentRisk: Number(u.inherent_risk || u.inherentRisk || 8),
+          financialExposure: Number(u.financial_exposure || u.financialExposure || 7),
+          regulatoryImpact: Number(u.regulatory_impact || u.regulatoryImpact || 8),
+          overallScore: Number(u.overall_score || u.overallScore || 7.8),
+          priority: u.priority || 'High',
+          lastAuditDate: u.last_audit_date || u.lastAuditDate || '2025-11-30',
+          leadAuditor: u.lead_auditor || u.leadAuditor || 'Senior Auditor'
         })));
+      } else if (Array.isArray(fetchedRisks) && fetchedRisks.length > 0) {
+        // Automatically sync ERM risks into Audit Universe if audit universe table is empty
+        const ermMappedUniverse = fetchedRisks.map(r => ({
+          id: `ERM-RISK-${r.id}`,
+          unitId: r.code || `UNIV-${r.id}`,
+          department: r.department || 'Custody Operations',
+          processName: r.event || r.description || r.title || 'Enterprise Custody Process',
+          inherentRisk: Number(r.inherentRisk ?? r.inherent_score ?? 8),
+          financialExposure: Number(r.impact ?? 7),
+          regulatoryImpact: Number(r.likelihood ?? 8),
+          overallScore: Number(r.residualRisk ?? r.residual_score ?? 7.5),
+          priority: (r.residualRisk >= 15 || r.impact >= 4) ? 'High' : 'Medium',
+          lastAuditDate: new Date().toISOString().split('T')[0],
+          leadAuditor: r.owner || 'Risk Owner'
+        }));
+        setAuditUniverse(ermMappedUniverse);
       }
 
-      if (Array.isArray(findingsData)) {
+      if (Array.isArray(findingsData) && findingsData.length > 0) {
         setFindings(findingsData.map(f => ({
           id: f.id,
-          findingNumber: f.finding_number,
-          businessUnit: f.business_unit,
-          observation: f.observation,
-          criteria: f.criteria,
-          rootCause: f.root_cause,
-          likelihood: Number(f.likelihood),
-          impact: Number(f.impact),
-          residualRisk: Number(f.residual_risk),
-          priority: f.priority,
-          severity: f.severity,
-          status: f.status,
-          managementResponse: f.management_response,
-          remediationDate: f.remediation_date,
-          auditor: f.auditor
+          findingNumber: f.finding_number || f.findingNumber || `FND-${f.id}`,
+          businessUnit: f.business_unit || f.businessUnit || 'Operations',
+          observation: f.observation || f.description || f.title,
+          criteria: f.criteria || 'PENCOM Statutory Guidelines',
+          rootCause: f.root_cause || f.rootCause || 'Process Gap',
+          likelihood: Number(f.likelihood || 5),
+          impact: Number(f.impact || 6),
+          residualRisk: Number(f.residual_risk || f.residualRisk || 30),
+          priority: f.priority || 'High',
+          severity: f.severity || 'High',
+          status: f.status || 'Open',
+          managementResponse: f.management_response || f.managementResponse || 'Remediation under review',
+          remediationDate: f.remediation_date || f.remediationDate || '2026-08-30',
+          auditor: f.auditor || 'Lead Auditor'
         })));
       }
 
-      if (Array.isArray(plansData)) {
+      if (Array.isArray(plansData) && plansData.length > 0) {
         setAuditPlans(plansData.map(p => ({
           id: p.id,
-          planId: p.plan_id,
-          auditName: p.audit_name,
-          department: p.department,
-          plannedHours: Number(p.planned_hours),
-          actualHours: Number(p.actual_hours),
-          status: p.status,
-          startDate: p.start_date,
-          endDate: p.end_date,
-          leadAuditor: p.lead_auditor
+          planId: p.plan_id || p.planId || `PLAN-${p.id}`,
+          auditName: p.audit_name || p.auditName || p.title,
+          department: p.department || 'Custody Operations',
+          plannedHours: Number(p.planned_hours || p.plannedHours || 120),
+          actualHours: Number(p.actual_hours || p.actualHours || 40),
+          status: p.status || 'In Progress',
+          startDate: p.start_date || p.startDate || '2026-01-15',
+          endDate: p.end_date || p.endDate || '2026-03-31',
+          leadAuditor: p.lead_auditor || p.leadAuditor || 'Lead Auditor'
         })));
       }
 
@@ -314,14 +344,95 @@ export const AuditProvider = ({ children }) => {
     }
   };
 
+  const syncFromErmSuite = async () => {
+    setIsSyncing(true);
+    try {
+      const [fetchedRisks, fetchedControls, fetchedActions, fetchedLosses] = await Promise.all([
+        fetch(`${AUDIT_API}/api/risks`).then(r => r.ok ? r.json() : []).catch(() => []),
+        fetch(`${AUDIT_API}/api/controls`).then(r => r.ok ? r.json() : []).catch(() => []),
+        fetch(`${AUDIT_API}/api/actions`).then(r => r.ok ? r.json() : []).catch(() => []),
+        fetch(`${AUDIT_API}/api/losses`).then(r => r.ok ? r.json() : []).catch(() => []),
+      ]);
+
+      let syncCount = 0;
+
+      if (Array.isArray(fetchedRisks) && fetchedRisks.length > 0) {
+        const ermUniverseItems = fetchedRisks.map(r => ({
+          id: `ERM-RISK-${r.id}`,
+          unitId: r.code || `UNIV-ERM-${r.id}`,
+          department: r.department || 'Custody Operations',
+          processName: r.event || r.description || r.title || 'Enterprise Risk Process',
+          inherentRisk: Number(r.inherentRisk ?? r.inherent_score ?? 8),
+          financialExposure: Number(r.impact ?? 7),
+          regulatoryImpact: Number(r.likelihood ?? 8),
+          overallScore: Number(r.residualRisk ?? r.residual_score ?? 7.5),
+          priority: (r.residualRisk >= 15 || r.impact >= 4) ? 'High' : 'Medium',
+          lastAuditDate: new Date().toISOString().split('T')[0],
+          leadAuditor: r.owner || 'ERM Risk Owner'
+        }));
+
+        setAuditUniverse(prev => {
+          const existingIds = new Set(prev.map(p => p.id));
+          const newItems = ermUniverseItems.filter(u => !existingIds.has(u.id));
+          return [...newItems, ...prev];
+        });
+        syncCount += fetchedRisks.length;
+      }
+
+      if (Array.isArray(fetchedControls) && fetchedControls.length > 0) {
+        setControls(prev => {
+          const existingCodes = new Set(prev.map(c => c.code));
+          const mapped = fetchedControls.map(c => ({
+            id: c.id || `CTRL-${Date.now()}`,
+            code: c.reference_id || c.code || `CTRL-${c.id}`,
+            name: c.title || c.description,
+            domain: c.category || 'Governance & Oversight',
+            type: c.type || 'Preventive',
+            frequency: c.frequency || 'Continuous',
+            owner: c.owner || 'Custody Ops',
+            effectiveness: c.design_effectiveness || c.effectiveness || 'Strong',
+            rating: Number(c.overall_rating || c.rating || 90)
+          }));
+          const newCtrls = mapped.filter(m => !existingCodes.has(m.code));
+          return [...newCtrls, ...prev];
+        });
+        syncCount += fetchedControls.length;
+      }
+
+      if (Array.isArray(fetchedActions) && fetchedActions.length > 0) {
+        setFindings(prev => prev.map(f => {
+          const matchingAction = fetchedActions.find(a => 
+            String(a.riskId) === String(f.id) || 
+            (a.task && f.observation && a.task.toLowerCase().includes(f.observation.toLowerCase().slice(0, 15)))
+          );
+          if (matchingAction) {
+            return {
+              ...f,
+              status: matchingAction.progress === 100 ? 'Remediated' : 'In Progress',
+              remediationDate: matchingAction.dueDate || f.remediationDate
+            };
+          }
+          return f;
+        }));
+        syncCount += fetchedActions.length;
+      }
+
+      setLastSyncedAt(new Date());
+      addNotification('RiskINTEGRA ERM Sync Complete', `Successfully ingested live data from ERM (${syncCount} records processed).`, 'success');
+    } catch (err) {
+      console.error('Failed to sync from ERM:', err);
+      addToast('❌ Failed to pull ERM live data.', 'danger');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   // Fetch audit records from PostgreSQL on mount, then poll every 30s
   useEffect(() => {
     fetchAuditData(false);
 
-    // 30-second polling for real-time multi-user sync
     const pollInterval = setInterval(() => fetchAuditData(true), 30000);
 
-    // Instant refresh when user returns to this tab
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') fetchAuditData(true);
     };
@@ -691,220 +802,9 @@ export const AuditProvider = ({ children }) => {
 
   const clearAllMockData = () => {
     // Data is fully database-backed; just reload fresh records from the API
-    const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
+    const API_BASE = (import.meta.env.VITE_AWS_API_URL || '').replace(/\/$/, '');
     fetch(`${API_BASE}/api/audit/findings`).then(r => r.ok ? r.json() : []).then(data => { if (Array.isArray(data)) setFindings(data.map(f => ({ id: f.id, findingNumber: f.finding_number, businessUnit: f.business_unit, observation: f.observation, criteria: f.criteria, rootCause: f.root_cause, likelihood: Number(f.likelihood), impact: Number(f.impact), residualRisk: Number(f.residual_risk), priority: f.priority, severity: f.severity, status: f.status, managementResponse: f.management_response, remediationDate: f.remediation_date, auditor: f.auditor }))); }).catch(console.error);
     addNotification('Data Refreshed', 'All audit records reloaded from the institutional database.', 'success');
-  };
-
-  const syncFromErmSuite = (isPurgeOrInit = false) => {
-    let ermRisks = [];
-
-    if (!ermRisks || !Array.isArray(ermRisks)) {
-      ermRisks = [];
-    }
-
-    // Transform ERM risks directly into Audit Universe Units
-    const ermDepartments = Array.from(new Set(ermRisks.map(r => r.department || 'General Custody Operations')));
-    const syncedUniverse = ermDepartments.map((dept, idx) => {
-      const deptRisks = ermRisks.filter(r => r.department === dept);
-      const maxScore = Math.max(...deptRisks.map(r => r.residualScore || 50), 50);
-      return {
-        id: `ERM-UNIV-${idx + 1}`,
-        code: `PROC-${String(idx + 101).padStart(3, '0')}`,
-        processName: `${dept} Core Process Review`,
-        title: `${dept} Core Process Review`,
-        department: dept,
-        businessUnit: dept,
-        owner: 'Department Head / ERM Liaison',
-        leadAuditor: 'Chief Senior Auditor',
-        inherentRisk: Math.min(10, Math.round((maxScore + 12) / 10)),
-        financialExposure: maxScore >= 80 ? 9 : 6,
-        regulatoryImpact: maxScore >= 70 ? 9 : 5,
-        previousFindings: deptRisks.length,
-        fraudExposure: maxScore >= 80 ? 7 : 3,
-        itDependency: dept.includes('IT') || dept.includes('Technology') ? 9 : 6,
-        lastAuditDate: '2025-11-15',
-        lastAudited: '2025-11-15',
-        frequency: maxScore >= 75 ? 'Annual' : 'Biennial'
-      };
-    });
-
-    const newErmFindings = ermRisks.map((risk, idx) => ({
-      findingNumber: `FND-ERM-${String(idx + 1).padStart(3, '0')}`,
-      id: `FND-ERM-${String(idx + 1).padStart(3, '0')}`,
-      businessUnit: risk.department || 'Corporate Governance',
-      department: risk.department || 'Corporate Governance',
-      observation: `ERM Risk Feed Observation: ${risk.riskTitle}`,
-      title: `ERM Risk Feed Observation: ${risk.riskTitle}`,
-      criteria: 'PENCOM Custodial SLA & Section 63 Prudential Guidelines',
-      rootCause: 'Flagged via direct feed from enterprise risk register (ERM Suite).',
-      likelihood: Math.max(1, Math.round((risk.residualScore || 60) / 10)),
-      impact: Math.max(5, Math.round((risk.residualScore || 60) / 11)),
-      residualRisk: risk.residualScore || 64,
-      priority: (risk.residualScore || 60) >= 80 ? 'Critical' : (risk.residualScore || 60) >= 60 ? 'High' : 'Medium',
-      severity: (risk.residualScore || 60) >= 80 ? 'High' : 'Medium',
-      status: 'Open',
-      isRepeat: false,
-      actionPlan: `Mandatory substantive control verification for ERM risk item #${risk.id || idx + 1}`,
-      dueDate: '2026-09-30',
-      targetDate: '2026-09-30',
-      owner: 'ERM / Audit Liaison',
-      actionOwner: 'ERM / Audit Liaison'
-    }));
-
-    const newErmPlans = ermDepartments.map((dept, idx) => {
-      const deptRisks = ermRisks.filter(r => r.department === dept);
-      const maxScore = Math.max(...deptRisks.map(r => r.residualScore || 50), 50);
-      return {
-        id: `PLAN-ERM-${idx + 1}`,
-        auditName: `FY2026 ${dept} Risk-Based Assurance Audit`,
-        title: `FY2026 ${dept} Risk-Based Assurance Audit`,
-        auditCode: `RBA-${String(idx + 1).padStart(3, '0')}`,
-        businessUnit: dept,
-        department: dept,
-        priority: maxScore >= 80 ? 'Critical' : maxScore >= 65 ? 'High' : 'Medium',
-        riskRating: maxScore >= 80 ? 'Critical' : maxScore >= 65 ? 'High' : 'Medium',
-        status: 'Approved',
-        plannedQuarter: maxScore >= 80 ? 'Q1 2026' : 'Q2 2026',
-        plannedStartDate: '2026-08-01',
-        plannedEndDate: '2026-08-25',
-        leadAuditor: 'Senior Audit Manager',
-        owner: 'Senior Audit Manager',
-        frequency: 'Annual',
-        budgetHours: maxScore >= 80 ? 240 : 160,
-        estimatedHours: maxScore >= 80 ? 240 : 160,
-        budget: maxScore >= 80 ? 32 : 24
-      };
-    });
-
-    const newErmPapers = ermRisks.map((risk, idx) => ({
-      id: `WP-ERM-${String(idx + 1).padStart(3, '0')}`,
-      title: `Substantive Evidence Paper: ${risk.riskTitle.substring(0, 42)}...`,
-      fileName: `ERM_Risk_Evidence_${risk.id}.xlsx`,
-      fileType: 'Excel / PBC Evidence',
-      linkedAudit: `FY2026 ${risk.department || 'Operations'} Audit`,
-      auditName: `FY2026 ${risk.department || 'Operations'} Audit`,
-      uploadedBy: 'ERM Live Gateway',
-      owner: 'ERM Live Gateway',
-      uploadDate: '2026-07-12',
-      status: 'Approved'
-    }));
-
-    const newErmControls = ermRisks.map((risk, idx) => ({
-      id: `CTRL-ERM-${String(idx + 1).padStart(3, '0')}`,
-      code: `CTRL-${String(idx + 201).padStart(3, '0')}`,
-      description: `Automated preventive safeguard monitoring: ${risk.riskTitle}`,
-      name: `Automated preventive safeguard monitoring: ${risk.riskTitle}`,
-      type: (risk.residualScore || 50) >= 75 ? 'Preventive' : 'Detective',
-      automation: 'Automated',
-      designEff: 'Effective',
-      designEffectiveness: 'Effective',
-      operatingEff: 'Effective',
-      operatingEffectiveness: 'Effective',
-      owner: `${risk.department || 'Operations'} Lead`,
-      lastTested: '2026-06-30',
-      lastTestedDate: '2026-06-30'
-    }));
-
-    const newErmReviews = ermDepartments.map((dept, idx) => ({
-      id: `REV-ERM-${String(idx + 1).padStart(3, '0')}`,
-      title: `Statutory PenCom & CBN Compliance Review: ${dept}`,
-      reviewTitle: `Statutory PenCom & CBN Compliance Review: ${dept}`,
-      regulatoryBody: 'National Pension Commission (PenCom)',
-      date: '2026-05-18',
-      inspectionDate: '2026-05-18',
-      findingsCount: idx % 2 === 0 ? 1 : 0,
-      totalObservations: idx % 2 === 0 ? 1 : 0,
-      leadReviewer: 'Chief Regulatory Compliance Auditor',
-      owner: 'Chief Regulatory Compliance Auditor',
-      status: idx % 2 === 0 ? 'Remediation Underway' : 'Completed & Cleared'
-    }));
-
-    const newErmFraud = ermRisks.slice(0, 3).map((risk, idx) => ({
-      id: `FRD-ERM-${String(idx + 1).padStart(3, '0')}`,
-      title: `Forensic Monitoring Case: ${risk.category} in ${risk.department}`,
-      caseTitle: `Forensic Monitoring Case: ${risk.category} in ${risk.department}`,
-      department: risk.department || 'Corporate Operations',
-      dateOpened: '2026-04-14',
-      reportedDate: '2026-04-14',
-      financialImpact: idx === 0 ? 18.5 : 6.2,
-      recoveredAmount: idx === 0 ? 18.5 : 6.2,
-      investigator: 'Head of Forensic Investigations',
-      leadInvestigator: 'Head of Forensic Investigations',
-      status: 'Closed - Remediated'
-    }));
-
-    const newErmContinuous = ermRisks.map((risk, idx) => ({
-      id: `KRI-ERM-${String(idx + 1).padStart(3, '0')}`,
-      ruleName: `Continuous Rule #${idx + 101}: ${risk.category} Threshold Alert`,
-      details: `Live KRI sensor monitoring threshold breaches for ERM Risk ID #${risk.id}: ${risk.riskTitle}`,
-      department: risk.department || 'General Operations',
-      severity: (risk.residualScore || 50) >= 80 ? 'Critical' : (risk.residualScore || 50) >= 65 ? 'High' : 'Medium',
-      timestamp: '2026-07-14 07:30:00',
-      status: (risk.residualScore || 50) >= 80 ? 'Under Review' : 'Cleared / Verified Normal'
-    }));
-
-    const newErmPrograms = ermDepartments.map((dept, idx) => {
-      const deptRisks = ermRisks.filter(r => r.department === dept);
-      const proceduresList = deptRisks.map((r, pIdx) => ({
-        id: `p-erm-${idx}-${pIdx + 1}`,
-        ref: `PROC-${dept.substring(0, 3).toUpperCase()}-${String(pIdx + 1).padStart(2, '0')}`,
-        step: `Verify controls mitigating ${r.riskTitle} and ensure compliance with PenCom prudenital guidelines.`,
-        sampleSize: (r.residualScore || 50) >= 75 ? '50 Samples (100% Target)' : '25 Samples (Selected Batches)',
-        riskLink: r.category || 'Operational Risk',
-        expectedControl: `Dual Maker/Checker authorization and daily exception log review for ${r.category}.`,
-        evidenceRequired: 'System audit trails, approval sign-off slips, and daily reconciliation sheets.',
-        status: (r.residualScore || 50) >= 80 ? 'Tested - Exception' : (r.residualScore || 50) >= 65 ? 'In Progress' : 'Tested - Pass',
-        findingRef: (r.residualScore || 50) >= 80 ? `FND-ERM-${String(ermRisks.indexOf(r) + 1).padStart(3, '0')}` : null
-      }));
-      return {
-        id: `PROG-ERM-${idx + 1}`,
-        title: `${dept} Risk-Based Testing & Assurance Program`,
-        name: `${dept} Risk-Based Testing & Assurance Program`,
-        category: dept,
-        objectives: `Comprehensive step-by-step verification procedures designed to evaluate internal controls across ${dept}, directly addressing ${deptRisks.length} high-priority ERM risk register items.`,
-        description: `Comprehensive step-by-step verification procedures designed to evaluate internal controls across ${dept}, directly addressing ${deptRisks.length} high-priority ERM risk register items.`,
-        procedures: proceduresList.length > 0 ? proceduresList : [
-          {
-            id: `p-erm-${idx}-1`,
-            ref: `PROC-${dept.substring(0, 3).toUpperCase()}-01`,
-            step: `Substantive test of operational controls in ${dept} for regulatory compliance.`,
-            sampleSize: '30 Samples',
-            riskLink: 'Compliance Risk',
-            expectedControl: 'Standard operational authorization and reconciliation.',
-            evidenceRequired: 'Audit log verification.',
-            status: 'Tested - Pass',
-            findingRef: null
-          }
-        ]
-      };
-    });
-
-    const isV8Protected = true || false //Item('ZPC_AUDIT_MOCK_REMOVED') === 'true';
-    
-    // Under V8 Backend Protection, strictly merge ERM items + custom user inputs (no legacy dummy injection)
-    const combinedUniverse = isV8Protected ? [...syncedUniverse, ...auditUniverse.filter(u => u.isUserCreated || (u.id && u.id.toString().startsWith('custom-')))] : [...syncedUniverse, ...INITIAL_AUDIT_UNIVERSE.filter(u => !syncedUniverse.some(su => su.name === u.name || su.id === u.id))];
-    const combinedFindings = isV8Protected ? [...newErmFindings, ...findings.filter(f => f.isUserCreated || (f.id && f.id.toString().startsWith('custom-')))] : [...newErmFindings, ...INITIAL_FINDINGS.filter(f => !newErmFindings.some(nf => nf.id === f.id || nf.findingNumber === f.findingNumber))];
-    const combinedPlans = isV8Protected ? [...newErmPlans, ...auditPlans.filter(p => p.isUserCreated || (p.id && p.id.toString().startsWith('custom-')))] : [...newErmPlans, ...INITIAL_ANNUAL_AUDIT_PLANS.filter(p => !newErmPlans.some(np => np.id === p.id || np.auditName === p.auditName))];
-    const combinedPrograms = isV8Protected ? [...newErmPrograms, ...auditPrograms.filter(p => p.isUserCreated || (p.id && p.id.toString().startsWith('custom-')))] : [...newErmPrograms, ...INITIAL_AUDIT_PROGRAMS.filter(p => !newErmPrograms.some(np => np.id === p.id))];
-    const combinedPapers = isV8Protected ? [...newErmPapers, ...workingPapers.filter(p => p.isUserCreated || (p.id && p.id.toString().startsWith('custom-')))] : [...newErmPapers, ...INITIAL_WORKING_PAPERS.filter(p => !newErmPapers.some(np => np.id === p.id))];
-    const combinedControls = isV8Protected ? [...newErmControls, ...controls.filter(c => c.isUserCreated || (c.id && c.id.toString().startsWith('custom-')))] : [...newErmControls, ...INITIAL_INTERNAL_CONTROLS.filter(c => !newErmControls.some(nc => nc.id === c.id))];
-    const combinedReviews = isV8Protected ? [...newErmReviews, ...regulatoryReviews.filter(r => r.isUserCreated || (r.id && r.id.toString().startsWith('custom-')))] : [...newErmReviews, ...INITIAL_REGULATORY_REVIEWS.filter(r => !newErmReviews.some(nr => nr.id === r.id))];
-    const combinedFraud = isV8Protected ? [...newErmFraud, ...fraudCases.filter(f => f.isUserCreated || (f.id && f.id.toString().startsWith('custom-')))] : [...newErmFraud, ...INITIAL_FRAUD_CASES.filter(f => !newErmFraud.some(nf => nf.id === f.id))];
-    const combinedContinuous = isV8Protected ? [...newErmContinuous, ...continuousExceptions.filter(c => c.isUserCreated || (c.id && c.id.toString().startsWith('custom-')))] : [...newErmContinuous, ...INITIAL_CONTINUOUS_EXCEPTIONS.filter(c => !newErmContinuous.some(nc => nc.id === c.id))];
-
-    saveArrayState('UNIVERSE', combinedUniverse, setAuditUniverse);
-    saveArrayState('FINDINGS', combinedFindings, setFindings);
-    saveArrayState('PLANS', combinedPlans, setAuditPlans);
-    saveArrayState('PROGRAMS', combinedPrograms, setAuditPrograms);
-    saveArrayState('PAPERS', combinedPapers, setWorkingPapers);
-    saveArrayState('CONTROLS', combinedControls, setControls);
-    saveArrayState('REVIEWS', combinedReviews, setRegulatoryReviews);
-    saveArrayState('FRAUD', combinedFraud, setFraudCases);
-    saveArrayState('CONTINUOUS', combinedContinuous, setContinuousExceptions);
-    if (!isPurgeOrInit) {
-      addNotification('Direct ERM Sync Complete', `Ingested ${ermRisks.length} Enterprise Risks directly from RiskINTEGRA ERM Suite into all Audit Library modules.`, 'success');
-    }
   };
 
   const bulkUploadRecords = async (type, records, s3Key = null) => {
@@ -1321,6 +1221,10 @@ export const AuditProvider = ({ children }) => {
         setContinuousExceptions,
         clearAllMockData,
         syncFromErmSuite,
+        ermRisks,
+        ermControls,
+        ermActions,
+        ermLosses,
         bulkUploadRecords,
         scoringWeights,
         setScoringWeights,

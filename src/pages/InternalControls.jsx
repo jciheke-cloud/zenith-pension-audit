@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { ShieldCheck, Plus, CheckCircle, AlertOctagon, Sliders, Layers } from 'lucide-react';
+import AuditDataUpload from '../components/AuditDataUpload';
 
 const InternalControls = () => {
   const { controls, setControls, addNotification } = useContext(AuditContext);
@@ -53,7 +54,8 @@ const InternalControls = () => {
             Evaluating preventive, detective, and corrective controls across Design Effectiveness (DE) and Operating Effectiveness (OE).
           </p>
         </div>
-        <div className="header-actions">
+        <div className="header-actions" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <AuditDataUpload targetModule="controls" buttonText="Batch Ingest Controls" />
           <button onClick={() => setIsModalOpen(true)} className="btn-primary">
             <Plus size={16} />
             <span>Add Internal Control</span>
