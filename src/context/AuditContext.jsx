@@ -237,7 +237,16 @@ export const AuditProvider = ({ children }) => {
     };
   }, [isAuthenticated, currentUser]);
 
-  const [businessUnits, setBusinessUnits] = useState(INITIAL_BUSINESS_UNITS);
+  const [businessUnits, setBusinessUnits] = useState(() => {
+    try {
+      const saved = localStorage.getItem('zpc_audit_business_units');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) { /* ignore */ }
+    return INITIAL_BUSINESS_UNITS;
+  });
   const [auditUniverse, setAuditUniverse] = useState([]);
   const [auditPlans, setAuditPlans] = useState([]);
   const [auditPrograms, setAuditPrograms] = useState(INITIAL_AUDIT_PROGRAMS);
@@ -247,6 +256,14 @@ export const AuditProvider = ({ children }) => {
   const [regulatoryReviews, setRegulatoryReviews] = useState(INITIAL_REGULATORY_REVIEWS);
   const [fraudCases, setFraudCases] = useState(INITIAL_FRAUD_CASES);
   const [continuousExceptions, setContinuousExceptions] = useState(INITIAL_CONTINUOUS_EXCEPTIONS);
+
+  useEffect(() => {
+    try {
+      if (businessUnits && Array.isArray(businessUnits) && businessUnits.length > 0) {
+        localStorage.setItem('zpc_audit_business_units', JSON.stringify(businessUnits));
+      }
+    } catch (e) { /* ignore */ }
+  }, [businessUnits]);
 
   // ── Real-time sync state ──────────────────────────────────────────
   const [isSyncing, setIsSyncing] = useState(false);
@@ -284,8 +301,18 @@ export const AuditProvider = ({ children }) => {
       // Sync Controls to Internal Controls State
 
 
-      // Business Units Initialization
-      setBusinessUnits(prev => prev.length > 0 && prev !== INITIAL_BUSINESS_UNITS ? prev : INITIAL_BUSINESS_UNITS);
+      // Business Units Initialization & Persistence Sync
+      setBusinessUnits(prev => {
+        if (prev && prev.length > 0 && prev !== INITIAL_BUSINESS_UNITS) return prev;
+        try {
+          const saved = localStorage.getItem('zpc_audit_business_units');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          }
+        } catch (e) { /* ignore */ }
+        return INITIAL_BUSINESS_UNITS;
+      });
 
       // Sync Controls to Internal Controls State
       if (Array.isArray(fetchedControls) && fetchedControls.length > 0) {
