@@ -1,7 +1,20 @@
 // Master Structure & Institutional Roles Definitions for Zenith Pension Custodian (ZPC) Audit Management Application
 // RiskINTEGRA Audit™ - Zero-Trust Institutional Ecosystem (No Mock Data)
 
-export const INITIAL_BUSINESS_UNITS = [];
+export const INITIAL_BUSINESS_UNITS = [
+  { id: 'bu-1', code: 'BU-CUST-01', name: 'Custody Operations & Asset Servicing', head: 'Head of Custody Operations', staffCount: 25, riskLevel: 'High', coverage: 100, status: 'Active' },
+  { id: 'bu-2', code: 'BU-SETT-02', name: 'Settlements, Clearing & Money Market', head: 'Head of Settlements', staffCount: 18, riskLevel: 'High', coverage: 100, status: 'Active' },
+  { id: 'bu-3', code: 'BU-CONT-03', name: 'Contribution Reconciliation & Invoicing', head: 'Head of Contribution Reconciliation', staffCount: 20, riskLevel: 'High', coverage: 100, status: 'Active' },
+  { id: 'bu-4', code: 'BU-ACCT-04', name: 'Fund Accounting & Net Asset Valuation (NAV)', head: 'Head of Fund Accounting', staffCount: 16, riskLevel: 'High', coverage: 100, status: 'Active' },
+  { id: 'bu-5', code: 'BU-RISK-05', name: 'Risk Management & Compliance', head: 'Head of Risk & Compliance', staffCount: 14, riskLevel: 'Medium', coverage: 100, status: 'Active' },
+  { id: 'bu-6', code: 'BU-IT-06', name: 'Information Technology & Cybersecurity', head: 'Head of IT & Cybersecurity', staffCount: 22, riskLevel: 'High', coverage: 100, status: 'Active' },
+  { id: 'bu-7', code: 'BU-AUD-07', name: 'Internal Audit & Assurance', head: 'Chief Audit Executive (CAE)', staffCount: 10, riskLevel: 'Low', coverage: 100, status: 'Active' },
+  { id: 'bu-8', code: 'BU-LGL-08', name: 'Legal & Company Secretarial', head: 'Head of Legal', staffCount: 8, riskLevel: 'Medium', coverage: 100, status: 'Active' },
+  { id: 'bu-9', code: 'BU-HR-09', name: 'Human Resources & Administration', head: 'Head of HR & Admin', staffCount: 12, riskLevel: 'Low', coverage: 100, status: 'Active' },
+  { id: 'bu-10', code: 'BU-FIN-10', name: 'Finance & Corporate Planning', head: 'Head of Finance', staffCount: 14, riskLevel: 'Medium', coverage: 100, status: 'Active' },
+  { id: 'bu-11', code: 'BU-CRM-11', name: 'Client Relationship & Pension Services', head: 'Head of Pension Services', staffCount: 18, riskLevel: 'Medium', coverage: 100, status: 'Active' },
+  { id: 'bu-12', code: 'BU-EXEC-12', name: 'Executive Management & Governance', head: 'Managing Director / CEO', staffCount: 6, riskLevel: 'Medium', coverage: 100, status: 'Active' }
+];
 
 export const INITIAL_AUDIT_UNIVERSE = [];
 
