@@ -85,7 +85,7 @@ const AUDIT_ROLE_IDS = [
 ];
 
 export const UserManagement = () => {
-  const { addToast } = useContext(AuditContext);
+  const { addToast, auditLogs, logAuditAction } = useContext(AuditContext);
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [logs, setLogs] = useState([]);
@@ -127,8 +127,8 @@ export const UserManagement = () => {
         }
       }
     } catch (e) {
-      console.error("Failed fetching audit users from Cognito API:", e);
-      if (addToast) addToast("⚠️ Could not load remote Cognito users", "warning");
+      console.error("Failed fetching audit users from directory API:", e);
+      if (addToast) addToast("⚠️ Could not load remote user directory", "warning");
     } finally {
       setLoadingUsers(false);
     }
@@ -214,6 +214,7 @@ export const UserManagement = () => {
 
       setUsers(users.map(u => u.id === editingUser.id || u.email === formData.email ? { ...u, ...payload } : u));
       if (addToast) addToast(`✓ Successfully updated Audit profile for ${formData.name}`, 'success');
+      if (logAuditAction) logAuditAction('UPDATE_AUDIT_USER', 'User', formData.email, `Updated Audit profile for ${formData.name} (${formData.role})`);
     } else {
       try {
         const res = await fetch(`${API_BASE_URL}/api/users/provision`, {
@@ -236,6 +237,7 @@ export const UserManagement = () => {
       };
       setUsers([newUser, ...users]);
       if (addToast) addToast(`👤 Provisioned new Audit credentials for ${formData.name}`, 'success');
+      if (logAuditAction) logAuditAction('PROVISION_AUDIT_USER', 'User', formData.email, `Provisioned new Audit credentials for ${formData.name} (${formData.role})`);
     }
 
     setShowModal(false);
@@ -254,6 +256,7 @@ export const UserManagement = () => {
       });
       setUsers(users.map(u => u.email === targetUser.email ? updatedUser : u));
       if (addToast) addToast(`🛡️ Account status updated for ${targetUser.name}: ${newStatus}`, newStatus === 'Active' ? 'success' : 'warning');
+      if (logAuditAction) logAuditAction('USER_STATUS_CHANGE', 'User', targetUser.email, `Account status updated for ${targetUser.name} to ${newStatus}`);
     } catch (e) {
       console.error("Failed toggling status:", e);
     }
@@ -318,7 +321,7 @@ export const UserManagement = () => {
             }}
           >
             <RefreshCw size={14} className={loadingUsers ? 'animate-spin' : ''} />
-            Sync Cognito
+            Sync Directory
           </button>
 
           <button
@@ -414,8 +417,8 @@ export const UserManagement = () => {
             <Lock size={24} />
           </div>
           <div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>Cognito Sync</div>
-            <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Live User Pool Attached</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>{auditLogs ? auditLogs.length : 0} Events</div>
+            <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Immutable Security Logs</div>
           </div>
         </div>
       </div>
@@ -767,15 +770,19 @@ export const UserManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {logs.length === 0 ? (
-                <tr>
-                  <td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
-                    No security events logged in this session.
-                  </td>
-                </tr>
-              ) : (
-                logs.map((l, i) => (
-                  <tr key={l.id || i} style={{ borderBottom: i === logs.length - 1 ? 'none' : '1px solid rgba(255, 255, 255, 0.05)' }}>
+              {(() => {
+                const displayLogs = (auditLogs && auditLogs.length > 0) ? auditLogs : logs;
+                if (displayLogs.length === 0) {
+                  return (
+                    <tr>
+                      <td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
+                        No security events logged in this session.
+                      </td>
+                    </tr>
+                  );
+                }
+                return displayLogs.map((l, i) => (
+                  <tr key={l.id || i} style={{ borderBottom: i === displayLogs.length - 1 ? 'none' : '1px solid rgba(255, 255, 255, 0.05)' }}>
                     <td style={{ padding: '0.85rem 1.2rem', color: '#94a3b8', fontFamily: 'monospace' }}>{l.timestamp}</td>
                     <td style={{ padding: '0.85rem 1.2rem', fontWeight: 700, color: 'white' }}>{l.actor}</td>
                     <td style={{ padding: '0.85rem 1.2rem' }}>
@@ -786,8 +793,8 @@ export const UserManagement = () => {
                     <td style={{ padding: '0.85rem 1.2rem', color: '#e2e8f0', fontWeight: 600 }}>{l.target}</td>
                     <td style={{ padding: '0.85rem 1.2rem', color: '#94a3b8' }}>{l.details}</td>
                   </tr>
-                ))
-              )}
+                ));
+              })()}
             </tbody>
           </table>
         </div>

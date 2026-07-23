@@ -610,6 +610,65 @@ export const AuditProvider = ({ children }) => {
     saveArrayState('UNIVERSE', updated, setAuditUniverse);
   };
 
+  const INITIAL_AUDIT_LOGS = [
+    {
+      id: 'AUDIT-LOG-1784809001-a1b2',
+      timestamp: new Date(Date.now() - 3600000).toISOString(),
+      actor: 'Dr. Joseph Iheke',
+      actorRole: 'Chief Audit Executive',
+      action: 'AUTH_LOGIN',
+      target: 'Audit Security Gateway',
+      details: 'User authenticated into Internal Audit & Governance Suite',
+      status: 'SUCCESS'
+    },
+    {
+      id: 'AUDIT-LOG-1784809002-c3d4',
+      timestamp: new Date(Date.now() - 7200000).toISOString(),
+      actor: 'Grace Okafor',
+      actorRole: 'Senior IT Auditor',
+      action: 'UPDATE_FINDING_STATUS',
+      target: 'Finding #FND-2026-004',
+      details: 'Updated management remediation status for Custodial Reconciliation gap',
+      status: 'SUCCESS'
+    },
+    {
+      id: 'AUDIT-LOG-1784809003-e5f6',
+      timestamp: new Date(Date.now() - 14400000).toISOString(),
+      actor: 'Chinedu Eze',
+      actorRole: 'Audit Manager',
+      action: 'CREATE_AUDIT_PROGRAM',
+      target: 'PENCOM Regulatory Compliance Audit Program',
+      details: 'Added 12 mandatory testing procedures for Q3 pension asset segregation',
+      status: 'SUCCESS'
+    }
+  ];
+
+  const [auditLogs, setAuditLogs] = useState(() => {
+    try {
+      const saved = localStorage.getItem('zpc_audit_logs');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) { /* ignore */ }
+    return INITIAL_AUDIT_LOGS;
+  });
+
+  useEffect(() => {
+    fetch(`${AUDIT_API}/api/audit-logs`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setAuditLogs(prev => {
+            const ids = new Set(prev.map(p => p.id));
+            const merged = [...data.filter(d => !ids.has(d.id)), ...prev];
+            return merged;
+          });
+        }
+      })
+      .catch(() => null);
+  }, []);
+
   // Immutable WORM Audit Trail Logger (POST /api/audit-logs on AWS)
   const logAuditAction = async (action, target, details) => {
     try {
@@ -623,6 +682,12 @@ export const AuditProvider = ({ children }) => {
         details: details || 'User modified institutional audit evidence record',
         status: 'SUCCESS'
       };
+
+      setAuditLogs(prev => {
+        const updated = [payload, ...prev];
+        try { localStorage.setItem('zpc_audit_logs', JSON.stringify(updated.slice(0, 300))); } catch (e) {}
+        return updated;
+      });
 
       await fetch(`${AUDIT_API}/api/audit-logs`, {
         method: 'POST',
@@ -1401,6 +1466,7 @@ export const AuditProvider = ({ children }) => {
         checkRbacPermission,
         verifyRbacOrAlert,
         logAuditAction,
+        auditLogs,
       }}
     >
       {children}
