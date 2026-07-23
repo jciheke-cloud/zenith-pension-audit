@@ -39,8 +39,8 @@ jobs:
         run: |
           if [ -n "$AWS_ACCESS_KEY_ID" ] && [ -n "$AWS_SECRET_ACCESS_KEY" ]; then
             echo "🚀 AWS Credentials found! Deploying Audit Portal to S3 & CloudFront..."
-            aws s3 sync dist/ s3://riskintegra-erm-frontend-frontendbucket-xz3sjsennvjl/audit-portal/ --delete --cache-control "no-cache"
-            aws s3 cp dist/index.html s3://riskintegra-erm-frontend-frontendbucket-xz3sjsennvjl/audit-portal/index.html --cache-control "no-cache, no-store, must-revalidate, max-age=0" --content-type "text/html"
+            aws s3 sync dist/ s3://riskintegra-erm-frontend-auditfrontendbucket-6j5mxckl17zv/audit-portal/ --cache-control "no-cache"
+            aws s3 sync dist/ s3://riskintegra-erm-frontend-auditfrontendbucket-6j5mxckl17zv/ --cache-control "no-cache"
             aws cloudfront create-invalidation --distribution-id E211U490INF7V3 --paths "/audit-portal/*" "/*"
             echo "✅ Audit Portal GitHub Actions Deployment finished successfully!"
           else
