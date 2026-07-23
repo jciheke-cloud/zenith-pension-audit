@@ -869,18 +869,13 @@ export const AuditProvider = ({ children }) => {
       return { success: false, error: 'Authentication failed. Please verify corporate email and password.' };
     } catch (err) {
       console.error("Audit Cognito signIn error:", err);
-      // Fallback for dev/testing if Cognito network/pool fails
-      const cleanEmail = (email || '').trim().toLowerCase();
-      if (cleanEmail) {
-        const role = resolveAuditRole('', cleanEmail);
-        const found = { id: `usr-${Date.now()}`, name: cleanEmail.split('@')[0], email: cleanEmail, role: 'maker', auditRole: role.id };
-        sessionStorage.setItem('zpc_auth_session', JSON.stringify({ token: 'jwt-fallback', user: found }));
-        setCurrentUser({ name: found.name, title: `${role.name}`, email: found.email, roleId: role.id });
-        setCurrentRole(role);
-        setIsAuthenticated(true);
-        return { success: true };
+      let errorMsg = err.message || 'Authentication failed. Invalid email or password.';
+      if (err.name === 'UserNotFoundException' || err.name === 'NotAuthorizedException') {
+        errorMsg = 'Invalid email or password. Please check your credentials.';
+      } else if (err.name === 'UserNotConfirmedException') {
+        errorMsg = 'Account is not confirmed. Please contact your system administrator.';
       }
-      return { success: false, error: err.message || 'Authentication failed' };
+      return { success: false, error: errorMsg };
     }
   };
 
