@@ -60,120 +60,35 @@ const AUDIT_RBAC_ROLES = [
     badge: { bg: 'rgba(100, 116, 139, 0.18)', border: 'rgba(100, 116, 139, 0.4)', text: '#94A3B8' },
     level: 'Tier 4 — External Access',
     permissions: ['Scoped Working Paper View', 'Attestation Repository', 'Regulatory Submissions View']
+  },
+  {
+    id: 'admin',
+    name: 'System Administrator (Platform Admin)',
+    description: 'Full administrative access across ERM & Audit suites, system provisioning, and security policy management.',
+    badge: { bg: 'rgba(239, 68, 68, 0.25)', border: 'rgba(239, 68, 68, 0.5)', text: '#EF4444' },
+    level: 'Tier 0 — Platform Admin',
+    permissions: ['Full Platform Admin', 'User Provisioning', 'Audit Trail Export', 'Security Matrix Config']
   }
 ];
 
-const INITIAL_AUDIT_USERS = [
-  {
-    id: 'usr-aud-001',
-    employeeId: 'ZPC-AUD-001',
-    name: 'Dr. Chidi Nnamdi',
-    email: 'c.nnamdi@zenithpensions.com',
-    role: 'Chief_Audit_Executive',
-    roleName: 'Chief Audit Executive (CAE)',
-    department: 'Internal Audit & Governance',
-    auditScope: 'All Institutional Operations & Custody',
-    status: 'Active',
-    lastLogin: '2026-07-22 15:40:12',
-    twoFactorEnabled: true
-  },
-  {
-    id: 'usr-aud-002',
-    employeeId: 'ZPC-AUD-002',
-    name: 'Aminu Bello',
-    email: 'a.bello@zenithpensions.com',
-    role: 'Audit_Manager',
-    roleName: 'Audit Manager / Lead Auditor',
-    department: 'Financial & Custodial Audit',
-    auditScope: 'Custodial Settlements & Fund Accounting',
-    status: 'Active',
-    lastLogin: '2026-07-22 14:12:05',
-    twoFactorEnabled: true
-  },
-  {
-    id: 'usr-aud-003',
-    employeeId: 'ZPC-AUD-003',
-    name: 'Nkechi Okonkwo',
-    email: 'n.okonkwo@zenithpensions.com',
-    role: 'Senior_Auditor',
-    roleName: 'Senior Internal Auditor',
-    department: 'Compliance & Regulatory Audit',
-    auditScope: 'PENCOM Regulatory Compliance & Licensing',
-    status: 'Active',
-    lastLogin: '2026-07-21 09:30:44',
-    twoFactorEnabled: true
-  },
-  {
-    id: 'usr-aud-004',
-    employeeId: 'ZPC-AUD-004',
-    name: 'Tunde Bakare',
-    email: 't.bakare@zenithpensions.com',
-    role: 'IT_Audit_Specialist',
-    roleName: 'IT & Cybersecurity Auditor',
-    department: 'Information Technology Audit',
-    auditScope: 'Core Custody Infrastructure & Cyber Controls',
-    status: 'Active',
-    lastLogin: '2026-07-22 16:05:11',
-    twoFactorEnabled: true
-  },
-  {
-    id: 'usr-aud-005',
-    employeeId: 'ZPC-AUD-005',
-    name: 'Fatima Yar’Adua',
-    email: 'f.yaradua@zenithpensions.com',
-    role: 'Forensic_Specialist',
-    roleName: 'Forensic & Fraud Specialist',
-    department: 'Forensic Investigations',
-    auditScope: 'High-Value Transfer Ledgers & Fraud Prevention',
-    status: 'Active',
-    lastLogin: '2026-07-20 11:22:19',
-    twoFactorEnabled: true
-  },
-  {
-    id: 'usr-aud-006',
-    employeeId: 'ZPC-AUD-006',
-    name: 'Chief Olumide Adeleke',
-    email: 'o.adeleke@board.zenithpensions.com',
-    role: 'Audit_Committee_Member',
-    roleName: 'Audit Committee Member',
-    department: 'Board Audit Committee',
-    auditScope: 'Board Oversight & Independence Telemetry',
-    status: 'Active',
-    lastLogin: '2026-07-19 17:45:00',
-    twoFactorEnabled: true
-  }
-];
-
-const INITIAL_AUDIT_LOGS = [
-  {
-    id: 'log-001',
-    timestamp: '2026-07-22 15:40:12',
-    actor: 'Dr. Chidi Nnamdi (CAE)',
-    action: 'USER_PROVISIONED',
-    target: 'Tunde Bakare (ZPC-AUD-004)',
-    details: 'Provisioned IT & Cybersecurity Auditor profile with active 2FA.'
-  },
-  {
-    id: 'log-002',
-    timestamp: '2026-07-21 11:15:00',
-    actor: 'Dr. Chidi Nnamdi (CAE)',
-    action: 'ROLE_MODIFIED',
-    target: 'Aminu Bello (ZPC-AUD-002)',
-    details: 'Elevated role to Audit Manager / Lead Auditor for FY2026 Annual Audit Plan.'
-  }
+const AUDIT_ROLE_IDS = [
+  'Chief_Audit_Executive',
+  'Audit_Manager',
+  'Senior_Auditor',
+  'IT_Audit_Specialist',
+  'Forensic_Specialist',
+  'Audit_Committee_Member',
+  'External_Auditor',
+  'admin',
+  'Platform_Administrator',
+  'Security_Administrator'
 ];
 
 export const UserManagement = () => {
   const { addToast } = useContext(AuditContext);
-  const [users, setUsers] = useState(() => {
-    const saved = localStorage.getItem('zpc_audit_users');
-    return saved ? JSON.parse(saved) : INITIAL_AUDIT_USERS;
-  });
-
-  const [logs, setLogs] = useState(() => {
-    const saved = localStorage.getItem('zpc_audit_user_logs');
-    return saved ? JSON.parse(saved) : INITIAL_AUDIT_LOGS;
-  });
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [logs, setLogs] = useState([]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
@@ -190,24 +105,47 @@ export const UserManagement = () => {
     role: 'Senior_Auditor',
     department: 'Internal Audit & Governance',
     auditScope: 'Operational Risk & Compliance',
+    appScope: 'audit',
     status: 'Active'
   });
 
-  useEffect(() => {
-    localStorage.setItem('zpc_audit_users', JSON.stringify(users));
-  }, [users]);
+  const fetchUsersFromCognito = async () => {
+    setLoadingUsers(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/users`);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          // Filter to Audit roles + Admin roles, or users with appScope === 'audit'
+          const auditUsers = data.filter(u => 
+            AUDIT_ROLE_IDS.includes(u.role) || 
+            AUDIT_ROLE_IDS.includes(u.auditRole) || 
+            u.appScope === 'audit' ||
+            u.appScope === 'both'
+          );
+          setUsers(auditUsers);
+        }
+      }
+    } catch (e) {
+      console.error("Failed fetching audit users from Cognito API:", e);
+      if (addToast) addToast("⚠️ Could not load remote Cognito users", "warning");
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
 
   useEffect(() => {
-    localStorage.setItem('zpc_audit_user_logs', JSON.stringify(logs));
-  }, [logs]);
+    fetchUsersFromCognito();
+  }, []);
 
   const filteredUsers = useMemo(() => {
     return users.filter(u => {
       const matchesSearch = 
-        u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        u.employeeId.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesRole = roleFilter === 'ALL' || u.role === roleFilter;
+        (u.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (u.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (u.employeeId || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (u.department || '').toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesRole = roleFilter === 'ALL' || u.role === roleFilter || u.auditRole === roleFilter;
       const matchesStatus = statusFilter === 'ALL' || u.status === statusFilter;
       return matchesSearch && matchesRole && matchesStatus;
     });
@@ -217,11 +155,12 @@ export const UserManagement = () => {
     setEditingUser(null);
     setFormData({
       name: '',
-      email: '',
-      employeeId: `ZPC-AUD-${String(users.length + 1).padStart(3, '0')}`,
+      email: '@zenithpensions.com',
+      employeeId: `ZPC-AUD-${Math.floor(100 + Math.random() * 900)}`,
       role: 'Senior_Auditor',
       department: 'Internal Audit & Governance',
       auditScope: 'Custodial & Financial Operations',
+      appScope: 'audit',
       status: 'Active'
     });
     setShowModal(true);
@@ -230,18 +169,19 @@ export const UserManagement = () => {
   const handleOpenEditModal = (user) => {
     setEditingUser(user);
     setFormData({
-      name: user.name,
-      email: user.email,
-      employeeId: user.employeeId,
-      role: user.role,
-      department: user.department,
-      auditScope: user.auditScope,
-      status: user.status
+      name: user.name || '',
+      email: user.email || '',
+      employeeId: user.employeeId || '',
+      role: user.auditRole || user.role || 'Senior_Auditor',
+      department: user.department || 'Internal Audit & Governance',
+      auditScope: user.auditScope || 'Custodial & Financial Operations',
+      appScope: user.appScope || 'audit',
+      status: user.status || 'Active'
     });
     setShowModal(true);
   };
 
-  const handleSaveUser = (e) => {
+  const handleSaveUser = async (e) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.email.trim()) {
       if (addToast) addToast('⚠️ Please fill out all required fields.', 'warning');
@@ -249,70 +189,74 @@ export const UserManagement = () => {
     }
 
     const selectedRole = AUDIT_RBAC_ROLES.find(r => r.id === formData.role) || AUDIT_RBAC_ROLES[2];
+    const payload = {
+      ...formData,
+      auditRole: formData.role,
+      roleName: selectedRole.name
+    };
 
     if (editingUser) {
-      const updated = users.map(u => u.id === editingUser.id ? {
-        ...u,
-        ...formData,
-        roleName: selectedRole.name
-      } : u);
-      setUsers(updated);
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/users/${encodeURIComponent(formData.email)}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || 'Failed to update user');
+        }
+      } catch (err) {
+        console.error("Failed updating user via API Gateway:", err);
+        if (addToast) addToast(`🚨 API Error: ${err.message}`, 'danger');
+        return;
+      }
 
-      const newLog = {
-        id: `log-${Date.now()}`,
-        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-        actor: 'Chief Audit Executive (CAE)',
-        action: 'PROFILE_UPDATED',
-        target: `${formData.name} (${formData.employeeId})`,
-        details: `Updated role to ${selectedRole.name} and scope to "${formData.auditScope}".`
-      };
-      setLogs([newLog, ...logs]);
-
+      setUsers(users.map(u => u.id === editingUser.id || u.email === formData.email ? { ...u, ...payload } : u));
       if (addToast) addToast(`✓ Successfully updated Audit profile for ${formData.name}`, 'success');
     } else {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/users/provision`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to provision user');
+      } catch (err) {
+        console.error("Failed provisioning user via API Gateway:", err);
+        if (addToast) addToast(`🚨 API Error: ${err.message}`, 'danger');
+        return;
+      }
+
       const newUser = {
         id: `usr-aud-${Date.now()}`,
-        ...formData,
-        roleName: selectedRole.name,
-        lastLogin: 'Never',
+        ...payload,
         twoFactorEnabled: true
       };
       setUsers([newUser, ...users]);
-
-      const newLog = {
-        id: `log-${Date.now()}`,
-        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-        actor: 'Chief Audit Executive (CAE)',
-        action: 'USER_PROVISIONED',
-        target: `${formData.name} (${formData.employeeId})`,
-        details: `Provisioned 3LoD Audit Credentials as ${selectedRole.name}.`
-      };
-      setLogs([newLog, ...logs]);
-
       if (addToast) addToast(`👤 Provisioned new Audit credentials for ${formData.name}`, 'success');
     }
 
     setShowModal(false);
   };
 
-  const handleToggleStatus = (targetId) => {
-    const target = users.find(u => u.id === targetId);
-    if (!target) return;
-    const newStatus = target.status === 'Active' ? 'Suspended' : 'Active';
-    const updated = users.map(u => u.id === targetId ? { ...u, status: newStatus } : u);
-    setUsers(updated);
+  const handleToggleStatus = async (targetUser) => {
+    if (!targetUser) return;
+    const newStatus = targetUser.status === 'Active' ? 'Suspended' : 'Active';
+    const updatedUser = { ...targetUser, status: newStatus };
 
-    const newLog = {
-      id: `log-${Date.now()}`,
-      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-      actor: 'Chief Audit Executive (CAE)',
-      action: 'STATUS_TOGGLED',
-      target: `${target.name} (${target.employeeId})`,
-      details: `Account access state transitioned to: ${newStatus}.`
-    };
-    setLogs([newLog, ...logs]);
-
-    if (addToast) addToast(`🛡️ User ${target.name} status updated to ${newStatus}`, newStatus === 'Active' ? 'success' : 'warning');
+    try {
+      await fetch(`${API_BASE_URL}/api/users/${encodeURIComponent(targetUser.email)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedUser)
+      });
+      setUsers(users.map(u => u.email === targetUser.email ? updatedUser : u));
+      if (addToast) addToast(`🛡️ Account status updated for ${targetUser.name}: ${newStatus}`, newStatus === 'Active' ? 'success' : 'warning');
+    } catch (e) {
+      console.error("Failed toggling status:", e);
+    }
   };
 
   return (
@@ -347,36 +291,58 @@ export const UserManagement = () => {
             </div>
             <div>
               <h1 style={{ fontSize: '1.75rem', fontWeight: 800, margin: 0, letterSpacing: '-0.5px' }}>
-                Audit Personnel & RBAC Governance
+                User Management
               </h1>
               <p style={{ color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', margin: 0, fontWeight: 500 }}>
-                3rd Line Independent Assurance User Management & Privilege Enforcement — PENCOM Compliant
+                Independent Audit & Assurance User Management & Privilege Enforcement — PENCOM Compliant
               </p>
             </div>
           </div>
         </div>
 
-        <button
-          onClick={handleOpenAddModal}
-          style={{
-            padding: '0.65rem 1.2rem',
-            borderRadius: '8px',
-            border: '1px solid rgba(236, 72, 153, 0.45)',
-            background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25) 0%, rgba(159, 18, 57, 0.35) 100%)',
-            color: 'white',
-            fontWeight: 700,
-            cursor: 'pointer',
-            fontSize: '0.85rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            boxShadow: '0 0 12px rgba(236, 72, 153, 0.3)',
-            transition: 'all 0.2s'
-          }}
-        >
-          <UserPlus size={16} />
-          Provision Audit Personnel
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <button
+            onClick={fetchUsersFromCognito}
+            style={{
+              padding: '0.65rem 1rem',
+              borderRadius: '8px',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              background: 'rgba(255, 255, 255, 0.05)',
+              color: 'white',
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontSize: '0.85rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem'
+            }}
+          >
+            <RefreshCw size={14} className={loadingUsers ? 'animate-spin' : ''} />
+            Sync Cognito
+          </button>
+
+          <button
+            onClick={handleOpenAddModal}
+            style={{
+              padding: '0.65rem 1.2rem',
+              borderRadius: '8px',
+              border: '1px solid rgba(236, 72, 153, 0.45)',
+              background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25) 0%, rgba(159, 18, 57, 0.35) 100%)',
+              color: 'white',
+              fontWeight: 700,
+              cursor: 'pointer',
+              fontSize: '0.85rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              boxShadow: '0 0 12px rgba(236, 72, 153, 0.3)',
+              transition: 'all 0.2s'
+            }}
+          >
+            <UserPlus size={16} />
+            Provision Audit Personnel
+          </button>
+        </div>
       </div>
 
       {/* Quick Metrics Bar */}
@@ -448,94 +414,73 @@ export const UserManagement = () => {
             <Lock size={24} />
           </div>
           <div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>100%</div>
-            <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>2FA Enforced Security</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>Cognito Sync</div>
+            <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Live User Pool Attached</div>
           </div>
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        marginBottom: '1.5rem'
-      }}>
-        <button
-          onClick={() => setActiveTab('personnel')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            background: 'transparent',
-            border: 'none',
-            borderBottom: activeTab === 'personnel' ? '3px solid #f472b6' : '3px solid transparent',
-            color: activeTab === 'personnel' ? '#f472b6' : '#94a3b8',
-            fontWeight: 700,
-            fontSize: '0.9rem',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-          }}
-        >
-          👤 Audit Roster & Personnel
-        </button>
-
-        <button
-          onClick={() => setActiveTab('rbac')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            background: 'transparent',
-            border: 'none',
-            borderBottom: activeTab === 'rbac' ? '3px solid #f472b6' : '3px solid transparent',
-            color: activeTab === 'rbac' ? '#f472b6' : '#94a3b8',
-            fontWeight: 700,
-            fontSize: '0.9rem',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-          }}
-        >
-          🔐 Audit RBAC Permission Matrix
-        </button>
-
-        <button
-          onClick={() => setActiveTab('logs')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            background: 'transparent',
-            border: 'none',
-            borderBottom: activeTab === 'logs' ? '3px solid #f472b6' : '3px solid transparent',
-            color: activeTab === 'logs' ? '#f472b6' : '#94a3b8',
-            fontWeight: 700,
-            fontSize: '0.9rem',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-          }}
-        >
-          📜 Access & Privilege Audit Logs
-        </button>
+      {/* Tabs Navigation */}
+      <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: '1.5rem' }}>
+        {[
+          { id: 'personnel', label: 'Audit Directory & Roster', icon: UserCheck },
+          { id: 'rbac', label: '3LoD Permission Matrix & Roles', icon: Key },
+          { id: 'logs', label: 'Security & Access Logs', icon: FileText }
+        ].map(tab => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                padding: '0.75rem 1.25rem',
+                border: 'none',
+                borderBottom: isActive ? '2px solid #f472b6' : '2px solid transparent',
+                background: 'transparent',
+                color: isActive ? '#f472b6' : '#94a3b8',
+                fontWeight: isActive ? 700 : 500,
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                transition: 'all 0.2s'
+              }}
+            >
+              <Icon size={16} />
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
 
-      {/* TAB 1: AUDIT PERSONNEL ROSTER */}
+      {/* TAB 1: PERSONNEL DIRECTORY */}
       {activeTab === 'personnel' && (
-        <div>
-          {/* Controls & Search */}
+        <>
+          {/* Controls Bar */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: '1rem',
-            marginBottom: '1.25rem',
-            flexWrap: 'wrap'
+            marginBottom: '1.5rem',
+            flexWrap: 'wrap',
+            background: 'rgba(15, 23, 42, 0.4)',
+            padding: '1rem',
+            borderRadius: '12px',
+            border: '1px solid rgba(255, 255, 255, 0.05)'
           }}>
-            <div style={{ position: 'relative', flex: 1, minWidth: '280px' }}>
-              <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+            <div style={{ position: 'relative', flex: 1, minWidth: '260px' }}>
+              <Search size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
               <input
                 type="text"
-                placeholder="Search audit personnel by name, email, or employee ID..."
+                placeholder="Search personnel by name, email, employee ID or department..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '0.6rem 1rem 0.6rem 2.4rem',
+                  padding: '0.65rem 1rem 0.65rem 2.6rem',
                   borderRadius: '8px',
                   background: 'rgba(15, 23, 42, 0.8)',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -545,17 +490,17 @@ export const UserManagement = () => {
               />
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               <select
                 value={roleFilter}
                 onChange={e => setRoleFilter(e.target.value)}
                 style={{
-                  padding: '0.6rem 1rem',
+                  padding: '0.65rem 1rem',
                   borderRadius: '8px',
                   background: 'rgba(15, 23, 42, 0.8)',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
                   color: 'white',
-                  fontSize: '0.85rem'
+                  fontSize: '0.82rem'
                 }}
               >
                 <option value="ALL">All Audit Roles</option>
@@ -568,236 +513,246 @@ export const UserManagement = () => {
                 value={statusFilter}
                 onChange={e => setStatusFilter(e.target.value)}
                 style={{
-                  padding: '0.6rem 1rem',
+                  padding: '0.65rem 1rem',
                   borderRadius: '8px',
                   background: 'rgba(15, 23, 42, 0.8)',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
                   color: 'white',
-                  fontSize: '0.85rem'
+                  fontSize: '0.82rem'
                 }}
               >
                 <option value="ALL">All Statuses</option>
-                <option value="Active">Active</option>
+                <option value="Active">Active Credentials</option>
                 <option value="Suspended">Suspended</option>
               </select>
             </div>
           </div>
 
-          {/* Personnel Table */}
-          <div style={{
-            background: 'rgba(15, 23, 42, 0.6)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '12px',
-            overflow: 'hidden'
-          }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
-              <thead>
-                <tr style={{ background: 'rgba(255, 255, 255, 0.03)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', color: '#94a3b8' }}>
-                  <th style={{ padding: '1rem 1.2rem' }}>Personnel</th>
-                  <th style={{ padding: '1rem 1.2rem' }}>Audit Role</th>
-                  <th style={{ padding: '1rem 1.2rem' }}>Assigned Department / Scope</th>
-                  <th style={{ padding: '1rem 1.2rem' }}>2FA Security</th>
-                  <th style={{ padding: '1rem 1.2rem' }}>Status</th>
-                  <th style={{ padding: '1rem 1.2rem', textAlign: 'right' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredUsers.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
-                      No audit personnel matching search filters.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredUsers.map((u, idx) => {
-                    const roleBadge = AUDIT_RBAC_ROLES.find(r => r.id === u.role)?.badge || { bg: 'rgba(99,102,241,0.18)', border: 'rgba(99,102,241,0.4)', text: '#818CF8' };
-                    return (
-                      <tr key={u.id} style={{ borderBottom: idx === filteredUsers.length - 1 ? 'none' : '1px solid rgba(255, 255, 255, 0.05)', transition: 'background 0.2s' }}>
-                        <td style={{ padding: '1rem 1.2rem' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                            <div style={{
-                              width: '36px',
-                              height: '36px',
-                              borderRadius: '50%',
-                              background: 'linear-gradient(135deg, #ec4899, #be185d)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontWeight: 800,
-                              fontSize: '0.8rem',
-                              color: 'white',
-                              boxShadow: '0 0 8px rgba(236, 72, 153, 0.4)'
-                            }}>
-                              {u.name.substring(0, 2).toUpperCase()}
-                            </div>
-                            <div>
-                              <div style={{ fontWeight: 700, color: 'white' }}>{u.name}</div>
-                              <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{u.email} · <span style={{ color: '#f472b6', fontWeight: 600 }}>{u.employeeId}</span></div>
-                            </div>
+          {/* User Cards / Roster Grid */}
+          {loadingUsers ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
+              <RefreshCw size={24} className="animate-spin" style={{ margin: '0 auto 1rem' }} />
+              Loading Cognito User Pool Users...
+            </div>
+          ) : filteredUsers.length === 0 ? (
+            <div style={{ padding: '3rem', textAlign: 'center', background: 'rgba(15, 23, 42, 0.4)', borderRadius: '12px', border: '1px dashed rgba(255,255,255,0.1)' }}>
+              <Shield size={32} style={{ color: '#f472b6', marginBottom: '0.5rem' }} />
+              <h4 style={{ margin: '0 0 0.25rem 0', color: 'white' }}>No Audit Personnel Found</h4>
+              <p style={{ fontSize: '0.82rem', color: '#94a3b8', margin: 0 }}>Try resetting your search query or role filter.</p>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
+              {filteredUsers.map(user => {
+                const roleObj = AUDIT_RBAC_ROLES.find(r => r.id === (user.auditRole || user.role)) || AUDIT_RBAC_ROLES[2];
+                const isSuspended = user.status === 'Suspended';
+
+                return (
+                  <div
+                    key={user.id || user.email}
+                    style={{
+                      background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.6))',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: '14px',
+                      padding: '1.4rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      position: 'relative',
+                      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
+                      opacity: isSuspended ? 0.7 : 1
+                    }}
+                  >
+                    <div>
+                      {/* Top Header Card Info */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.85rem' }}>
+                        <div>
+                          <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'white' }}>
+                            {user.name}
+                          </h3>
+                          <div style={{ fontSize: '0.78rem', color: '#f472b6', fontWeight: 600, fontFamily: 'monospace' }}>
+                            {user.employeeId || user.email}
                           </div>
-                        </td>
+                        </div>
 
-                        <td style={{ padding: '1rem 1.2rem' }}>
-                          <span style={{
-                            padding: '0.25rem 0.6rem',
-                            borderRadius: '2rem',
-                            fontSize: '0.75rem',
-                            fontWeight: 700,
-                            background: roleBadge.bg,
-                            border: `1px solid ${roleBadge.border}`,
-                            color: roleBadge.text,
-                            display: 'inline-block'
-                          }}>
-                            {u.roleName || u.role}
-                          </span>
-                        </td>
+                        <span style={{
+                          padding: '0.2rem 0.6rem',
+                          borderRadius: '9999px',
+                          fontSize: '0.7rem',
+                          fontWeight: 700,
+                          background: isSuspended ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                          color: isSuspended ? '#f87171' : '#34d399',
+                          border: isSuspended ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(16, 185, 129, 0.3)'
+                        }}>
+                          {user.status || 'Active'}
+                        </span>
+                      </div>
 
-                        <td style={{ padding: '1rem 1.2rem', maxWidth: '240px' }}>
-                          <div style={{ color: '#e2e8f0', fontWeight: 600 }}>{u.department}</div>
-                          <div style={{ fontSize: '0.75rem', color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.auditScope}</div>
-                        </td>
+                      {/* Role Pill */}
+                      <div style={{ marginBottom: '1rem' }}>
+                        <span style={{
+                          display: 'inline-block',
+                          padding: '0.3rem 0.75rem',
+                          borderRadius: '8px',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          background: roleObj.badge.bg,
+                          color: roleObj.badge.text,
+                          border: `1px solid ${roleObj.badge.border}`
+                        }}>
+                          {roleObj.name}
+                        </span>
+                      </div>
 
-                        <td style={{ padding: '1rem 1.2rem' }}>
-                          <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#34d399', fontSize: '0.78rem', fontWeight: 600 }}>
-                            <Shield size={14} /> Enforced (TOTP)
-                          </span>
-                        </td>
+                      {/* Details Meta */}
+                      <div style={{ fontSize: '0.8rem', color: '#94a3b8', display: 'flex', flexDirection: 'column', gap: '0.4rem', marginBottom: '1.25rem' }}>
+                        <div><strong>Dept:</strong> {user.department || 'Internal Audit & Governance'}</div>
+                        <div><strong>Email:</strong> {user.email}</div>
+                        <div><strong>Scope:</strong> {user.auditScope || 'Custodial & Regulatory Compliance'}</div>
+                      </div>
+                    </div>
 
-                        <td style={{ padding: '1rem 1.2rem' }}>
-                          <span style={{
-                            padding: '0.2rem 0.55rem',
-                            borderRadius: '4px',
-                            fontSize: '0.72rem',
-                            fontWeight: 700,
-                            background: u.status === 'Active' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                            border: `1px solid ${u.status === 'Active' ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)'}`,
-                            color: u.status === 'Active' ? '#34d399' : '#f87171'
-                          }}>
-                            {u.status}
-                          </span>
-                        </td>
+                    {/* Footer Actions */}
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      paddingTop: '0.85rem',
+                      borderTop: '1px solid rgba(255, 255, 255, 0.08)'
+                    }}>
+                      <button
+                        onClick={() => handleToggleStatus(user)}
+                        style={{
+                          padding: '0.4rem 0.8rem',
+                          borderRadius: '6px',
+                          border: 'none',
+                          background: isSuspended ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                          color: isSuspended ? '#34d399' : '#f87171',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {isSuspended ? 'Reactivate' : 'Suspend'}
+                      </button>
 
-                        <td style={{ padding: '1rem 1.2rem', textAlign: 'right' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                            <button
-                              onClick={() => handleOpenEditModal(u)}
-                              style={{
-                                background: 'rgba(255, 255, 255, 0.06)',
-                                border: '1px solid rgba(255, 255, 255, 0.15)',
-                                color: '#e2e8f0',
-                                padding: '0.3rem 0.6rem',
-                                borderRadius: '6px',
-                                cursor: 'pointer',
-                                fontSize: '0.75rem',
-                                fontWeight: 600
-                              }}
-                            >
-                              Edit Profile
-                            </button>
-
-                            <button
-                              onClick={() => handleToggleStatus(u.id)}
-                              style={{
-                                background: u.status === 'Active' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
-                                border: `1px solid ${u.status === 'Active' ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.4)'}`,
-                                color: u.status === 'Active' ? '#f87171' : '#34d399',
-                                padding: '0.3rem 0.6rem',
-                                borderRadius: '6px',
-                                cursor: 'pointer',
-                                fontSize: '0.75rem',
-                                fontWeight: 700
-                              }}
-                            >
-                              {u.status === 'Active' ? 'Suspend' : 'Activate'}
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                      <button
+                        onClick={() => handleOpenEditModal(user)}
+                        style={{
+                          padding: '0.4rem 0.8rem',
+                          borderRadius: '6px',
+                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          background: 'rgba(255, 255, 255, 0.05)',
+                          color: 'white',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Edit Profile
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </>
       )}
 
-      {/* TAB 2: AUDIT RBAC PERMISSION MATRIX */}
+      {/* TAB 2: 3LOD PERMISSION MATRIX & ROLES */}
       {activeTab === 'rbac' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
           {AUDIT_RBAC_ROLES.map(role => (
-            <div key={role.id} style={{
-              background: 'rgba(15, 23, 42, 0.6)',
-              border: `1px solid ${role.badge.border}`,
-              borderRadius: '12px',
-              padding: '1.5rem',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
-            }}>
+            <div
+              key={role.id}
+              style={{
+                background: 'rgba(15, 23, 42, 0.6)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '14px',
+                padding: '1.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+              }}
+            >
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                   <span style={{
-                    padding: '0.25rem 0.65rem',
-                    borderRadius: '2rem',
-                    fontSize: '0.72rem',
+                    fontSize: '0.7rem',
                     fontWeight: 800,
+                    textTransform: 'uppercase',
+                    color: role.badge.text,
                     background: role.badge.bg,
-                    border: `1px solid ${role.badge.border}`,
-                    color: role.badge.text
+                    padding: '0.2rem 0.6rem',
+                    borderRadius: '6px',
+                    border: `1px solid ${role.badge.border}`
                   }}>
                     {role.level}
                   </span>
-                  <Shield size={18} style={{ color: role.badge.text }} />
+                  <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontFamily: 'monospace' }}>
+                    {role.id}
+                  </span>
                 </div>
 
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, margin: '0 0 0.4rem 0', color: 'white' }}>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, margin: '0 0 0.5rem 0', color: 'white' }}>
                   {role.name}
                 </h3>
-                <p style={{ fontSize: '0.82rem', color: '#94a3b8', lineHeight: 1.5, marginBottom: '1.2rem' }}>
+                <p style={{ fontSize: '0.82rem', color: '#94a3b8', margin: '0 0 1.25rem 0', lineHeight: 1.5 }}>
                   {role.description}
                 </p>
 
-                <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '1rem' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f472b6', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
-                    Granted 3LoD Privileges:
+                <div style={{ marginBottom: '1rem' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#e2e8f0', marginBottom: '0.5rem' }}>
+                    Granted Privilege Scope:
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                    {role.permissions.map((p, i) => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: '#e2e8f0' }}>
-                        <CheckCircle size={14} style={{ color: '#34d399', flexShrink: 0 }} />
-                        <span>{p}</span>
-                      </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                    {role.permissions.map((p, idx) => (
+                      <span key={idx} style={{
+                        fontSize: '0.72rem',
+                        padding: '0.2rem 0.5rem',
+                        borderRadius: '4px',
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        color: '#cbd5e1'
+                      }}>
+                        ✓ {p}
+                      </span>
                     ))}
                   </div>
                 </div>
               </div>
 
-              <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', marginTop: '1.5rem', paddingTop: '0.75rem', fontSize: '0.75rem', color: '#64748b', display: 'flex', justifyContent: 'space-between' }}>
-                <span>PENCOM Governance Model</span>
-                <span style={{ color: role.badge.text, fontWeight: 700 }}>Independent 3LoD</span>
+              <div style={{
+                fontSize: '0.75rem',
+                color: '#94a3b8',
+                paddingTop: '0.75rem',
+                borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}>
+                <span>Assigned Users:</span>
+                <span style={{ fontWeight: 700, color: role.badge.text }}>
+                  {users.filter(u => (u.auditRole || u.role) === role.id).length} Personnel
+                </span>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* TAB 3: AUDIT LOGS */}
+      {/* TAB 3: SECURITY & ACCESS LOGS */}
       {activeTab === 'logs' && (
         <div style={{
           background: 'rgba(15, 23, 42, 0.6)',
           border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '12px',
+          borderRadius: '14px',
           overflow: 'hidden'
         }}>
-          <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>WORM Immutable Audit Logs</h3>
-              <p style={{ fontSize: '0.78rem', color: '#94a3b8', margin: 0 }}>Audit personnel privilege assignments & credential lifecycle history</p>
-            </div>
-            <span style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', padding: '0.3rem 0.75rem', borderRadius: '2rem', fontSize: '0.75rem', fontWeight: 700, border: '1px solid rgba(16, 185, 129, 0.4)' }}>
-              🔒 WORM Sealed
+          <div style={{ padding: '1.2rem 1.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>Audit Credentials Security Telemetry</h3>
+            <span style={{ fontSize: '0.75rem', color: '#34d399', background: 'rgba(16, 185, 129, 0.15)', padding: '0.25rem 0.6rem', borderRadius: '6px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+              🔒 WORM Sealed Audit Trail
             </span>
           </div>
 
@@ -812,19 +767,27 @@ export const UserManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {logs.map((l, i) => (
-                <tr key={l.id || i} style={{ borderBottom: i === logs.length - 1 ? 'none' : '1px solid rgba(255, 255, 255, 0.05)' }}>
-                  <td style={{ padding: '0.85rem 1.2rem', color: '#94a3b8', fontFamily: 'monospace' }}>{l.timestamp}</td>
-                  <td style={{ padding: '0.85rem 1.2rem', fontWeight: 700, color: 'white' }}>{l.actor}</td>
-                  <td style={{ padding: '0.85rem 1.2rem' }}>
-                    <span style={{ background: 'rgba(236, 72, 153, 0.15)', color: '#f472b6', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700, border: '1px solid rgba(236, 72, 153, 0.3)' }}>
-                      {l.action}
-                    </span>
+              {logs.length === 0 ? (
+                <tr>
+                  <td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
+                    No security events logged in this session.
                   </td>
-                  <td style={{ padding: '0.85rem 1.2rem', color: '#e2e8f0', fontWeight: 600 }}>{l.target}</td>
-                  <td style={{ padding: '0.85rem 1.2rem', color: '#94a3b8' }}>{l.details}</td>
                 </tr>
-              ))}
+              ) : (
+                logs.map((l, i) => (
+                  <tr key={l.id || i} style={{ borderBottom: i === logs.length - 1 ? 'none' : '1px solid rgba(255, 255, 255, 0.05)' }}>
+                    <td style={{ padding: '0.85rem 1.2rem', color: '#94a3b8', fontFamily: 'monospace' }}>{l.timestamp}</td>
+                    <td style={{ padding: '0.85rem 1.2rem', fontWeight: 700, color: 'white' }}>{l.actor}</td>
+                    <td style={{ padding: '0.85rem 1.2rem' }}>
+                      <span style={{ background: 'rgba(236, 72, 153, 0.15)', color: '#f472b6', padding: '0.15rem 0.5rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700, border: '1px solid rgba(236, 72, 153, 0.3)' }}>
+                        {l.action}
+                      </span>
+                    </td>
+                    <td style={{ padding: '0.85rem 1.2rem', color: '#e2e8f0', fontWeight: 600 }}>{l.target}</td>
+                    <td style={{ padding: '0.85rem 1.2rem', color: '#94a3b8' }}>{l.details}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

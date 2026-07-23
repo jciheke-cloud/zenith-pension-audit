@@ -178,7 +178,7 @@ const Sidebar = () => {
         )}
         <NavLink to="/user-management" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <Users />
-          <span style={{ color: '#f472b6', fontWeight: 700 }}>User Management & RBAC</span>
+          <span style={{ color: '#f472b6', fontWeight: 700 }}>User Management</span>
         </NavLink>
         <NavLink to="/user-guide" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <BookOpen />
