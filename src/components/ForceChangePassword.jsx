@@ -58,7 +58,7 @@ export const ForceChangePassword = ({ email, onComplete }) => {
             Mandatory Password Change
           </h2>
           <p style={{ color: '#94A3B8', fontSize: '0.88rem', marginTop: '0.5rem' }}>
-            AWS Cognito requires you to update the temporary password for <strong>{email}</strong> before proceeding.
+            Enterprise Identity Policy requires you to update your initial password for <strong>{email}</strong> before proceeding.
           </p>
         </div>
 
