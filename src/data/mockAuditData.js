@@ -1,7 +1,20 @@
 // Master Structure & Institutional Roles Definitions for Zenith Pension Custodian (ZPC) Audit Management Application
 // RiskINTEGRA Audit™ - Zero-Trust Institutional Ecosystem (No Mock Data)
 
-export const INITIAL_BUSINESS_UNITS = [];
+export const INITIAL_BUSINESS_UNITS = [
+  { id: 'bu-1', code: 'BU-CUST-01', name: 'Custody Operations & Asset Servicing', head: 'Nkechi Okolie', staffCount: 28, riskLevel: 'High', coverage: 85, status: 'Active' },
+  { id: 'bu-2', code: 'BU-SETT-02', name: 'Settlements, Clearing & Money Market', head: 'Emeka Nwosu', staffCount: 18, riskLevel: 'High', coverage: 90, status: 'Active' },
+  { id: 'bu-3', code: 'BU-CONT-03', name: 'Contribution Reconciliation & Invoicing', head: 'Amina Bello', staffCount: 22, riskLevel: 'High', coverage: 80, status: 'Active' },
+  { id: 'bu-4', code: 'BU-ACCT-04', name: 'Fund Accounting & Net Asset Valuation (NAV)', head: 'Babatunde Adebayo', staffCount: 16, riskLevel: 'High', coverage: 95, status: 'Active' },
+  { id: 'bu-5', code: 'BU-RISK-05', name: 'Risk Management & Compliance', head: 'Dr. Joseph Iheke', staffCount: 14, riskLevel: 'Medium', coverage: 100, status: 'Active' },
+  { id: 'bu-6', code: 'BU-IT-06', name: 'Information Technology & Cybersecurity', head: 'Oluwaseun Thorne', staffCount: 25, riskLevel: 'High', coverage: 88, status: 'Active' },
+  { id: 'bu-7', code: 'BU-AUD-07', name: 'Internal Audit & Assurance', head: 'Chief Audit Executive (CAE)', staffCount: 12, riskLevel: 'Low', coverage: 100, status: 'Active' },
+  { id: 'bu-8', code: 'BU-LGL-08', name: 'Legal & Company Secretarial', head: 'Chioma Chukwu', staffCount: 8, riskLevel: 'Medium', coverage: 75, status: 'Active' },
+  { id: 'bu-9', code: 'BU-HR-09', name: 'Human Resources & Administration', head: 'Folake Adeleke', staffCount: 15, riskLevel: 'Low', coverage: 70, status: 'Active' },
+  { id: 'bu-10', code: 'BU-FIN-10', name: 'Finance & Corporate Planning', head: 'Ibrahim Danjuma', staffCount: 14, riskLevel: 'Medium', coverage: 85, status: 'Active' },
+  { id: 'bu-11', code: 'BU-CRM-11', name: 'Client Relationship & Pension Services', head: 'Grace Okafor', staffCount: 20, riskLevel: 'Medium', coverage: 80, status: 'Active' },
+  { id: 'bu-12', code: 'BU-EXEC-12', name: 'Executive Management & Governance', head: 'Managing Director / CEO', staffCount: 6, riskLevel: 'Medium', coverage: 100, status: 'Active' }
+];
 
 export const INITIAL_AUDIT_UNIVERSE = [];
 

@@ -237,7 +237,7 @@ export const AuditProvider = ({ children }) => {
     };
   }, [isAuthenticated, currentUser]);
 
-  const [businessUnits, setBusinessUnits] = useState([]);
+  const [businessUnits, setBusinessUnits] = useState(INITIAL_BUSINESS_UNITS);
   const [auditUniverse, setAuditUniverse] = useState([]);
   const [auditPlans, setAuditPlans] = useState([]);
   const [auditPrograms, setAuditPrograms] = useState(INITIAL_AUDIT_PROGRAMS);
