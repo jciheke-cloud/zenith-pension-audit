@@ -267,6 +267,25 @@ const LoginScreen = () => {
                 {isLoading ? 'Authenticating...' : 'Secure Login'}
               </button>
             </form>
+
+            <div style={{ marginTop: '1.2rem', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1rem' }}>
+              <a 
+                href="https://zpc-portal.nayandjoerisktechconsulting.com/"
+                style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: '0.4rem', 
+                  color: '#9CA3AF', 
+                  fontSize: '0.82rem', 
+                  textDecoration: 'none',
+                  transition: 'color 0.2s ease' 
+                }}
+                onMouseOver={(e) => e.target.style.color = '#F3F4F6'}
+                onMouseOut={(e) => e.target.style.color = '#9CA3AF'}
+              >
+                ← Return to App Selector Portal
+              </a>
+            </div>
           </div>
         )}
       </div>
