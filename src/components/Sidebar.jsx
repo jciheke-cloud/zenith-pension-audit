@@ -173,7 +173,7 @@ const Sidebar = () => {
         {(isExecutive || isErm || isBoard || isSenior) && (
           <NavLink to="/erm-sync" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
             <Share2 />
-            <span style={{ color: '#fda4af', fontWeight: 800 }}>ERM Sync Bridge™</span>
+            <span style={{ color: '#fda4af', fontWeight: 800 }}>Data Ingestion & Import</span>
           </NavLink>
         )}
         <NavLink to="/user-management" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>

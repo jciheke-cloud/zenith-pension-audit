@@ -545,7 +545,6 @@ export const AuditProvider = ({ children }) => {
   useEffect(() => {
     const runRealtimeSync = async (silentMode = false) => {
       await fetchAuditData(silentMode);
-      await syncFromErmSuite(silentMode);
     };
 
     // Run immediately on mount
