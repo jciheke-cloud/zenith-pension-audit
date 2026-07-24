@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { BookOpen, ShieldCheck, Layers, Users, Key, ExternalLink, Search, CheckCircle2, ChevronRight, HelpCircle, FileText, Share2, Wrench } from 'lucide-react';
 
 const UserGuidePage = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('phases_guide');
   const [searchQuery, setSearchQuery] = useState('');
 
   const sections = [
+    { id: 'phases_guide', label: '⭐ Phase 1-3 Feature Verification Guide', icon: ShieldCheck },
     { id: 'overview', label: '📖 Executive Overview', icon: BookOpen },
     { id: 'rbac', label: '🔐 Roles & RBAC Security', icon: Key },
     { id: 'modules', label: '📊 14 Audit Modules', icon: Layers },
@@ -193,6 +194,96 @@ const UserGuidePage = () => {
           padding: '2rem',
           minHeight: '650px'
         }}>
+          {/* TAB 0: PHASE 1-3 VERIFICATION GUIDE */}
+          {activeTab === 'phases_guide' && (
+            <div>
+              <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', padding: '1.2rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+                <h3 style={{ margin: '0 0 0.4rem', color: '#60A5FA', fontSize: '1.1rem', fontWeight: 800 }}>
+                  💡 Browser Cache Notice: How to View the Latest Live Updates
+                </h3>
+                <p style={{ margin: 0, fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+                  If you are testing on <strong>zpc-portal.nayandjoerisktechconsulting.com</strong>, your browser may have cached older JavaScript bundles. Please perform a <strong>Hard Refresh</strong> by pressing <kbd style={{ background: '#1E293B', padding: '0.2rem 0.4rem', borderRadius: '4px', border: '1px solid #475569' }}>Ctrl + F5</kbd> (Windows) or <kbd style={{ background: '#1E293B', padding: '0.2rem 0.4rem', borderRadius: '4px', border: '1px solid #475569' }}>Cmd + Shift + R</kbd> (Mac) to ensure you are seeing the latest build!
+                </p>
+              </div>
+
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fda4af', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem', marginTop: 0 }}>
+                ⭐ Phase 1 to Phase 3 Implementation Verification Guide
+              </h2>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', lineHeight: 1.6 }}>
+                Follow this exact step-by-step checklist to test and verify all newly implemented Phase 1, Phase 2, and Phase 3 internal audit enhancements in the application:
+              </p>
+
+              {/* PHASE 1 CHECKLIST */}
+              <div style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)', padding: '1.25rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.8rem' }}>
+                  <span className="badge-purple">PHASE 1</span>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'white', fontWeight: 800 }}>Golden Thread Traceability & Working Paper Sampling Grid</h3>
+                </div>
+                <ul style={{ paddingLeft: '1.2rem', margin: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+                  <li>
+                    <strong>Where to Look:</strong> Click <strong>Electronic Working Papers</strong> in the left sidebar menu (or go to <code>#/working-papers</code>).
+                  </li>
+                  <li>
+                    <strong>What to Click:</strong> Click the blue <strong>"Inspect WP"</strong> button on any working paper row (e.g. <code>WP-101</code> or <code>WP-104</code>).
+                  </li>
+                  <li>
+                    <strong>What to Verify:</strong>
+                    <div style={{ marginTop: '0.3rem', paddingLeft: '1rem', color: '#93C5FD' }}>
+                      • <strong>Population & Sampling Metrics:</strong> Displays Population Size (e.g. <em>2,450 transactions</em>), Sampling Method (<em>Risk-based / Random / Judgmental</em>), and Sample Size (<em>25</em>).<br/>
+                      • <strong>Sample Test Execution Matrix:</strong> An interactive testing grid showing individual sample items (<code>SMP-001</code> to <code>SMP-005</code>), expected vs. actual results, and exception status badges (<code>⚠️ Exception Detected</code> / <code>✓ Passed</code>).<br/>
+                      • <strong>SHA-256 Checksum Badge:</strong> Immutability verification hash (<code>e3b0c44298fc...</code>).<br/>
+                      • <strong>Golden Thread Link:</strong> Direct back-link button to <code>FND-2026-004</code> in Findings Management.
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              {/* PHASE 2 CHECKLIST */}
+              <div style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)', padding: '1.25rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.8rem' }}>
+                  <span className="badge-warning">PHASE 2</span>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'white', fontWeight: 800 }}>Action Owner Remediation Proof & Auditor Retest Gate</h3>
+                </div>
+                <ul style={{ paddingLeft: '1.2rem', margin: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+                  <li>
+                    <strong>Where to Look:</strong> Click <strong>Action Tracker (CAPs)</strong> in the left sidebar menu (or go to <code>#/actions</code>).
+                  </li>
+                  <li>
+                    <strong>What to Test (Action Owner Proof):</strong> On any <em>In Progress</em> action item, click <strong>"Submit Remediation Proof"</strong>. A modal pops up allowing Action Owners to enter remediation notes and attach proof screenshots, updating the status to <em>Awaiting Validation</em>.
+                  </li>
+                  <li>
+                    <strong>What to Test (Auditor Sign-Off Gate):</strong> On any <em>Awaiting Validation</em> action item, click <strong>"Auditor Retest Sign-Off"</strong>. An auditor verification modal pops up requiring mandatory retesting evaluation notes before formally closing the finding (`Closed & Verified`).
+                  </li>
+                  <li>
+                    <strong>Aging Badges:</strong> Notice the <code>⚠️ Overdue &gt; 24 Days</code> vs. <code>✓ On Schedule</code> indicators under the Target Date column.
+                  </li>
+                </ul>
+              </div>
+
+              {/* PHASE 3 CHECKLIST */}
+              <div style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)', padding: '1.25rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.8rem' }}>
+                  <span className="badge-success">PHASE 3</span>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'white', fontWeight: 800 }}>Framework Standards Mapping & 2-Step Governance Approvals</h3>
+                </div>
+                <ul style={{ paddingLeft: '1.2rem', margin: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+                  <li>
+                    <strong>Where to Look (Framework Badges):</strong> Click <strong>Audit Programs</strong> in the left sidebar menu (or go to <code>#/programs</code>).
+                  </li>
+                  <li>
+                    <strong>What to Verify:</strong> Notice the header badges mapping procedures to 📜 <strong>IIA Standards (2200/2300)</strong>, 🏛️ <strong>COSO Internal Control Components</strong>, and 🔰 <strong>PenCom Statutory Directives</strong>, alongside the new <strong>"Attach Program to Engagement ➔"</strong> button.
+                  </li>
+                  <li>
+                    <strong>Where to Look (2-Step Board Approvals):</strong> Click <strong>Annual Audit Plan</strong> in the left sidebar menu (or go to <code>#/audit-plan</code>).
+                  </li>
+                  <li>
+                    <strong>What to Test:</strong> Notice the 2-step governance approval buttons: <strong>"CAE Sign-Off"</strong> (`Draft` ➔ `CAE Approved`) followed by <strong>"BAC Ratify"</strong> (`CAE Approved` ➔ `BAC Approved`), which unlocks <strong>"Launch Fieldwork"</strong>.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
+
           {/* TAB 1: OVERVIEW */}
           {activeTab === 'overview' && (
             <div>
