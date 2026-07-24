@@ -154,20 +154,41 @@ const AuditPrograms = () => {
         <div className="glass-card" style={{ marginBottom: '1.75rem', background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%)' }}>
         <div className="flex-between">
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
               <span className="badge-purple">Code: {selectedProgram.id}</span>
               <span className="badge-chip-info">{selectedProgram.category || 'Standard Program'}</span>
+              <span className="badge-chip" style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#60A5FA', fontSize: '0.72rem', border: '1px solid rgba(59, 130, 246, 0.4)' }}>
+                📜 IIA Standard {selectedProgram.iiaRef || '2200 / 2300'}
+              </span>
+              <span className="badge-chip" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', fontSize: '0.72rem', border: '1px solid rgba(16, 185, 129, 0.4)' }}>
+                🏛️ COSO {selectedProgram.cosoComponent || 'Control Activities'}
+              </span>
+              <span className="badge-chip" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#FBBF24', fontSize: '0.72rem', border: '1px solid rgba(245, 158, 11, 0.4)' }}>
+                🔰 PenCom Statutory Directive
+              </span>
             </div>
             <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: 800, color: 'white' }}>{selectedProgram.title || selectedProgram.name || 'Standard Audit Program'}</h2>
             <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-secondary)', maxWidth: '800px', lineHeight: '1.6' }}>
               {selectedProgram.objectives || selectedProgram.description || 'Comprehensive testing checklist and field procedures for internal audit validation and regulatory compliance.'}
             </p>
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Total Procedures</span>
-            <span className="tabular-nums" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fda4af' }}>
-              {selectedProgram.procedures?.length || 0}
-            </span>
+          <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.6rem' }}>
+            <div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Total Procedures</span>
+              <span className="tabular-nums" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fda4af' }}>
+                {selectedProgram.procedures?.length || 0}
+              </span>
+            </div>
+            <button 
+              onClick={() => {
+                addNotification('Program Attached', `Program "${selectedProgram.title}" linked to Active Audit Engagement.`, 'success');
+                navigate('/engagements');
+              }} 
+              className="btn-primary" 
+              style={{ padding: '0.4rem 0.8rem', fontSize: '0.78rem' }}
+            >
+              Attach Program to Engagement ➔
+            </button>
           </div>
         </div>
       </div>

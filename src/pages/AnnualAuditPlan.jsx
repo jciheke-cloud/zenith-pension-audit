@@ -59,11 +59,19 @@ const AnnualAuditPlan = () => {
     setAuditName('');
   };
 
-  const handleApprovePlan = (id) => {
+  const handleCaeApprove = (id) => {
     const plan = auditPlans.find(p => p.id === id);
     if (plan) {
-      saveAuditPlan({ ...plan, status: 'Approved', isExisting: true });
-      addNotification('Plan Approved', `Audit Plan "${plan.auditName}" approved by Chief Audit Executive.`, 'success');
+      saveAuditPlan({ ...plan, status: 'CAE Approved', isExisting: true });
+      addNotification('CAE Sign-Off Complete', `Audit Plan "${plan.auditName}" signed off by Chief Audit Executive. Pending Board Audit Committee approval.`, 'info');
+    }
+  };
+
+  const handleBacApprove = (id) => {
+    const plan = auditPlans.find(p => p.id === id);
+    if (plan) {
+      saveAuditPlan({ ...plan, status: 'BAC Approved', isExisting: true });
+      addNotification('BAC Final Approval', `Audit Plan "${plan.auditName}" ratified and approved by ZPC Board Audit Committee.`, 'success');
     }
   };
 
@@ -234,23 +242,29 @@ const AnnualAuditPlan = () => {
                     <td>
                       {plan.status === 'Completed' && <span className="badge-success">Completed</span>}
                       {(plan.status === 'In Progress' || plan.status === 'Active') && <span className="badge-info">In Progress</span>}
-                      {(plan.status === 'Approved' || plan.status === 'Scheduled') && <span className="badge-purple">{plan.status || 'Approved'}</span>}
-                      {(plan.status === 'Draft' || (!plan.status || (plan.status !== 'Completed' && plan.status !== 'In Progress' && plan.status !== 'Active' && plan.status !== 'Approved' && plan.status !== 'Scheduled'))) && <span className="badge-chip" style={{ background: 'rgba(255,255,255,0.08)', color: '#cbd5e1' }}>{plan.status || 'Draft'}</span>}
+                      {plan.status === 'BAC Approved' && <span className="badge-success" style={{ background: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.4)' }}>✓ BAC Approved</span>}
+                      {plan.status === 'CAE Approved' && <span className="badge-purple">CAE Signed-Off</span>}
+                      {(plan.status === 'Draft' || (!plan.status || (plan.status !== 'Completed' && plan.status !== 'In Progress' && plan.status !== 'Active' && plan.status !== 'BAC Approved' && plan.status !== 'CAE Approved'))) && <span className="badge-chip" style={{ background: 'rgba(255,255,255,0.08)', color: '#cbd5e1' }}>{plan.status || 'Draft'}</span>}
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: '0.4rem' }}>
-                        {plan.status === 'Draft' && (
-                          <button onClick={() => handleApprovePlan(plan.id)} className="btn-success" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
-                            Approve
+                        {(plan.status === 'Draft' || !plan.status) && (
+                          <button onClick={() => handleCaeApprove(plan.id)} className="btn-primary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem', background: 'rgba(139, 92, 246, 0.2)', color: '#C4B5FD' }}>
+                            CAE Sign-Off
                           </button>
                         )}
-                        {plan.status === 'Approved' && (
+                        {plan.status === 'CAE Approved' && (
+                          <button onClick={() => handleBacApprove(plan.id)} className="btn-success" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
+                            BAC Ratify
+                          </button>
+                        )}
+                        {plan.status === 'BAC Approved' && (
                           <button onClick={() => handleStartFieldwork(plan.id)} className="btn-primary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
                             Launch Fieldwork
                           </button>
                         )}
-                        <button onClick={() => navigate('/engagements')} className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
-                          Manage ➔
+                        <button onClick={() => navigate('/engagements', { state: { auditPlanRef: plan.id } })} className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
+                          View Engagement
                         </button>
                       </div>
                     </td>
