@@ -116,7 +116,13 @@ const AuditPrograms = () => {
           <button onClick={() => navigate('/engagements')} className="btn-secondary">
             <span>Go to Active Engagements ➔</span>
           </button>
-          <button onClick={() => setIsProcModalOpen(true)} className="btn-primary">
+          <button 
+            onClick={() => {
+              if (!verifyRbacOrAlert('create', 'programs')) return;
+              setIsProcModalOpen(true);
+            }} 
+            className="btn-primary"
+          >
             <Plus size={16} />
             <span>Add Testing Procedure</span>
           </button>
@@ -181,7 +187,7 @@ const AuditPrograms = () => {
             </div>
             <button 
               onClick={() => {
-                addNotification('Program Attached', `Program "${selectedProgram.title}" linked to Active Audit Engagement.`, 'success');
+                addNotification('Program Attached', `Program "${selectedProgram.title || selectedProgram.name}" linked to Active Audit Engagement.`, 'success');
                 navigate('/engagements');
               }} 
               className="btn-primary" 
@@ -240,23 +246,12 @@ const AuditPrograms = () => {
                   <td className="tabular-nums" style={{ fontWeight: 700 }}>{proc.sampleSize || '30 Samples (100% Target)'}</td>
                   <td><span className="badge-chip" style={{ background: 'rgba(255,255,255,0.06)' }}>{proc.riskLink || 'Custody Compliance Risk'}</span></td>
                   <td>
-                    {(proc.status === 'Tested - Pass' || proc.status === 'Passed' || proc.status?.includes('Pass') || proc.status?.includes('Satisfactory')) && (
-                      <span className="badge-success" title="Substantive field testing completed with 0 deviations. Control operating effectively.">Tested - Pass / Satisfactory</span>
-                    )}
-                    {(proc.status === 'Tested - Exception' || proc.status === 'Failed' || proc.status?.includes('Exception') || proc.status?.includes('Failed')) && (
-                      <span className="badge-danger" title={`Exception identified during sample testing. Linked to finding ${proc.findingRef || 'in 10×10 Matrix'}.`}>
-                        Tested - Exception {proc.findingRef ? `(${proc.findingRef})` : '(Action Req.)'}
-                      </span>
-                    )}
-                    {(proc.status === 'In Progress' || proc.status?.includes('Progress')) && (
-                      <span className="badge-info" title="Fieldwork and PBC sample testing currently underway by assigned auditor.">Fieldwork In Progress</span>
-                    )}
-                    {(!proc.status || (proc.status !== 'Tested - Pass' && proc.status !== 'Passed' && !proc.status?.includes('Pass') && proc.status !== 'Tested - Exception' && proc.status !== 'Failed' && !proc.status?.includes('Exception') && proc.status !== 'In Progress' && !proc.status?.includes('Progress'))) && (
-                      <span className="badge-warning" title="Procedure scheduled in annual audit plan; substantive test pending execution.">{proc.status || 'Pending Field Test'}</span>
-                    )}
+                    {(proc.status === 'Completed' || proc.status === 'Pass' || proc.status === 'Verified') && <span className="badge-success">Verified / Pass</span>}
+                    {(proc.status === 'In Progress' || proc.status === 'Under Review') && <span className="badge-info">In Progress</span>}
+                    {(!proc.status || proc.status === 'Open' || proc.status === 'Pending') && <span className="badge-warning">Pending Test</span>}
                   </td>
                   <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                       <button onClick={() => navigate('/engagements')} className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }} title="Execute step in active field engagement">
                         Execute ➔
                       </button>
@@ -264,7 +259,7 @@ const AuditPrograms = () => {
                         onClick={() => handleStartEdit(proc)}
                         className="btn-secondary"
                         style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('edit', 'programs') ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('edit', 'programs') ? '#60A5FA' : 'var(--text-muted)' }}
-                        title={checkRbacPermission('edit', 'programs') ? "Edit Procedure (✏️)" : "🔒 RBAC Restricted: Only Audit Team can edit"}
+                        title={checkRbacPermission('edit', 'programs') ? "Edit Procedure (✏️)" : "🔒 RBAC Restricted"}
                       >
                         <Edit2 size={13} />
                       </button>
@@ -291,7 +286,7 @@ const AuditPrograms = () => {
           <div className="modal-content" style={{ maxWidth: '560px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
               <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
-                {editingProcId ? 'Edit Procedure Step' : `Add Procedure to ${selectedProgram.name}`}
+                {editingProcId ? 'Edit Procedure Step' : `Add Procedure to ${selectedProgram?.title || selectedProgram?.name || 'Audit Program'}`}
               </h3>
               <button onClick={() => { setIsProcModalOpen(false); setEditingProcId(null); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
             </div>
