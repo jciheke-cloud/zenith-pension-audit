@@ -126,3 +126,5 @@ export const ROLES_LIST = [
 ];
 
 export const MOCK_USERS = [];
+
+// Enforced template injection to support Phase 1-3 testing
