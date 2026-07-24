@@ -18,13 +18,87 @@ export const INITIAL_BUSINESS_UNITS = [
 
 export const INITIAL_AUDIT_UNIVERSE = [];
 
-export const INITIAL_ANNUAL_AUDIT_PLANS = [];
+export const INITIAL_ANNUAL_AUDIT_PLANS = [
+  {
+    id: 'plan-1',
+    planId: 'PLAN-2026-01',
+    auditName: 'Q3 Custody Operations & Fee Sweep Audit',
+    department: 'Custody Operations',
+    plannedHours: 120,
+    actualHours: 45,
+    status: 'Draft',
+    startDate: '2026-07-01',
+    endDate: '2026-09-30',
+    leadAuditor: 'Lead Senior Auditor'
+  }
+];
 
-export const INITIAL_AUDIT_PROGRAMS = [];
+export const INITIAL_AUDIT_PROGRAMS = [
+  {
+    id: 'AP-01',
+    name: 'Custody Operations Standard Audit Program',
+    title: 'Custody Operations Standard Audit Program',
+    category: 'Core Custody',
+    iiaRef: '2200 / 2300',
+    cosoComponent: 'Control Activities',
+    procedures: [
+      { id: 'PROC-01', ref: 'CUST-01', step: 'Verify RTGS inflow sweeps to PFC within 24 hours.', expectedControl: 'Automated 24hr sweep', sampleSize: '25 Transactions', riskLink: 'High', status: 'Pending' }
+    ]
+  }
+];
 
-export const INITIAL_WORKING_PAPERS = [];
+export const INITIAL_WORKING_PAPERS = [
+  {
+    id: 'WP-101',
+    title: 'Q3 Custody Fee Sweep Reconciliation',
+    fileName: 'q3_custody_fee_sweep_reconciliation.xlsx',
+    fileType: 'Excel Workbook (.xlsx)',
+    linkedAudit: 'Q3 Custody Operations & Fee Sweep Audit',
+    uploadedBy: 'Lead Senior Auditor',
+    samplingMethod: 'Risk-based',
+    populationSize: '2,450',
+    sampleSize: '25',
+    checksum: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+    status: 'Verified'
+  }
+];
 
-export const INITIAL_FINDINGS = [];
+export const INITIAL_FINDINGS = [
+  {
+    id: 'FND-2026-004',
+    findingNumber: 'FND-2026-004',
+    businessUnit: 'Custody Operations',
+    observation: 'Delayed Sweeping of Contribution Funds',
+    criteria: 'Funds must be swept within 24 hours per PenCom guidelines.',
+    rootCause: 'Manual processing delays during peak volumes.',
+    likelihood: 4,
+    impact: 4,
+    residualRisk: 16,
+    priority: 'High',
+    severity: 'High',
+    status: 'In Progress',
+    managementResponse: 'Automated sweep script will be deployed.',
+    remediationDate: '2026-08-15',
+    auditor: 'Lead Senior Auditor'
+  },
+  {
+    id: 'FND-2026-005',
+    findingNumber: 'FND-2026-005',
+    businessUnit: 'Information Technology',
+    observation: 'Missing Dual Authorization on Firewall Rule Changes',
+    criteria: 'ISO 27001 Access Control Policy',
+    rootCause: 'System configuration error after migration.',
+    likelihood: 3,
+    impact: 5,
+    residualRisk: 15,
+    priority: 'High',
+    severity: 'Medium',
+    status: 'Awaiting Validation',
+    managementResponse: 'Rule updated to enforce maker-checker.',
+    remediationDate: '2026-07-20',
+    auditor: 'IT Auditor'
+  }
+];
 
 export const INITIAL_INTERNAL_CONTROLS = [];
 
