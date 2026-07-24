@@ -1,20 +1,38 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
-import { FolderOpen, Plus, FileText, Download, Eye, CheckCircle, Search, Filter, ShieldCheck, Edit2, Trash2 } from 'lucide-react';
+import { FolderOpen, Plus, FileText, Download, Eye, CheckCircle, Search, Filter, ShieldCheck, Edit2, Trash2, Hash, Layers, CheckSquare, AlertTriangle, ExternalLink } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import AuditDataUpload from '../components/AuditDataUpload';
 
 const WorkingPapers = () => {
   const { workingPapers, addWorkingPaper, setWorkingPapers, auditPlans, checkRbacPermission, verifyRbacOrAlert, addNotification } = useContext(AuditContext);
+  const navigate = useNavigate();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingWpId, setEditingWpId] = useState(null);
+
+  // Inspector Drawer State
+  const [inspectWp, setInspectWp] = useState(null);
 
   // New & Edit WP Form State
   const [title, setTitle] = useState('');
   const [fileType, setFileType] = useState('Excel Workbook (.xlsx)');
   const [linkedAudit, setLinkedAudit] = useState(auditPlans[0]?.auditName || 'Q3 Custody Fee Sweep Reconciliation');
   const [uploadedBy, setUploadedBy] = useState('Lead Senior Auditor');
+  const [samplingMethod, setSamplingMethod] = useState('Risk-based');
+  const [populationSize, setPopulationSize] = useState('2,450');
+  const [sampleSize, setSampleSize] = useState('25');
+
+  // Sample testing grid inside inspector
+  const [sampleRows, setSampleRows] = useState([
+    { id: 'SMP-001', desc: 'Custody Settlement TRX-9981', expected: 'Dual Authorization Signed', actual: 'Verified & Signed', exception: 'No' },
+    { id: 'SMP-002', desc: 'Money Market Placement TRX-9982', expected: 'CP Placement Limit < ₦500M', actual: 'Limit Verified (₦350M)', exception: 'No' },
+    { id: 'SMP-003', desc: 'Employer Contribution Inflow TRX-9983', expected: '24-hr Swept to PFC Vault', actual: 'Delayed 48-hrs (Fee Leakage)', exception: 'Yes' },
+    { id: 'SMP-004', desc: 'NAV Valuation Sheet #NAV-2026-081', expected: 'Independent Market Price Re-calc', actual: 'Agrees with Bloomberg Feed', exception: 'No' },
+    { id: 'SMP-005', desc: 'Safekeeping Physical Certificate Verification', expected: 'Physical Safe Verification Entry', actual: 'Dual Custodian Seal Present', exception: 'No' }
+  ]);
 
   const handleStartEdit = (wp) => {
     if (!verifyRbacOrAlert('edit', 'workingPapers')) return;
@@ -34,10 +52,10 @@ const WorkingPapers = () => {
   };
 
   const filteredPapers = workingPapers.filter(wp => {
-    const matchesSearch = wp.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          wp.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          wp.linkedAudit.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = filterType === 'All' || wp.fileType.includes(filterType);
+    const matchesSearch = (wp.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (wp.id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (wp.linkedAudit || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = filterType === 'All' || (wp.fileType || '').includes(filterType);
     return matchesSearch && matchesType;
   });
 
@@ -52,7 +70,10 @@ const WorkingPapers = () => {
         fileName: `${title.toLowerCase().replace(/\s+/g, '_')}.xlsx`,
         fileType,
         linkedAudit,
-        uploadedBy
+        uploadedBy,
+        samplingMethod,
+        populationSize,
+        sampleSize
       } : wp));
       addNotification('Working Paper Updated', `Working paper "${title}" updated successfully.`, 'success');
     } else {
@@ -61,7 +82,11 @@ const WorkingPapers = () => {
         fileName: `${title.toLowerCase().replace(/\s+/g, '_')}.xlsx`,
         fileType,
         linkedAudit,
-        uploadedBy
+        uploadedBy,
+        samplingMethod,
+        populationSize,
+        sampleSize,
+        checksum: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
       });
     }
     setIsModalOpen(false);
@@ -93,7 +118,7 @@ const WorkingPapers = () => {
           <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
           <input
             type="text"
-            placeholder="Search working papers by ID, title, linked audit, or uploader..."
+            placeholder="Search working papers by WP Ref, title, linked audit, or uploader..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             className="form-input"
@@ -129,10 +154,10 @@ const WorkingPapers = () => {
               <tr>
                 <th>Paper Ref #</th>
                 <th>Working Paper Document Title</th>
-                <th>File Format</th>
+                <th>File Format & SHA-256</th>
                 <th>Linked Audit Engagement</th>
+                <th>Sampling Method</th>
                 <th>Uploaded By</th>
-                <th>Date Uploaded</th>
                 <th>Review Status</th>
                 <th>Actions</th>
               </tr>
@@ -140,16 +165,32 @@ const WorkingPapers = () => {
             <tbody>
               {filteredPapers.map(wp => (
                 <tr key={wp.id}>
-                  <td className="tabular-nums" style={{ fontWeight: 800, color: '#3B82F6' }}>{wp.id}</td>
+                  <td className="tabular-nums" style={{ fontWeight: 800, color: '#3B82F6' }}>
+                    <button 
+                      onClick={() => setInspectWp(wp)} 
+                      style={{ background: 'none', border: 'none', color: '#60A5FA', cursor: 'pointer', fontWeight: 800, textDecoration: 'underline', padding: 0 }}
+                    >
+                      {wp.id}
+                    </button>
+                  </td>
                   <td style={{ fontWeight: 700 }}>{wp.title || wp.fileName || 'Verified Working Paper Evidence'}</td>
                   <td>
-                    <span className="badge-chip" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                      📄 {wp.fileType || 'Excel'}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                      <span className="badge-chip" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                        📄 {wp.fileType || 'Excel'}
+                      </span>
+                      <span style={{ fontSize: '0.68rem', fontFamily: 'monospace', color: 'var(--text-muted)' }}>
+                        SHA: {wp.checksum ? wp.checksum.substring(0, 12) + '...' : 'e3b0c44298fc...'}
+                      </span>
+                    </div>
+                  </td>
+                  <td style={{ maxWidth: '230px', fontSize: '0.86rem', color: '#fda4af' }}>{wp.linkedAudit || wp.auditName || 'FY2026 ERM Core Custody Risk Review'}</td>
+                  <td style={{ fontSize: '0.82rem' }}>
+                    <span className="badge-chip-info" style={{ fontSize: '0.72rem' }}>
+                      {wp.samplingMethod || 'Risk-based'} ({wp.sampleSize || '25'} samples)
                     </span>
                   </td>
-                  <td style={{ maxWidth: '250px', fontSize: '0.86rem', color: '#fda4af' }}>{wp.linkedAudit || wp.auditName || 'FY2026 ERM Core Custody Risk Review'}</td>
                   <td style={{ fontSize: '0.84rem' }}>{wp.uploadedBy || wp.owner || 'Lead Senior Auditor'}</td>
-                  <td className="tabular-nums" style={{ color: 'var(--text-muted)' }}>{wp.uploadDate || '2026-07-10'}</td>
                   <td>
                     {(wp.status === 'Approved' || wp.status === 'Supervisor Signed-Off' || wp.status === 'QA Approved') && <span className="badge-success">Approved / Signed-Off</span>}
                     {(wp.status === 'Submitted for Review' || wp.status === 'Under Review' || wp.status === 'In Progress') && <span className="badge-warning">Under Review</span>}
@@ -157,11 +198,8 @@ const WorkingPapers = () => {
                   </td>
                   <td>
                     <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                      <button className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
-                        <Eye size={13} /> View
-                      </button>
-                      <button className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
-                        <Download size={13} />
+                      <button onClick={() => setInspectWp(wp)} className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem', background: 'rgba(59, 130, 246, 0.18)', color: '#60A5FA' }}>
+                        <Eye size={13} /> Inspect WP
                       </button>
                       <button
                         onClick={() => handleStartEdit(wp)}
@@ -188,10 +226,100 @@ const WorkingPapers = () => {
         </div>
       </div>
 
+      {/* Working Paper Inspector Drawer / Modal */}
+      {inspectWp && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '850px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.8rem' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#3B82F6', background: 'rgba(59, 130, 246, 0.15)', padding: '0.2rem 0.6rem', borderRadius: '4px' }}>
+                    {inspectWp.id}
+                  </span>
+                  <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>{inspectWp.title || inspectWp.fileName}</h3>
+                </div>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.2rem', display: 'block' }}>
+                  Golden Thread Link ➔ Engagement: <strong style={{ color: '#fda4af' }}>{inspectWp.linkedAudit}</strong>
+                </span>
+              </div>
+              <button onClick={() => setInspectWp(null)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
+            </div>
+
+            {/* Header Metrics */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.8rem', marginBottom: '1.5rem', background: 'rgba(0,0,0,0.25)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block' }}>Auditor (Prepared By)</span>
+                <span style={{ fontSize: '0.88rem', fontWeight: 700 }}>{inspectWp.uploadedBy || 'Lead Senior Auditor'}</span>
+              </div>
+              <div>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block' }}>Reviewer (Supervisory Sign-Off)</span>
+                <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#F59E0B' }}>Sarah James (Pending Clearance)</span>
+              </div>
+              <div>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block' }}>Sampling Methodology</span>
+                <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#10B981' }}>{inspectWp.samplingMethod || 'Risk-based'} ({inspectWp.sampleSize || '25'}/{inspectWp.populationSize || '2,450'})</span>
+              </div>
+              <div>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block' }}>SHA-256 Checksum Integrity</span>
+                <span style={{ fontSize: '0.72rem', fontFamily: 'monospace', color: '#60A5FA', display: 'block', wordBreak: 'break-all' }}>
+                  {inspectWp.checksum ? inspectWp.checksum.substring(0, 16) + '...' : 'e3b0c44298fc1c14...'}
+                </span>
+              </div>
+            </div>
+
+            {/* Sample Testing Grid */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  📋 Sample Test Execution Matrix ({sampleRows.length} Tested Samples)
+                </h4>
+                <button onClick={() => navigate('/findings')} className="btn-secondary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.74rem' }}>
+                  <ExternalLink size={12} /> View Linked Findings (FND-2026-004)
+                </button>
+              </div>
+              <div className="data-table-container" style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '6px' }}>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Sample #</th>
+                      <th>Sample Test Item Description</th>
+                      <th>Expected Result</th>
+                      <th>Actual Test Result</th>
+                      <th>Exception?</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sampleRows.map(row => (
+                      <tr key={row.id}>
+                        <td className="tabular-nums" style={{ fontWeight: 700, color: '#3B82F6' }}>{row.id}</td>
+                        <td style={{ fontSize: '0.82rem' }}>{row.desc}</td>
+                        <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{row.expected}</td>
+                        <td style={{ fontSize: '0.82rem', fontWeight: 600 }}>{row.actual}</td>
+                        <td>
+                          {row.exception === 'Yes' ? (
+                            <span className="badge-danger">⚠️ Exception Detected</span>
+                          ) : (
+                            <span className="badge-success">✓ Passed</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.8rem', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1rem' }}>
+              <button onClick={() => setInspectWp(null)} className="btn-secondary">Close Inspector</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Upload / Edit Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '520px' }}>
+          <div className="modal-content" style={{ maxWidth: '540px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
               <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{editingWpId ? 'Edit Working Paper Evidence' : 'Upload Working Paper Evidence'}</h3>
               <button onClick={() => { setIsModalOpen(false); setEditingWpId(null); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
@@ -208,6 +336,21 @@ const WorkingPapers = () => {
                     <option key={p.id} value={p.auditName}>{p.auditName}</option>
                   ))}
                 </select>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Sampling Methodology</label>
+                  <select value={samplingMethod} onChange={e => setSamplingMethod(e.target.value)} className="form-select">
+                    <option value="Risk-based">Risk-based Sampling</option>
+                    <option value="Random">Random Selection</option>
+                    <option value="Judgmental">Judgmental Selection</option>
+                    <option value="Systematic">Systematic Interval</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Sample Size / Population</label>
+                  <input type="text" value={sampleSize} onChange={e => setSampleSize(e.target.value)} className="form-input" placeholder="e.g. 25 / 2,450" />
+                </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
