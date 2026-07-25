@@ -124,7 +124,6 @@ const FraudAndContinuous = () => {
               <h3 className="section-title">24/7 Automated Script Exception Alerts</h3>
               <p className="section-subtitle">Real-time detection of Maker/Checker segregation of duties (SoD) breaches, dormant account activity, and RTGS mismatches</p>
             </div>
-            <span className="badge-chip-danger">Live Script Engine Active</span>
           </div>
 
           <div className="data-table-container">

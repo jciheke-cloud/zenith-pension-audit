@@ -145,7 +145,6 @@ const WorkingPapers = () => {
             <h3 className="section-title">Verified Electronic Working Papers Inventory</h3>
             <p className="section-subtitle">Immutable audit trail supporting supervisory review notes and external regulatory inspections</p>
           </div>
-          <span className="badge-chip-info">IIA Working Paper Retention Standard Aligned</span>
         </div>
 
         <div className="data-table-container">

@@ -161,17 +161,7 @@ const AuditPrograms = () => {
         <div className="flex-between">
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
-              <span className="badge-purple">Code: {selectedProgram.id}</span>
-              <span className="badge-chip-info">{selectedProgram.category || 'Standard Program'}</span>
-              <span className="badge-chip" style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#60A5FA', fontSize: '0.72rem', border: '1px solid rgba(59, 130, 246, 0.4)' }}>
-                📜 IIA Standard {selectedProgram.iiaRef || '2200 / 2300'}
-              </span>
-              <span className="badge-chip" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', fontSize: '0.72rem', border: '1px solid rgba(16, 185, 129, 0.4)' }}>
-                🏛️ COSO {selectedProgram.cosoComponent || 'Control Activities'}
-              </span>
-              <span className="badge-chip" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#FBBF24', fontSize: '0.72rem', border: '1px solid rgba(245, 158, 11, 0.4)' }}>
-                🔰 PenCom Statutory Directive
-              </span>
+              {/* Labels removed per user request */}
             </div>
             <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: 800, color: 'white' }}>{selectedProgram.title || selectedProgram.name || 'Standard Audit Program'}</h2>
             <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-secondary)', maxWidth: '800px', lineHeight: '1.6' }}>
