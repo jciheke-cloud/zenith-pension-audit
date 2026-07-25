@@ -122,7 +122,7 @@ const ErmSyncPage = () => {
           <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.4rem 1.8rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)', display: 'flex', flexDirection: 'column', gap: '0.6rem', minWidth: '280px' }}>
             <div className="flex-between">
               <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Connection Status</span>
-              <span className="badge-success">● Active / Live Socket</span>
+              
             </div>
             <div className="flex-between">
               <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Last Payload Exchange</span>
@@ -168,7 +168,7 @@ const ErmSyncPage = () => {
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.6', margin: '0 0 1rem' }}>
             As action owners remediate CAPs and auditors pass retesting validation (`Closed status`), operational risk KRI metrics decrease, lowering statutory capital requirement projections.
           </p>
-          <span className="badge-success">100% KRI Sync Active</span>
+          
         </div>
       </div>
 

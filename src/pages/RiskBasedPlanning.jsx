@@ -261,7 +261,7 @@ const RiskBasedPlanning = () => {
             <h3 className="section-title">Weighted Audit Universe Scoring Matrix</h3>
             <p className="section-subtitle">Real-time prioritized ranking of all auditable processes across Zenith Pension Custodian</p>
           </div>
-          <span className="badge-chip-info">Scored on 1-10 Composite Scale</span>
+          
         </div>
 
         <div className="data-table-container">

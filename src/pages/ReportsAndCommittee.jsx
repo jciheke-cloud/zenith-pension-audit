@@ -124,7 +124,7 @@ const ReportsAndCommittee = () => {
           <div className="glass-card col-span-7" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
             <div className="flex-between" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.8rem', marginBottom: '1.2rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <span className="badge-danger">LIVE PREVIEW</span>
+                
                 <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>{reportType}</span>
               </div>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>ZPC Institutional Template v3.1</span>
@@ -233,7 +233,7 @@ const ReportsAndCommittee = () => {
                     <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'white' }}>RiskINTEGRA ERM & Audit Ecosystem Alignment Certificate</h4>
                     <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Confirming cross-module sync between Audit Universe & ERM Risk Register</span>
                   </div>
-                  <span className="badge-success">✓ Synchronized</span>
+                  
                 </div>
                 <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', margin: 0 }}>
                   Confirms that all 14 audit universe processes and their 10×10 residual risk scores are actively streaming data into the Zenith Pension Custodian ERM application.

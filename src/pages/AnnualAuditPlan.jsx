@@ -193,7 +193,7 @@ const AnnualAuditPlan = () => {
             <h3 className="section-title">2026 Comprehensive Statutory & Internal Audit Plan</h3>
             <p className="section-subtitle">Risk-weighted schedule of audits across ZPC custodial operations</p>
           </div>
-          <span className="badge-chip-info">100% PenCom & IIA Standard Aligned</span>
+          
         </div>
 
         <div className="data-table-container">
