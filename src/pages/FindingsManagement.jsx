@@ -387,6 +387,7 @@ const FindingsManagement = () => {
                   <th>10×10 Score (L×I)</th>
                   <th>Priority Tier</th>
                   <th>Repeat Flag</th>
+                  <th>Regulatory Breach</th>
                   <th>Management Action Owner</th>
                   <th>Target Date</th>
                   <th>Status</th>
@@ -416,6 +417,13 @@ const FindingsManagement = () => {
                         <span className="badge-chip-danger" title={f.repeatCycle}>⚠️ REPEAT ISSUE</span>
                       ) : (
                         <span className="badge-chip" style={{ background: 'rgba(255,255,255,0.06)' }}>New</span>
+                      )}
+                    </td>
+                    <td>
+                      {f.regulatoryBreach ? (
+                        <span className="badge-chip-danger" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5' }}>⚖️ {f.regulatoryBreach}</span>
+                      ) : (
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>None</span>
                       )}
                     </td>
                     <td style={{ fontSize: '0.84rem' }}>{f.actionOwner || f.owner || 'Head of Department / ERM Liaison'}</td>
