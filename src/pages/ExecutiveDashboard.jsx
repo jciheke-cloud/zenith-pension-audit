@@ -85,14 +85,7 @@ const ExecutiveDashboard = () => {
   });
 
   let buFindingsData = Object.values(deptMap);
-  if (buFindingsData.length === 0) {
-    buFindingsData = [
-      { name: 'Custody Operations', total: 3, highRisk: 2, mediumRisk: 1 },
-      { name: 'Settlements & Ops', total: 2, highRisk: 1, mediumRisk: 1 },
-      { name: 'IT & Cybersecurity', total: 2, highRisk: 1, mediumRisk: 1 },
-      { name: 'Treasury & Markets', total: 1, highRisk: 0, mediumRisk: 1 }
-    ];
-  }
+  
 
   // 3. Severity Distribution (from live Findings)
   const critCount = findings.filter(f => (f.priority || f.severity || '').toLowerCase() === 'critical').length;
@@ -107,12 +100,7 @@ const ExecutiveDashboard = () => {
     { name: 'High', value: highCount, color: '#F59E0B' },
     { name: 'Medium', value: medCount, color: '#3B82F6' },
     { name: 'Low', value: lowCount, color: '#10B981' }
-  ] : [
-    { name: 'Critical', value: 1, color: '#EF4444' },
-    { name: 'High', value: 3, color: '#F59E0B' },
-    { name: 'Medium', value: 2, color: '#3B82F6' },
-    { name: 'Low', value: 1, color: '#10B981' }
-  ];
+  ] : [];
 
   // 4. Issue Aging Horizon (from live Findings)
   const agingData = [
@@ -129,39 +117,17 @@ const ExecutiveDashboard = () => {
     actual: Number(p.actualHours || p.actual_hours || 80)
   }));
 
-  const displayPlanHoursData = planHoursData.length > 0 ? planHoursData : [
-    { name: 'Custody Ops', planned: 320, actual: 180 },
-    { name: 'IT Security', planned: 240, actual: 240 },
-    { name: 'Treasury', planned: 280, actual: 90 },
-    { name: 'Compliance', planned: 160, actual: 40 }
-  ];
+  const displayPlanHoursData = planHoursData;
 
   
   // 6. Reconciliation Exceptions (Live Data Simulation)
-  const reconExceptionsData = [
-    { range: '< 24 Hours', count: 12 },
-    { range: '24-48 Hours', count: 5 },
-    { range: '48-72 Hours', count: 2 },
-    { range: '> 72 Hours (Breach)', count: 0 }
-  ];
+  const reconExceptionsData = [];
 
   // 7. PFA Instruction Defect Rate
-  const defectRateData = [
-    { month: 'Jan', rate: 2.1 },
-    { month: 'Feb', rate: 1.8 },
-    { month: 'Mar', rate: 1.5 },
-    { month: 'Apr', rate: 1.9 },
-    { month: 'May', rate: 1.2 },
-    { month: 'Jun', rate: 0.8 }
-  ];
+  const defectRateData = [];
 
   // Heat map summary of auditable units from live auditUniverse
-  const highPriorityUnits = auditUniverse.length > 0 ? auditUniverse.slice(0, 6) : [
-    { id: '1', code: 'PROC-CUS-01', processName: '24-Hr Employer Contribution Sweeping & Allocation', businessUnit: 'Custody Operations', inherentRisk: 9, regulatoryImpact: 9, leadAuditor: 'Lead Custody Auditor' },
-    { id: '2', code: 'PROC-SET-02', processName: 'SWIFT MT540/MT542 Trade Settlement & Matching Engine', businessUnit: 'Settlements & Reconciliation', inherentRisk: 8, regulatoryImpact: 8, leadAuditor: 'Senior Treasury Auditor' },
-    { id: '3', code: 'PROC-IT-03', processName: 'RMAS Gateway Real-Time Telemetry & Encryption Key Security', businessUnit: 'IT & Cybersecurity', inherentRisk: 9, regulatoryImpact: 9, leadAuditor: 'CISO Audit Specialist' },
-    { id: '4', code: 'PROC-TRE-04', processName: 'Money Market Placement, Liquidity Coverage & Haircut Compliance', businessUnit: 'Treasury & Markets', inherentRisk: 7, regulatoryImpact: 7, leadAuditor: 'Lead Financial Auditor' }
-  ];
+  const highPriorityUnits = auditUniverse.slice(0, 6);
 
   return (
     <div className="page-container">
@@ -341,6 +307,11 @@ const ExecutiveDashboard = () => {
             <span className="badge-chip" style={{ fontSize: '0.72rem' }}>Live Breakdown</span>
           </div>
           <div style={{ height: '270px', width: '100%' }}>
+                      {(buFindingsData.length === 0) ? (
+            <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+              No Live Data — Awaiting Backend Sync
+            </div>
+          ) : (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={buFindingsData} layout="vertical" margin={{ top: 5, right: 30, left: 10, bottom: 5 }}>
                 <XAxis type="number" stroke="var(--text-muted)" fontSize={11} />
@@ -351,6 +322,7 @@ const ExecutiveDashboard = () => {
                 <Bar dataKey="mediumRisk" name="Medium & Low Risk" fill="#3B82F6" radius={[0, 4, 4, 0]} stackId="a" />
               </BarChart>
             </ResponsiveContainer>
+          )}
           </div>
         </div>
 
@@ -364,35 +336,43 @@ const ExecutiveDashboard = () => {
             <span className="badge-chip-danger" style={{ fontSize: '0.72rem' }}>10×10 Risk Engine</span>
           </div>
           <div style={{ height: '270px', width: '100%', display: 'flex', alignItems: 'center' }}>
-            <ResponsiveContainer width="55%" height="100%">
-              <PieChart>
-                <Pie
-                  data={severityData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={92}
-                  paddingAngle={4}
-                  dataKey="value"
-                >
-                  {severityData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+            {severityData.length === 0 ? (
+              <div style={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+                No Live Data — Awaiting Backend Sync
+              </div>
+            ) : (
+              <>
+                <ResponsiveContainer width="55%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={severityData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={92}
+                      paddingAngle={4}
+                      dataKey="value"
+                    >
+                      {severityData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div style={{ width: '45%', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                  {severityData.map((item, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: '0.5rem', background: 'rgba(255,255,255,0.02)', padding: '0.45rem 0.75rem', borderRadius: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: item.color }} />
+                        <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-secondary)' }}>{item.name}</span>
+                      </div>
+                      <span className="tabular-nums" style={{ fontWeight: 800, color: item.color, fontSize: '0.9rem' }}>{item.value}</span>
+                    </div>
                   ))}
-                </Pie>
-                <Tooltip contentStyle={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }} />
-              </PieChart>
-            </ResponsiveContainer>
-            <div style={{ width: '45%', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-              {severityData.map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: '0.5rem', background: 'rgba(255,255,255,0.02)', padding: '0.45rem 0.75rem', borderRadius: '6px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: item.color }} />
-                    <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-secondary)' }}>{item.name}</span>
-                  </div>
-                  <span className="tabular-nums" style={{ fontWeight: 800, color: item.color, fontSize: '0.9rem' }}>{item.value}</span>
                 </div>
-              ))}
-            </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -409,6 +389,11 @@ const ExecutiveDashboard = () => {
             <span className="badge-info" style={{ fontSize: '0.72rem' }}>Field Hours</span>
           </div>
           <div style={{ height: '250px', width: '100%' }}>
+                      {(displayPlanHoursData.length === 0) ? (
+            <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+              No Live Data — Awaiting Backend Sync
+            </div>
+          ) : (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={displayPlanHoursData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                 <XAxis dataKey="name" stroke="#94A3B8" fontSize={11} />
@@ -419,6 +404,7 @@ const ExecutiveDashboard = () => {
                 <Bar dataKey="actual" name="Actual Field Hours" fill="#10B981" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
+          )}
           </div>
         </div>
 
@@ -461,6 +447,11 @@ const ExecutiveDashboard = () => {
             <span className="badge-warning" style={{ fontSize: '0.72rem' }}>Live API Feed</span>
           </div>
           <div style={{ height: '250px', width: '100%' }}>
+                      {(reconExceptionsData.length === 0) ? (
+            <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+              No Live Data — Awaiting Backend Sync
+            </div>
+          ) : (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={reconExceptionsData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                 <XAxis dataKey="range" stroke="#94A3B8" fontSize={11} />
@@ -473,6 +464,7 @@ const ExecutiveDashboard = () => {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
+          )}
           </div>
         </div>
 
@@ -486,6 +478,11 @@ const ExecutiveDashboard = () => {
             <span className="badge-info" style={{ fontSize: '0.72rem' }}>Trend Analysis</span>
           </div>
           <div style={{ height: '250px', width: '100%' }}>
+                      {(defectRateData.length === 0) ? (
+            <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+              No Live Data — Awaiting Backend Sync
+            </div>
+          ) : (
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={defectRateData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                 <XAxis dataKey="month" stroke="#94A3B8" fontSize={11} />
@@ -494,6 +491,7 @@ const ExecutiveDashboard = () => {
                 <Line type="monotone" dataKey="rate" name="Defect Rate (%)" stroke="#10B981" strokeWidth={3} dot={{ r: 4, fill: '#10B981' }} activeDot={{ r: 6 }} />
               </LineChart>
             </ResponsiveContainer>
+          )}
           </div>
         </div>
       </div>
@@ -511,44 +509,52 @@ const ExecutiveDashboard = () => {
         </div>
 
         <div className="data-table-container">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Process Code</th>
-                <th>Auditable Process Unit Name</th>
-                <th>Business Unit</th>
-                <th>Inherent Risk</th>
-                <th>Regulatory Impact</th>
-                <th>Priority Tier</th>
-                <th>Lead Auditor</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {highPriorityUnits.map(unit => (
-                <tr key={unit.id}>
-                  <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{unit.code || unit.unitId}</td>
-                  <td style={{ fontWeight: 700 }}>{unit.processName || unit.title}</td>
-                  <td>{unit.businessUnit || unit.department}</td>
-                  <td>
-                    <span className="badge-danger">{unit.inherentRisk} / 10</span>
-                  </td>
-                  <td>
-                    <span className="badge-danger">{unit.regulatoryImpact} / 10</span>
-                  </td>
-                  <td>
-                    <span className="badge-chip-danger">🔴 HIGH PRIORITY</span>
-                  </td>
-                  <td style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{unit.leadAuditor || 'Senior Auditor'}</td>
-                  <td>
-                    <button onClick={() => navigate('/engagements')} className="btn-secondary" style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}>
-                      Launch Audit
-                    </button>
-                  </td>
+          
+          {highPriorityUnits.length === 0 ? (
+            <div style={{ display: 'flex', padding: '2rem', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+              No Live Data — Awaiting Backend Sync
+            </div>
+          ) : (
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Process Code</th>
+                  <th>Auditable Process Unit Name</th>
+                  <th>Business Unit</th>
+                  <th>Inherent Risk</th>
+                  <th>Regulatory Impact</th>
+                  <th>Priority Tier</th>
+                  <th>Lead Auditor</th>
+                  <th>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {highPriorityUnits.map(unit => (
+                  <tr key={unit.id}>
+                    <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{unit.code || unit.unitId}</td>
+                    <td style={{ fontWeight: 700 }}>{unit.processName || unit.title}</td>
+                    <td>{unit.businessUnit || unit.department}</td>
+                    <td>
+                      <span className="badge-danger">{unit.inherentRisk} / 10</span>
+                    </td>
+                    <td>
+                      <span className="badge-danger">{unit.regulatoryImpact} / 10</span>
+                    </td>
+                    <td>
+                      <span className="badge-chip-danger">🔴 HIGH PRIORITY</span>
+                    </td>
+                    <td style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{unit.leadAuditor || 'Senior Auditor'}</td>
+                    <td>
+                      <button onClick={() => navigate('/engagements')} className="btn-secondary" style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}>
+                        Launch Audit
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+
         </div>
       </div>
     </div>

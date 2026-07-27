@@ -26,13 +26,7 @@ const WorkingPapers = () => {
   const [sampleSize, setSampleSize] = useState('25');
 
   // Sample testing grid inside inspector
-  const [sampleRows, setSampleRows] = useState([
-    { id: 'SMP-001', desc: 'Custody Settlement TRX-9981', expected: 'Dual Authorization Signed', actual: 'Verified & Signed', exception: 'No' },
-    { id: 'SMP-002', desc: 'Money Market Placement TRX-9982', expected: 'CP Placement Limit < ₦500M', actual: 'Limit Verified (₦350M)', exception: 'No' },
-    { id: 'SMP-003', desc: 'Employer Contribution Inflow TRX-9983', expected: '24-hr Swept to PFC Vault', actual: 'Delayed 48-hrs (Fee Leakage)', exception: 'Yes' },
-    { id: 'SMP-004', desc: 'NAV Valuation Sheet #NAV-2026-081', expected: 'Independent Market Price Re-calc', actual: 'Agrees with Bloomberg Feed', exception: 'No' },
-    { id: 'SMP-005', desc: 'Safekeeping Physical Certificate Verification', expected: 'Physical Safe Verification Entry', actual: 'Dual Custodian Seal Present', exception: 'No' }
-  ]);
+  const [sampleRows, setSampleRows] = useState([]);
 
   const handleStartEdit = (wp) => {
     if (!verifyRbacOrAlert('edit', 'workingPapers')) return;
@@ -162,7 +156,13 @@ const WorkingPapers = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredPapers.map(wp => (
+              {filteredPapers.length === 0 ? (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                    No working papers available.
+                  </td>
+                </tr>
+              ) : filteredPapers.map(wp => (
                 <tr key={wp.id}>
                   <td className="tabular-nums" style={{ fontWeight: 800, color: '#3B82F6' }}>
                     <button 
@@ -288,7 +288,13 @@ const WorkingPapers = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {sampleRows.map(row => (
+                    {sampleRows.length === 0 ? (
+                      <tr>
+                        <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                          No test evidence attached yet.
+                        </td>
+                      </tr>
+                    ) : sampleRows.map(row => (
                       <tr key={row.id}>
                         <td className="tabular-nums" style={{ fontWeight: 700, color: '#3B82F6' }}>{row.id}</td>
                         <td style={{ fontSize: '0.82rem' }}>{row.desc}</td>

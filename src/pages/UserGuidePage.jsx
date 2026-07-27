@@ -199,6 +199,12 @@ const UserGuidePage = () => {
               <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fda4af', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem', marginTop: 0 }}>
                 📖 Executive Overview & Philosophy
               </h2>
+              <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+                <h4 style={{ color: '#FCA5A5', margin: '0 0 0.5rem 0' }}>⚠️ SYSTEM NOTICE: LIVE PRODUCTION MODE ACTIVE</h4>
+                <p style={{ margin: 0, fontSize: '0.9rem', color: '#CBD5E1', lineHeight: 1.5 }}>
+                  <del>Mock / Demo Data Framework</del> <strong>[DEPRECATED]</strong>: RiskINTEGRA is now hard-wired to production API feeds (e.g. CPAS, NAV engines). Dashboards and Working Papers will display <strong>"No Live Data — Awaiting Backend Sync"</strong> instead of falling back to static seeded mock arrays.
+                </p>
+              </div>
               <p style={{ lineHeight: 1.8, fontSize: '0.95rem', color: '#E2E8F0' }}>
                 Welcome to <strong>RiskINTEGRA Internal Audit Management™</strong>, engineered explicitly for <strong>Zenith Pension Custodian Limited (ZPC)</strong>. Traditional internal auditing relies on periodic, backward-looking examinations that often miss rapidly emerging settlement variances or market shocks.
               </p>
