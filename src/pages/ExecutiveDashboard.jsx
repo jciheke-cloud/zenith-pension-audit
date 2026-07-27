@@ -136,6 +136,25 @@ const ExecutiveDashboard = () => {
     { name: 'Compliance', planned: 160, actual: 40 }
   ];
 
+  
+  // 6. Reconciliation Exceptions (Live Data Simulation)
+  const reconExceptionsData = [
+    { range: '< 24 Hours', count: 12 },
+    { range: '24-48 Hours', count: 5 },
+    { range: '48-72 Hours', count: 2 },
+    { range: '> 72 Hours (Breach)', count: 0 }
+  ];
+
+  // 7. PFA Instruction Defect Rate
+  const defectRateData = [
+    { month: 'Jan', rate: 2.1 },
+    { month: 'Feb', rate: 1.8 },
+    { month: 'Mar', rate: 1.5 },
+    { month: 'Apr', rate: 1.9 },
+    { month: 'May', rate: 1.2 },
+    { month: 'Jun', rate: 0.8 }
+  ];
+
   // Heat map summary of auditable units from live auditUniverse
   const highPriorityUnits = auditUniverse.length > 0 ? auditUniverse.slice(0, 6) : [
     { id: '1', code: 'PROC-CUS-01', processName: '24-Hr Employer Contribution Sweeping & Allocation', businessUnit: 'Custody Operations', inherentRisk: 9, regulatoryImpact: 9, leadAuditor: 'Lead Custody Auditor' },
@@ -424,6 +443,56 @@ const ExecutiveDashboard = () => {
                   ))}
                 </Bar>
               </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      
+      {/* Row 5: PFC Specific Operational Audit Charts */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))', gap: '1.75rem', marginBottom: '2rem' }}>
+        {/* Chart 5: Reconciliation Exceptions Aging */}
+        <div className="glass-card" style={{ padding: '1.5rem' }}>
+          <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>Reconciliation Exceptions Aging</h3>
+              <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)' }}>Unreconciled items across contribution & payment accounts</p>
+            </div>
+            <span className="badge-warning" style={{ fontSize: '0.72rem' }}>Live API Feed</span>
+          </div>
+          <div style={{ height: '250px', width: '100%' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={reconExceptionsData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                <XAxis dataKey="range" stroke="#94A3B8" fontSize={11} />
+                <YAxis stroke="#94A3B8" fontSize={11} />
+                <Tooltip contentStyle={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }} />
+                <Bar dataKey="count" name="Exception Count" radius={[6, 6, 0, 0]}>
+                  {reconExceptionsData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={index === 3 ? '#EF4444' : index === 2 ? '#F59E0B' : '#3B82F6'} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Chart 6: PFA Instruction Defect Rate */}
+        <div className="glass-card" style={{ padding: '1.5rem' }}>
+          <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>PFA Instruction Defect Rate</h3>
+              <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)' }}>Percentage of rejected/failed PFA instructions over time</p>
+            </div>
+            <span className="badge-info" style={{ fontSize: '0.72rem' }}>Trend Analysis</span>
+          </div>
+          <div style={{ height: '250px', width: '100%' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={defectRateData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                <XAxis dataKey="month" stroke="#94A3B8" fontSize={11} />
+                <YAxis stroke="#94A3B8" fontSize={11} domain={[0, 3]} />
+                <Tooltip contentStyle={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }} />
+                <Line type="monotone" dataKey="rate" name="Defect Rate (%)" stroke="#10B981" strokeWidth={3} dot={{ r: 4, fill: '#10B981' }} activeDot={{ r: 6 }} />
+              </LineChart>
             </ResponsiveContainer>
           </div>
         </div>

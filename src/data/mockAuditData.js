@@ -20,6 +20,18 @@ export const INITIAL_AUDIT_UNIVERSE = [];
 
 export const INITIAL_ANNUAL_AUDIT_PLANS = [
   {
+    id: 'plan-2',
+    planId: 'PLAN-2026-02',
+    auditName: 'Q4 PFA Fee Reconciliation & Billing Audit',
+    department: 'Contribution Reconciliation & Invoicing',
+    plannedHours: 200,
+    actualHours: 0,
+    status: 'Draft',
+    startDate: '2026-10-01',
+    endDate: '2026-12-15',
+    leadAuditor: 'Lead Financial Auditor'
+  },
+  {
     id: 'plan-1',
     planId: 'PLAN-2026-01',
     auditName: 'Q3 Custody Operations & Fee Sweep Audit',
@@ -48,6 +60,19 @@ export const INITIAL_AUDIT_PROGRAMS = [
 ];
 
 export const INITIAL_WORKING_PAPERS = [
+  {
+    id: 'WP-102',
+    title: 'PFA Instruction Accuracy & Defect Rate Testing',
+    fileName: 'pfa_instruction_defects_q3.xlsx',
+    fileType: 'Excel Workbook (.xlsx)',
+    linkedAudit: 'Q4 PFA Fee Reconciliation & Billing Audit',
+    uploadedBy: 'Lead Financial Auditor',
+    samplingMethod: 'Systematic Interval',
+    populationSize: '15,000',
+    sampleSize: '250',
+    checksum: '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92',
+    status: 'Submitted for Review'
+  },
   {
     id: 'WP-101',
     title: 'Q3 Custody Fee Sweep Reconciliation',
