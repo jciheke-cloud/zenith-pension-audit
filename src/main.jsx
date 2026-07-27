@@ -5,13 +5,16 @@ import './index.css';
 import './App.css';
 import App from './App.jsx';
 import { AuditProvider } from './context/AuditContext';
+import LicenseGuard from './components/LicenseGuard';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <HashRouter>
-      <AuditProvider>
-        <App />
-      </AuditProvider>
+      <LicenseGuard>
+        <AuditProvider>
+          <App />
+        </AuditProvider>
+      </LicenseGuard>
     </HashRouter>
   </StrictMode>
 );
