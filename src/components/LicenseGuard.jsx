@@ -7,15 +7,14 @@ const LicenseGuard = ({ children }) => {
   const [uploading, setUploading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Extract base API URL based on environment
-  const apiBaseUrl = window.location.hostname === 'localhost' 
-    ? 'http://localhost:3000' 
-    : '/prod';
+  let API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+  if (API_BASE_URL.endsWith('/')) API_BASE_URL = API_BASE_URL.slice(0, -1);
+  if (!API_BASE_URL.endsWith('/api')) API_BASE_URL = `${API_BASE_URL}/api`;
 
   useEffect(() => {
     const checkLicense = async () => {
       try {
-        const response = await fetch(`${apiBaseUrl}/api/license/status`);
+        const response = await fetch(`${API_BASE_URL}/license/status`);
         if (response.ok) {
           setIsAuthorized(true);
         } else {
@@ -30,7 +29,7 @@ const LicenseGuard = ({ children }) => {
       }
     };
     checkLicense();
-  }, [apiBaseUrl]);
+  }, [API_BASE_URL]);
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -57,7 +56,7 @@ const LicenseGuard = ({ children }) => {
         throw new Error("Invalid license file format (not JSON).");
       }
 
-      const response = await fetch(`${apiBaseUrl}/api/license/upload`, {
+      const response = await fetch(`${API_BASE_URL}/license/upload`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
