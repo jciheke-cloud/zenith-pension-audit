@@ -1,84 +1,91 @@
 import React, { useState, useEffect } from 'react';
 
-const AUTHORIZED_DOMAINS = [
-  'zpc.riskintegra-erm.nayandjoerisktechconsulting.com',
-  'zpc.riskintegra-audit.nayandjoerisktechconsulting.com',
-  'nayandjoerisktechconsulting.com',
-  'cloudfront.net',
-  'amplifyapp.com',
-  'awsapp.com',
-  'amazonaws.com',
-  'zpc-audit.aws.amazon.com',
-  'github.io',
-  'zpc-audit-cloud.zenithcustodian.com',
-  'audit.zenithcustodian.com',
-  'zpc-audit.com',
-  'zenithcustodian.com'
-];
-
-const VALID_LICENSE_KEYS = [
-  'RISKINTEGRA-ZPC-2026-ENTERPRISE-PROD',
-  'RISKINTEGRA-AUDIT-EXPRESS-2026',
-  'ZPC-PENCOM-SECTION63-VALIDATED'
-];
-
 const LicenseGuard = ({ children }) => {
   const [isAuthorized, setIsAuthorized] = useState(true);
-  const [licenseInput, setLicenseInput] = useState('');
+  const [checking, setChecking] = useState(true);
+  const [licenseFile, setLicenseFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Extract base API URL based on environment
+  const apiBaseUrl = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000' 
+    : '/prod';
+
   useEffect(() => {
-    // 1. Inject Console Legal Watermark & Active DevTools Shield
-    setTimeout(() => {
+    const checkLicense = async () => {
       try {
-        console.clear();
-      } catch (e) {
-        // Ignore if clear fails
+        const response = await fetch(`${apiBaseUrl}/api/license/status`);
+        if (response.ok) {
+          setIsAuthorized(true);
+        } else {
+          setIsAuthorized(false);
+        }
+      } catch (err) {
+        // If API fails or is unreachable, default to unauthorized to enforce security
+        console.error("License check failed:", err);
+        setIsAuthorized(false);
+      } finally {
+        setChecking(false);
       }
-      const legalNotice = `
-==============================================================================
-© 2026 RiskINTEGRA Internal Audit™ - ZENITH PENSION CUSTODIAN LIMITED
-CONFIDENTIAL & PROPRIETARY INSTITUTIONAL SOFTWARE
-------------------------------------------------------------------------------
-WARNING: This software and its underlying continuous auditing models, risk-based
-scoring algorithms, and PENCOM statutory compliance ledgers are protected under the
-Nigerian Copyright Act and international trade secret conventions.
-Any unauthorized inspection, reverse-engineering, or redistribution is strictly monitored.
-==============================================================================
-      `;
-      console.warn(`%c${legalNotice}`, 'color: #ef4444; font-weight: bold; font-size: 11px; background: #0f172a; padding: 8px; border-left: 4px solid #ef4444;');
-      console.warn(`%c🛑 STOP! SECURITY INSTRUCTION FOR INSTITUTIONAL USERS:`, 'color: #ef4444; font-size: 14px; font-weight: bold;');
-      console.warn(`%cIf someone instructed you to copy and paste scripts or commands into this browser console, DO NOT PROCEED. Pasting code here can compromise your institutional credentials and expose confidential PENCOM audit ledgers.`, 'color: #f87171; font-size: 12px;');
-    }, 100);
+    };
+    checkLicense();
+  }, [apiBaseUrl]);
 
-    // 2. Domain & License Key Verification
-    const currentHost = window.location.hostname;
-    const storedKey = localStorage.getItem('RISKINTEGRA_AUDIT_LICENSE_KEY') || localStorage.getItem('RISKINTEGRA_LICENSE_KEY');
-
-    const domainValid = AUTHORIZED_DOMAINS.some(domain => 
-      currentHost === domain || currentHost.endsWith(`.${domain}`) || true
-    );
-
-    const licenseValid = storedKey && VALID_LICENSE_KEYS.includes(storedKey);
-
-    if (!domainValid && !licenseValid) {
-      setIsAuthorized(false);
-    } else {
-      setIsAuthorized(true);
-    }
-  }, []);
-
-  const handleActivateLicense = (e) => {
-    e.preventDefault();
-    if (VALID_LICENSE_KEYS.includes(licenseInput.trim())) {
-      localStorage.setItem('RISKINTEGRA_AUDIT_LICENSE_KEY', licenseInput.trim());
-      localStorage.setItem('RISKINTEGRA_LICENSE_KEY', licenseInput.trim());
-      setIsAuthorized(true);
-      setErrorMsg('');
-    } else {
-      setErrorMsg('Invalid Cryptographic License Key. Please contact RiskINTEGRA™ Licensing Operations.');
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setLicenseFile(e.target.files[0]);
     }
   };
+
+  const handleUploadLicense = async (e) => {
+    e.preventDefault();
+    if (!licenseFile) {
+      setErrorMsg('Please select a riskintegra.lic file to upload.');
+      return;
+    }
+
+    setUploading(true);
+    setErrorMsg('');
+
+    try {
+      const text = await licenseFile.text();
+      let parsedLicense;
+      try {
+        parsedLicense = JSON.parse(text);
+      } catch (e) {
+        throw new Error("Invalid license file format (not JSON).");
+      }
+
+      const response = await fetch(`${apiBaseUrl}/api/license/upload`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(parsedLicense)
+      });
+
+      if (response.ok) {
+        setIsAuthorized(true);
+        window.location.reload(); // Reload to refresh contexts
+      } else {
+        const data = await response.json();
+        setErrorMsg(data.error || 'Cryptographic validation failed. License tampered or expired.');
+      }
+    } catch (err) {
+      setErrorMsg(err.message || 'Failed to upload and validate license.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  if (checking) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f172a', color: 'white' }}>
+        Verifying Cryptographic License Integrity...
+      </div>
+    );
+  }
 
   if (!isAuthorized) {
     return (
@@ -103,25 +110,23 @@ Any unauthorized inspection, reverse-engineering, or redistribution is strictly 
         }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🛡️</div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fda4af', marginBottom: '0.75rem' }}>
-            Intellectual Property & Domain Protection Triggered
+            System Locked - License Required
           </h1>
           <p style={{ fontSize: '0.9rem', color: '#CBD5E1', lineHeight: '1.6', marginBottom: '1.5rem' }}>
-            This deployment of <strong>RiskINTEGRA Internal Audit™</strong> is running on an unauthorized domain (`{window.location.hostname}`). To protect institutional intellectual property under Nigerian Trade Secrets Law and Section 63 PRA 2014, execution has been suspended.
+            <strong>RiskINTEGRA Internal Audit™</strong> requires a cryptographically signed license to operate. Your license is currently missing, invalid, or expired.
           </p>
 
-          <form onSubmit={handleActivateLicense} style={{ textAlign: 'left', background: 'rgba(0,0,0,0.3)', padding: '1.25rem', borderRadius: '0.6rem', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <form onSubmit={handleUploadLicense} style={{ textAlign: 'left', background: 'rgba(0,0,0,0.3)', padding: '1.25rem', borderRadius: '0.6rem', border: '1px solid rgba(255,255,255,0.08)' }}>
             <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#94A3B8', marginBottom: '0.5rem' }}>
-              ENTER INSTITUTIONAL LICENSE KEY (OR ENTERPRISE OVERRIDE):
+              UPLOAD riskintegra.lic FILE:
             </label>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <input 
-                type="text" 
-                value={licenseInput}
-                onChange={(e) => setLicenseInput(e.target.value)}
-                placeholder="e.g. RISKINTEGRA-ZPC-2026-ENTERPRISE-PROD"
+                type="file" 
+                accept=".lic,.json"
+                onChange={handleFileChange}
                 style={{
-                  flex: 1,
-                  padding: '0.6rem 0.8rem',
+                  padding: '0.6rem',
                   background: '#090d16',
                   border: '1px solid #334155',
                   borderRadius: '4px',
@@ -131,32 +136,31 @@ Any unauthorized inspection, reverse-engineering, or redistribution is strictly 
               />
               <button 
                 type="submit"
+                disabled={uploading}
                 style={{
-                  background: 'linear-gradient(135deg, #C81E1E, #991B1B)',
+                  background: uploading ? '#475569' : 'linear-gradient(135deg, #C81E1E, #991B1B)',
                   color: 'white',
                   border: 'none',
-                  padding: '0.6rem 1.25rem',
+                  padding: '0.75rem',
                   borderRadius: '4px',
                   fontWeight: 700,
-                  cursor: 'pointer',
-                  fontSize: '0.85rem'
+                  cursor: uploading ? 'not-allowed' : 'pointer',
+                  fontSize: '0.9rem',
+                  textAlign: 'center'
                 }}
               >
-                Activate →
+                {uploading ? 'Validating Signature...' : 'Activate System'}
               </button>
             </div>
             {errorMsg && (
-              <div style={{ color: '#fda4af', fontSize: '0.8rem', marginTop: '0.6rem', fontWeight: 500 }}>
+              <div style={{ color: '#fda4af', fontSize: '0.85rem', marginTop: '1rem', fontWeight: 500, padding: '0.5rem', background: 'rgba(200, 30, 30, 0.1)', borderRadius: '4px', border: '1px solid rgba(200, 30, 30, 0.3)' }}>
                 ⚠️ {errorMsg}
               </div>
             )}
-            <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.75rem' }}>
-              💡 Institutional Production License Key: <code>RISKINTEGRA-ZPC-2026-ENTERPRISE-PROD</code>
-            </div>
           </form>
 
           <div style={{ marginTop: '1.5rem', fontSize: '0.72rem', color: '#64748b', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem' }}>
-            © 2026 RiskINTEGRA Internal Audit™ - Zenith Pension Custodian Limited. All rights reserved under Nigerian Copyright Act.
+            © 2026 RiskINTEGRA Internal Audit™. All rights reserved under Nigerian Copyright Act.
           </div>
         </div>
       </div>
