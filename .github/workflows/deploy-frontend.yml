@@ -1,16 +1,23 @@
-# Trigger automated CI/CD deployment to AWS S3 & CloudFront
-name: Build, Verify & Deploy Audit Portal
+name: Build & Deploy Audit Frontend
 
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - '*.json'
+      - '*.config.js'
+      - '.github/workflows/deploy-frontend.yml'
   pull_request:
     branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'public/**'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Audit Repository
         uses: actions/checkout@v4
@@ -28,9 +35,9 @@ jobs:
         run: npm run build
 
       - name: Verify Dist Output
-        run: test -f dist/index.html && echo "✅ Audit App production bundle successfully generated!"
+        run: test -f dist/index.html && echo "✅ Audit App frontend bundle successfully generated!"
 
-      - name: Deploy Audit Portal to AWS S3 & CloudFront
+      - name: Deploy Audit Portal Frontend to AWS S3 & CloudFront
         if: github.ref == 'refs/heads/main'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -38,12 +45,11 @@ jobs:
           AWS_DEFAULT_REGION: 'eu-west-1'
         run: |
           if [ -n "$AWS_ACCESS_KEY_ID" ] && [ -n "$AWS_SECRET_ACCESS_KEY" ]; then
-            echo "🚀 AWS Credentials found! Deploying Audit Portal to S3 & CloudFront..."
+            echo "🚀 AWS Credentials found! Deploying Audit Portal Frontend to S3 & CloudFront..."
             aws s3 sync dist/ s3://riskintegra-erm-frontend-auditfrontendbucket-6j5mxckl17zv/audit-portal/ --cache-control "no-cache"
             aws s3 sync dist/ s3://riskintegra-erm-frontend-auditfrontendbucket-6j5mxckl17zv/ --cache-control "no-cache"
             aws cloudfront create-invalidation --distribution-id E211U490INF7V3 --paths "/audit-portal/*" "/*"
-            echo "✅ Audit Portal GitHub Actions Deployment finished successfully!"
+            echo "✅ Audit Portal Frontend GitHub Actions Deployment finished successfully!"
           else
             echo "ℹ️ AWS Secrets (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY) not found in GitHub Secrets."
-            echo "Direct CLI deployments from terminal are active & live. Add secrets in GitHub Repo Settings to enable automated GitHub push deployments."
           fi
