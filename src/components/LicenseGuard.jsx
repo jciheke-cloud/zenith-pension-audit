@@ -7,7 +7,7 @@ const LicenseGuard = ({ children }) => {
   const [uploading, setUploading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  let API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+  let API_BASE_URL = import.meta.env.VITE_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod/api';
   if (API_BASE_URL.endsWith('/')) API_BASE_URL = API_BASE_URL.slice(0, -1);
   if (!API_BASE_URL.endsWith('/api')) API_BASE_URL = `${API_BASE_URL}/api`;
 
