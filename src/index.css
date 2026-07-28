@@ -409,7 +409,9 @@ h1, h2, h3, h4, h5, h6 {
 /* Institutional Application Layout & Containers */
 .app-container {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  flex: 1;
+  overflow: hidden;
   background: var(--bg-dark);
   width: 100%;
 }
@@ -423,6 +425,7 @@ h1, h2, h3, h4, h5, h6 {
   min-width: 0;
   max-width: calc(100vw - 275px);
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 @media (max-width: 1024px) {
@@ -451,6 +454,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Institutional Sidebar & Navigation Structure */
 .sidebar {
   width: 275px;
+  overflow-y: auto;
   flex-shrink: 0;
   height: 100vh;
   position: sticky;
@@ -464,6 +468,7 @@ h1, h2, h3, h4, h5, h6 {
   z-index: 50;
   overflow-y: auto;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .sidebar-header {

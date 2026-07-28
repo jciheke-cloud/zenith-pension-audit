@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuditContext } from './context/AuditContext';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
@@ -30,10 +30,18 @@ import PortalLanding from './pages/PortalLanding';
 
 const App = () => {
   const { isAuthenticated, loading } = useContext(AuditContext);
+  const mainRef = React.useRef(null);
+  const location = useLocation();
+
+  React.useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTo(0, 0);
+    }
+  }, [location.pathname]);
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark, #0f172a)', color: 'white', fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark, #0f172a)', color: 'white', fontFamily: "'Inter', sans-serif" }}>
         Loading Internal Audit Suite...
       </div>
     );
@@ -46,7 +54,7 @@ const App = () => {
 
   if (!isAuthenticated) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', width: '100%' }}>
         <CbnDmoMacroTicker />
         <LoginScreen />
       </div>
@@ -54,11 +62,11 @@ const App = () => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', width: '100%' }}>
       <CbnDmoMacroTicker />
       <div className="app-container" style={{ flex: 1 }}>
         <Sidebar />
-        <div className="main-content">
+        <div className="main-content" ref={mainRef} style={{ overflowY: 'auto' }}>
           <Topbar />
           <NotificationDrawer />
           <ToastContainer />
