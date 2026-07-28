@@ -427,7 +427,7 @@ export const UserManagement = () => {
       <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: '1.5rem' }}>
         {[
           { id: 'personnel', label: 'Directory', icon: UserCheck },
-          { id: 'rbac', label: 'User Roles', icon: Key },
+          { id: 'rbac', label: 'Permissions & Roles', icon: Key },
           { id: 'logs', label: 'Audit Logs', icon: FileText }
         ].map(tab => {
           const Icon = tab.icon;
