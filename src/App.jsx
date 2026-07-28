@@ -35,13 +35,13 @@ const App = () => {
 
   React.useEffect(() => {
     if (mainRef.current) {
-      mainRef.current.scrollTo(0, 0);
+      setTimeout(() => mainRef.current?.scrollTo(0, 0), 10);
     }
   }, [location.pathname]);
 
   if (loading) {
     return (
-      <div style={{ height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark, #0f172a)', color: 'white', fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ height: '100%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark, #0f172a)', color: 'white', fontFamily: "'Inter', sans-serif" }}>
         Loading Internal Audit Suite...
       </div>
     );
@@ -54,7 +54,7 @@ const App = () => {
 
   if (!isAuthenticated) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', width: '100%' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', width: '100%' }}>
         <CbnDmoMacroTicker />
         <LoginScreen />
       </div>
@@ -62,7 +62,7 @@ const App = () => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', width: '100%' }}>
       <CbnDmoMacroTicker />
       <div className="app-container" style={{ flex: 1 }}>
         <Sidebar />
