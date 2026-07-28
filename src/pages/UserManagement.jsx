@@ -297,7 +297,7 @@ export const UserManagement = () => {
                 User Management
               </h1>
               <p style={{ color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', margin: 0, fontWeight: 500 }}>
-                Independent Audit & Assurance User Management & Privilege Enforcement — PENCOM Compliant
+                Manage user directory and role permissions for the Audit platform.
               </p>
             </div>
           </div>
@@ -343,7 +343,7 @@ export const UserManagement = () => {
             }}
           >
             <UserPlus size={16} />
-            Provision Audit Personnel
+            Provision User
           </button>
         </div>
       </div>
@@ -364,7 +364,7 @@ export const UserManagement = () => {
           </div>
           <div>
             <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>{users.length}</div>
-            <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Total Audit Personnel</div>
+            <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Total Users</div>
           </div>
         </div>
 
@@ -400,7 +400,7 @@ export const UserManagement = () => {
           </div>
           <div>
             <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>{AUDIT_RBAC_ROLES.length}</div>
-            <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Defined 3LoD RBAC Roles</div>
+            <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Defined Roles</div>
           </div>
         </div>
 
@@ -418,7 +418,7 @@ export const UserManagement = () => {
           </div>
           <div>
             <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>{auditLogs ? auditLogs.length : 0} Events</div>
-            <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Immutable Security Logs</div>
+            <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Audit Logs</div>
           </div>
         </div>
       </div>
@@ -426,9 +426,9 @@ export const UserManagement = () => {
       {/* Tabs Navigation */}
       <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: '1.5rem' }}>
         {[
-          { id: 'personnel', label: 'Audit Directory & Roster', icon: UserCheck },
-          { id: 'rbac', label: '3LoD Permission Matrix & Roles', icon: Key },
-          { id: 'logs', label: 'Security & Access Logs', icon: FileText }
+          { id: 'personnel', label: 'Directory', icon: UserCheck },
+          { id: 'rbac', label: 'User Roles', icon: Key },
+          { id: 'logs', label: 'Audit Logs', icon: FileText }
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -506,7 +506,7 @@ export const UserManagement = () => {
                   fontSize: '0.82rem'
                 }}
               >
-                <option value="ALL">All Audit Roles</option>
+                <option value="ALL">All Roles</option>
                 {AUDIT_RBAC_ROLES.map(r => (
                   <option key={r.id} value={r.id}>{r.name}</option>
                 ))}
@@ -535,12 +535,12 @@ export const UserManagement = () => {
           {loadingUsers ? (
             <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
               <RefreshCw size={24} className="animate-spin" style={{ margin: '0 auto 1rem' }} />
-              Loading Cognito User Pool Users...
+              Loading Users...
             </div>
           ) : filteredUsers.length === 0 ? (
             <div style={{ padding: '3rem', textAlign: 'center', background: 'rgba(15, 23, 42, 0.4)', borderRadius: '12px', border: '1px dashed rgba(255,255,255,0.1)' }}>
               <Shield size={32} style={{ color: '#f472b6', marginBottom: '0.5rem' }} />
-              <h4 style={{ margin: '0 0 0.25rem 0', color: 'white' }}>No Audit Personnel Found</h4>
+              <h4 style={{ margin: '0 0 0.25rem 0', color: 'white' }}>No Personnel Found</h4>
               <p style={{ fontSize: '0.82rem', color: '#94a3b8', margin: 0 }}>Try resetting your search query or role filter.</p>
             </div>
           ) : (
@@ -662,7 +662,7 @@ export const UserManagement = () => {
         </>
       )}
 
-      {/* TAB 2: 3LOD PERMISSION MATRIX & ROLES */}
+      {/* TAB 2: ROLES */}
       {activeTab === 'rbac' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
           {AUDIT_RBAC_ROLES.map(role => (
@@ -744,7 +744,7 @@ export const UserManagement = () => {
         </div>
       )}
 
-      {/* TAB 3: SECURITY & ACCESS LOGS */}
+      {/* TAB 3: LOGS */}
       {activeTab === 'logs' && (
         <div style={{
           background: 'rgba(15, 23, 42, 0.6)',
@@ -753,10 +753,7 @@ export const UserManagement = () => {
           overflow: 'hidden'
         }}>
           <div style={{ padding: '1.2rem 1.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>Audit Credentials Security Telemetry</h3>
-            <span style={{ fontSize: '0.75rem', color: '#34d399', background: 'rgba(16, 185, 129, 0.15)', padding: '0.25rem 0.6rem', borderRadius: '6px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-              🔒 WORM Sealed Audit Trail
-            </span>
+            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>Audit Logs</h3>
           </div>
 
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
@@ -766,7 +763,7 @@ export const UserManagement = () => {
                 <th style={{ padding: '0.85rem 1.2rem' }}>Actor</th>
                 <th style={{ padding: '0.85rem 1.2rem' }}>Action</th>
                 <th style={{ padding: '0.85rem 1.2rem' }}>Target Personnel</th>
-                <th style={{ padding: '0.85rem 1.2rem' }}>Audit Trail Details</th>
+                <th style={{ padding: '0.85rem 1.2rem' }}>Details</th>
               </tr>
             </thead>
             <tbody>
