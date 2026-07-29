@@ -33,25 +33,37 @@ const App = () => {
   const mainRef = React.useRef(null);
   const location = useLocation();
 
+  // Disable browser auto scroll restoration
+  React.useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
+
+  // Reset scroll container to top on every route/hash navigation
   React.useEffect(() => {
     const scrollToTop = () => {
       if (mainRef.current) {
         mainRef.current.scrollTop = 0;
-        if (typeof mainRef.current.scrollTo === 'function') {
+        try {
           mainRef.current.scrollTo(0, 0);
-        }
+        } catch (e) {}
       }
       window.scrollTo(0, 0);
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
     };
 
-    // Instant scroll reset
     scrollToTop();
+    const rafId = requestAnimationFrame(scrollToTop);
+    const timer1 = setTimeout(scrollToTop, 50);
+    const timer2 = setTimeout(scrollToTop, 150);
 
-    // Delayed fallback check for async rendered page components
-    const timer = setTimeout(scrollToTop, 20);
-    return () => clearTimeout(timer);
+    return () => {
+      cancelAnimationFrame(rafId);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
   }, [location.pathname, location.hash, location.key, location.search]);
 
   if (loading) {
