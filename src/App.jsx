@@ -27,11 +27,20 @@ import UserGuidePage from './pages/UserGuidePage';
 import UserManagement from './pages/UserManagement';
 import CbnDmoMacroTicker from './components/CbnDmoMacroTicker';
 import PortalLanding from './pages/PortalLanding';
+import useIdleTimeout from './hooks/useIdleTimeout';
 
 const App = () => {
-  const { isAuthenticated, loading } = useContext(AuditContext);
+  const { isAuthenticated, loading, logoutUser } = useContext(AuditContext);
+  const [showIdleModal, setShowIdleModal] = React.useState(false);
   const mainRef = React.useRef(null);
   const location = useLocation();
+
+  useIdleTimeout(() => {
+    if (isAuthenticated) {
+      if (logoutUser) logoutUser();
+      setShowIdleModal(true);
+    }
+  }, 15 * 60 * 1000);
 
   // Disable browser auto scroll restoration
   React.useEffect(() => {
@@ -135,6 +144,24 @@ const App = () => {
           </footer>
         </div>
       </div>
+
+      {showIdleModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div style={{ background: '#0F172A', border: '1px solid #EF4444', borderRadius: '0.75rem', padding: '2rem', maxWidth: '460px', width: '100%', textAlign: 'center', boxShadow: '0 25px 50px -12px rgba(239, 68, 68, 0.25)' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>⏱️</div>
+            <h3 style={{ color: 'white', fontWeight: 800, fontSize: '1.25rem', marginBottom: '0.5rem' }}>Audit Session Expired (SOC-2 Compliance)</h3>
+            <p style={{ color: '#94A3B8', fontSize: '0.875rem', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+              You were logged out after 15 minutes of inactivity in accordance with IIA, ISO 27001, and PENCOM IT Security Policy. Please log in again to continue.
+            </p>
+            <button 
+              onClick={() => { setShowIdleModal(false); window.location.reload(); }}
+              style={{ padding: '0.75rem 1.5rem', borderRadius: '0.5rem', background: '#EF4444', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer', width: '100%' }}
+            >
+              Re-Authenticate / Log In
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -28,6 +28,8 @@ import {
   MOCK_USERS
 } from '../data/mockAuditData';
 
+import { SecureStorageService } from '../services/SecureStorageService';
+
 export const AuditContext = createContext();
 
 export const normalizeAutomation = (val) => {
@@ -239,11 +241,8 @@ export const AuditProvider = ({ children }) => {
 
   const [businessUnits, setBusinessUnits] = useState(() => {
     try {
-      const saved = localStorage.getItem('zpc_audit_business_units');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
+      const saved = SecureStorageService.getItem('zpc_audit_business_units');
+      if (saved && Array.isArray(saved) && saved.length > 0) return saved;
     } catch (e) { /* ignore */ }
     return INITIAL_BUSINESS_UNITS;
   });
@@ -260,7 +259,7 @@ export const AuditProvider = ({ children }) => {
   useEffect(() => {
     try {
       if (businessUnits && Array.isArray(businessUnits) && businessUnits.length > 0) {
-        localStorage.setItem('zpc_audit_business_units', JSON.stringify(businessUnits));
+        SecureStorageService.setItem('zpc_audit_business_units', businessUnits);
       }
     } catch (e) { /* ignore */ }
   }, [businessUnits]);
