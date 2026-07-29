@@ -34,10 +34,25 @@ const App = () => {
   const location = useLocation();
 
   React.useEffect(() => {
-    if (mainRef.current) {
-      setTimeout(() => mainRef.current?.scrollTo(0, 0), 10);
-    }
-  }, [location.pathname]);
+    const scrollToTop = () => {
+      if (mainRef.current) {
+        mainRef.current.scrollTop = 0;
+        if (typeof mainRef.current.scrollTo === 'function') {
+          mainRef.current.scrollTo(0, 0);
+        }
+      }
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+
+    // Instant scroll reset
+    scrollToTop();
+
+    // Delayed fallback check for async rendered page components
+    const timer = setTimeout(scrollToTop, 20);
+    return () => clearTimeout(timer);
+  }, [location.pathname, location.hash, location.key, location.search]);
 
   if (loading) {
     return (
