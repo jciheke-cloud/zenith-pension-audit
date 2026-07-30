@@ -294,7 +294,7 @@ const PortalLanding = () => {
         zIndex: 10
       }}>
         <div>© 2026 Zenith Pension Custodian (ZPC) Limited. All Rights Reserved.</div>
-        <div>RiskINTEGRA Enterprise Platform · Powered by Nay & Joe Risk Tech Consulting</div>
+        <div>RiskINTEGRA Enterprise Platform · Powered by Nay&JoeRiskAndTechConsulting</div>
       </footer>
     </div>
   );
