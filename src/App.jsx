@@ -136,7 +136,7 @@ const App = () => {
             color: '#94a3b8'
           }}>
             <div style={{ fontWeight: 700, color: '#E2E8F0', letterSpacing: '0.02em' }}>
-              RiskINTEGRA Internal Audit™ - © 2026 NayandJoeRiskTechConsulting • Licensed exclusively to Zenith Pension Custodian Limited
+              RiskINTEGRA Internal Audit™ - © 2026 Nay&JoeRiskAndTechConsulting • Licensed exclusively to Zenith Pension Custodian Limited
             </div>
             <div style={{ marginTop: '0.25rem', fontSize: '0.72rem', color: '#64748b' }}>
               Confidential Proprietary Software under Nigerian Copyright Act & Trade Secrets Law • PENCOM Section 63 & IIA Standards

@@ -198,7 +198,7 @@ const Sidebar = () => {
         background: 'rgba(0,0,0,0.2)'
       }}>
         RiskINTEGRA Internal Audit™<br />
-        <span style={{ fontSize: '0.7rem', fontWeight: '600', color: '#94a3b8' }}>© 2026 NayandJoeRiskTechConsulting</span>
+        <span style={{ fontSize: '0.7rem', fontWeight: '600', color: '#94a3b8' }}>© 2026 Nay&JoeRiskAndTechConsulting</span>
       </div>
     </aside>
   );
