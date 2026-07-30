@@ -11,6 +11,8 @@ const MasterData = () => {
   const [activeTab, setActiveTab] = useState('bus'); // 'bus' or 'universe'
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBu, setFilterBu] = useState('All');
+  const [filterFreq, setFilterFreq] = useState('All');
+  const [filterLead, setFilterLead] = useState('All');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
   // New & Edit BU Modal State
@@ -84,12 +86,17 @@ const MasterData = () => {
   const filteredUniverse = (auditUniverse || []).filter(item => {
     const name = getItemName(item).toLowerCase();
     const code = getItemCode(item).toLowerCase();
-    const lead = getItemLead(item).toLowerCase();
+    const lead = getItemLead(item);
     const bu = getItemBu(item);
+    const freq = item.frequency || 'Quarterly';
     const query = searchTerm.toLowerCase();
-    const matchesSearch = name.includes(query) || code.includes(query) || lead.includes(query);
+    
+    const matchesSearch = name.includes(query) || code.includes(query) || lead.toLowerCase().includes(query);
     const matchesBu = filterBu === 'All' || bu === filterBu || bu.includes(filterBu) || filterBu.includes(bu);
-    return matchesSearch && matchesBu;
+    const matchesFreq = filterFreq === 'All' || freq === filterFreq;
+    const matchesLead = filterLead === 'All' || lead.includes(filterLead) || filterLead.includes(lead);
+    
+    return matchesSearch && matchesBu && matchesFreq && matchesLead;
   });
 
   const handleCreateBu = (e) => {
@@ -252,11 +259,11 @@ const MasterData = () => {
               <div style={{ 
                 position: 'absolute', right: 0, top: '110%', background: 'var(--bg-dark, #1e293b)', 
                 border: '1px solid var(--border-color, rgba(255,255,255,0.1))', padding: '1rem', 
-                borderRadius: '8px', zIndex: 10, width: '220px', display: 'flex', flexDirection: 'column', gap: '1rem',
+                borderRadius: '8px', zIndex: 10, width: '260px', display: 'flex', flexDirection: 'column', gap: '1rem',
                 boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
               }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Filter Department</label>
+                  <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Department / BU</label>
                   <select
                     value={filterBu}
                     onChange={e => setFilterBu(e.target.value)}
@@ -269,6 +276,44 @@ const MasterData = () => {
                     ))}
                   </select>
                 </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Audit Frequency</label>
+                  <select
+                    value={filterFreq}
+                    onChange={e => setFilterFreq(e.target.value)}
+                    className="form-select"
+                    style={{ width: '100%', padding: '0.6rem 0.8rem' }}
+                  >
+                    <option value="All">Any Frequency</option>
+                    <option value="Monthly">Monthly</option>
+                    <option value="Quarterly">Quarterly</option>
+                    <option value="Semi-Annually">Semi-Annually</option>
+                    <option value="Annually">Annually</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Lead Auditor</label>
+                  <select
+                    value={filterLead}
+                    onChange={e => setFilterLead(e.target.value)}
+                    className="form-select"
+                    style={{ width: '100%', padding: '0.6rem 0.8rem' }}
+                  >
+                    <option value="All">All Auditors</option>
+                    {[...new Set(auditUniverse.map(item => getItemLead(item)))].filter(Boolean).map(leadName => (
+                      <option key={leadName} value={leadName}>{leadName}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <button 
+                  onClick={() => { setFilterBu('All'); setFilterFreq('All'); setFilterLead('All'); }} 
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-color)', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer', marginTop: '0.5rem', fontSize: '0.85rem' }}
+                >
+                  Reset Filters
+                </button>
               </div>
             )}
           </div>
