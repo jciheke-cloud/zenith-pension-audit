@@ -1,12 +1,14 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
-import { CheckSquare, AlertTriangle, Clock, ShieldCheck, ArrowRight, RefreshCw, Send, Paperclip, CheckCircle2, FileCheck, Eye } from 'lucide-react';
+import { CheckSquare, AlertTriangle, Clock, ShieldCheck, ArrowRight, RefreshCw, Send, Paperclip, CheckCircle2, FileCheck, Eye, Search, Filter } from 'lucide-react';
 import AuditDataUpload from '../components/AuditDataUpload';
 
 const ActionTracking = () => {
   const { findings, updateFindingStatus, addNotification } = useContext(AuditContext);
   const [activeTab, setActiveTab] = useState('All');
-
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterPriority, setFilterPriority] = useState('All');
+  const [showFilter, setShowFilter] = useState(false);
   // Proof & Retest Modals
   const [proofModalCap, setProofModalCap] = useState(null);
   const [retestModalCap, setRetestModalCap] = useState(null);
@@ -23,6 +25,11 @@ const ActionTracking = () => {
     if (activeTab === 'All') return true;
     if (activeTab === 'Overdue') return f.status === 'Overdue' || (f.status !== 'Closed' && f.targetDate < '2026-07-01');
     return f.status === activeTab;
+  }).filter(f => {
+    const term = searchTerm.toLowerCase();
+    const matchSearch = (f.findingNumber || f.id || '').toLowerCase().includes(term) || (f.observation || f.title || '').toLowerCase().includes(term) || (f.actionOwner || f.owner || '').toLowerCase().includes(term);
+    const matchPriority = filterPriority === 'All' || (f.priority || 'Low') === filterPriority;
+    return matchSearch && matchPriority;
   });
 
   const handleSendReminder = (finding) => {
@@ -125,6 +132,29 @@ const ActionTracking = () => {
             <h3 className="section-title">Management Corrective Action Register</h3>
             <p className="section-subtitle">Retesting verification workflows and automated escalation tracking</p>
           </div>
+          <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+            <div style={{ position: 'relative' }}>
+              <Search size={16} style={{ position: 'absolute', left: '12px', top: '10px', color: 'var(--text-muted)' }} />
+              <input type="text" placeholder="Search CAPs..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2.2rem', width: '220px' }} />
+            </div>
+            <div style={{ position: 'relative' }}>
+              <button onClick={() => setShowFilter(!showFilter)} className="btn-secondary" style={{ padding: '0.5rem 0.8rem' }}>
+                <Filter size={16} /> Filter
+              </button>
+              {showFilter && (
+                <div style={{ position: 'absolute', right: 0, top: '110%', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.8rem', zIndex: 10, minWidth: '180px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.4rem' }}>By Priority</label>
+                  <select value={filterPriority} onChange={e => setFilterPriority(e.target.value)} className="form-select" style={{ width: '100%' }}>
+                    <option value="All">All Priorities</option>
+                    <option value="Critical">Critical</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                  </select>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="data-table-container">
@@ -142,7 +172,12 @@ const ActionTracking = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredCAPs.map(cap => {
+              {filteredCAPs.length === 0 ? (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: 'center', padding: '2rem' }}>No matching items found</td>
+                </tr>
+              ) : (
+              filteredCAPs.map(cap => {
                 const isOverdue = cap.status !== 'Closed' && cap.targetDate < '2026-07-24';
                 return (
                   <tr key={cap.findingNumber || cap.id}>
@@ -205,7 +240,7 @@ const ActionTracking = () => {
                     </td>
                   </tr>
                 );
-              })}
+              }))}
             </tbody>
           </table>
         </div>

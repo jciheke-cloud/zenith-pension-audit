@@ -4,13 +4,16 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend, AreaChart, Area
 } from 'recharts';
 import {
-  CheckCircle, AlertOctagon, Clock, RefreshCw, ShieldAlert, Award, FileSpreadsheet, Layers, ArrowUpRight, CheckSquare, Activity, ShieldCheck
+  CheckCircle, AlertOctagon, Clock, RefreshCw, ShieldAlert, Award, FileSpreadsheet, Layers, ArrowUpRight, CheckSquare, Activity, ShieldCheck, Search, Filter
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const ExecutiveDashboard = () => {
   const { auditPlans = [], findings = [], auditUniverse = [], controls = [], currency } = useContext(AuditContext);
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [filterDepartment, setFilterDepartment] = React.useState('All');
+  const [showFilters, setShowFilters] = React.useState(false);
 
   // ── 1. Live Data Calculations from Synced ERM & Audit Database ──
   const totalPlans = auditPlans.length;
@@ -128,6 +131,11 @@ const ExecutiveDashboard = () => {
 
   // Heat map summary of auditable units from live auditUniverse
   const highPriorityUnits = auditUniverse.slice(0, 6);
+  const filteredHighPriorityUnits = highPriorityUnits.filter(unit => {
+    const searchMatch = !searchTerm || (unit.processName || unit.title || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const deptMatch = filterDepartment === 'All' || (unit.businessUnit || unit.department) === filterDepartment;
+    return searchMatch && deptMatch;
+  });
 
   return (
     <div className="page-container">
@@ -498,14 +506,38 @@ const ExecutiveDashboard = () => {
 
       {/* Heat Map of Auditable Units & High Priority Table */}
       <div className="glass-card" style={{ padding: '1.5rem' }}>
-        <div className="section-header-bar" style={{ marginBottom: '1.25rem' }}>
-          <div>
-            <h3 className="section-title">High-Priority Auditable Units Heat Map Summary</h3>
-            <p className="section-subtitle">Core custodial processes evaluated under the 6-Factor PENCOM Risk Matrix</p>
+        <div className="section-header-bar" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'stretch', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h3 className="section-title">High-Priority Auditable Units Heat Map Summary</h3>
+              <p className="section-subtitle">Core custodial processes evaluated under the 6-Factor PENCOM Risk Matrix</p>
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <button onClick={() => navigate('/risk-scoring')} className="btn-secondary" style={{ marginRight: '1rem' }}>
+                View 6-Factor Scoring Engine ➔
+              </button>
+              <div style={{ position: 'relative' }}>
+                <Search size={16} style={{ position: 'absolute', left: '10px', top: '10px', color: 'var(--text-muted)' }} />
+                <input type="text" placeholder="Search processes..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2rem', width: '200px' }} />
+              </div>
+              <button onClick={() => setShowFilters(!showFilters)} className="btn-secondary" style={{ padding: '0.55rem' }}>
+                <Filter size={16} />
+              </button>
+            </div>
           </div>
-          <button onClick={() => navigate('/risk-scoring')} className="btn-secondary">
-            View 6-Factor Scoring Engine ➔
-          </button>
+          {showFilters && (
+            <div style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.03)', padding: '0.75rem', borderRadius: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Department:</span>
+                <select value={filterDepartment} onChange={e => setFilterDepartment(e.target.value)} className="form-select">
+                  <option value="All">All Departments</option>
+                  <option value="Custody Operations">Custody Operations</option>
+                  <option value="IT & Cybersecurity">IT & Cybersecurity</option>
+                  <option value="Treasury">Treasury</option>
+                </select>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="data-table-container">
@@ -529,7 +561,11 @@ const ExecutiveDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {highPriorityUnits.map(unit => (
+                {filteredHighPriorityUnits.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No matching items found</td>
+                  </tr>
+                ) : filteredHighPriorityUnits.map(unit => (
                   <tr key={unit.id}>
                     <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{unit.code || unit.unitId}</td>
                     <td style={{ fontWeight: 700 }}>{unit.processName || unit.title}</td>

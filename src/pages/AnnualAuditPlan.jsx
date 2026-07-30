@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
-import { Calendar, Plus, CheckCircle, Clock, AlertTriangle, FileText, Download, Sliders } from 'lucide-react';
+import { Calendar, Plus, CheckCircle, Clock, AlertTriangle, FileText, Download, Sliders, Search, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AuditDataUpload from '../components/AuditDataUpload';
 
@@ -10,6 +10,8 @@ const AnnualAuditPlan = () => {
 
   const [filterDept, setFilterDept] = useState('All');
   const [filterStatus, setFilterStatus] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showFilter, setShowFilter] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // New Plan State
@@ -36,7 +38,9 @@ const AnnualAuditPlan = () => {
   const filteredPlans = auditPlans.filter(p => {
     const matchesDept = filterDept === 'All' || p.department === filterDept;
     const matchesStatus = filterStatus === 'All' || p.status === filterStatus;
-    return matchesDept && matchesStatus;
+    const term = searchTerm.toLowerCase();
+    const matchesSearch = (p.auditName || p.title || '').toLowerCase().includes(term) || (p.leadAuditor || '').toLowerCase().includes(term);
+    return matchesDept && matchesStatus && matchesSearch;
   });
 
   const handleCreatePlan = (e) => {
@@ -164,27 +168,7 @@ const AnnualAuditPlan = () => {
         </div>
       </div>
 
-      {/* Filter Bar */}
-      <div className="filter-bar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Filter Department:</span>
-          <select value={filterDept} onChange={e => setFilterDept(e.target.value)} className="form-select" style={{ width: '220px', padding: '0.5rem 0.8rem' }}>
-            <option value="All">All Departments</option>
-            {businessUnits.map(b => <option key={b.id} value={b.name}>{b.name}</option>)}
-          </select>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Filter Status:</span>
-          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select" style={{ width: '180px', padding: '0.5rem 0.8rem' }}>
-            <option value="All">All Statuses</option>
-            <option value="Completed">Completed</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Approved">Approved</option>
-            <option value="Draft">Draft</option>
-          </select>
-        </div>
-      </div>
+      {/* Old Filter Bar removed */}
 
       {/* Annual Plan Table */}
       <div className="glass-card">
@@ -193,7 +177,34 @@ const AnnualAuditPlan = () => {
             <h3 className="section-title">2026 Comprehensive Statutory & Internal Audit Plan</h3>
             <p className="section-subtitle">Risk-weighted schedule of audits across ZPC custodial operations</p>
           </div>
-          
+          <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+            <div style={{ position: 'relative' }}>
+              <Search size={16} style={{ position: 'absolute', left: '12px', top: '10px', color: 'var(--text-muted)' }} />
+              <input type="text" placeholder="Search Plans..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2.2rem', width: '220px' }} />
+            </div>
+            <div style={{ position: 'relative' }}>
+              <button onClick={() => setShowFilter(!showFilter)} className="btn-secondary" style={{ padding: '0.5rem 0.8rem' }}>
+                <Filter size={16} /> Filter
+              </button>
+              {showFilter && (
+                <div style={{ position: 'absolute', right: 0, top: '110%', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.8rem', zIndex: 10, minWidth: '220px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.4rem' }}>By Department</label>
+                  <select value={filterDept} onChange={e => setFilterDept(e.target.value)} className="form-select" style={{ width: '100%', marginBottom: '0.8rem' }}>
+                    <option value="All">All Departments</option>
+                    {businessUnits.map(b => <option key={b.id} value={b.name}>{b.name}</option>)}
+                  </select>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.4rem' }}>By Status</label>
+                  <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select" style={{ width: '100%' }}>
+                    <option value="All">All Statuses</option>
+                    <option value="Completed">Completed</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Draft">Draft</option>
+                  </select>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="data-table-container">
@@ -214,7 +225,12 @@ const AnnualAuditPlan = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredPlans.map(plan => {
+              {filteredPlans.length === 0 ? (
+                <tr>
+                  <td colSpan="11" style={{ textAlign: 'center', padding: '2rem' }}>No matching items found</td>
+                </tr>
+              ) : (
+              filteredPlans.map(plan => {
                 const rating = plan.riskRating || plan.priority || 'High';
                 const hrs = plan.estimatedHours || plan.budgetHours || 180;
                 const timeline = plan.plannedStartDate ? `${plan.plannedStartDate} ➔ ${plan.plannedEndDate}` : plan.plannedQuarter || 'Q2 2026';
@@ -270,7 +286,7 @@ const AnnualAuditPlan = () => {
                     </td>
                   </tr>
                 );
-              })}
+              }))}
             </tbody>
           </table>
         </div>

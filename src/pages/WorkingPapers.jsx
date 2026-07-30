@@ -10,6 +10,7 @@ const WorkingPapers = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('All');
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingWpId, setEditingWpId] = useState(null);
 
@@ -107,7 +108,7 @@ const WorkingPapers = () => {
       </div>
 
       {/* Filter / Search Bar */}
-      <div className="filter-bar">
+      <div className="filter-bar" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: 1 }}>
           <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
           <input
@@ -116,19 +117,38 @@ const WorkingPapers = () => {
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             className="form-input"
-            style={{ paddingLeft: '2.4rem' }}
+            style={{ paddingLeft: '2.4rem', width: '100%' }}
           />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <Filter size={16} color="var(--text-muted)" />
-          <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Filter Document Type:</span>
-          <select value={filterType} onChange={e => setFilterType(e.target.value)} className="form-select" style={{ width: '200px', padding: '0.5rem 0.8rem' }}>
-            <option value="All">All Document Types</option>
-            <option value="Excel">Excel Workbooks</option>
-            <option value="PDF">PDF Bank Statements</option>
-            <option value="Word">Word Documents</option>
-          </select>
+        <div style={{ position: 'relative' }}>
+          <button 
+            className="btn-secondary" 
+            onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          >
+            <Filter size={16} />
+            <span>Filters</span>
+          </button>
+          
+          {showFilterDropdown && (
+            <div style={{ 
+              position: 'absolute', right: 0, top: '110%', background: 'var(--bg-dark, #1e293b)', 
+              border: '1px solid var(--border-color, rgba(255,255,255,0.1))', padding: '1rem', 
+              borderRadius: '8px', zIndex: 10, width: '220px', display: 'flex', flexDirection: 'column', gap: '1rem',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
+            }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Document Type</label>
+                <select value={filterType} onChange={e => setFilterType(e.target.value)} className="form-select" style={{ width: '100%' }}>
+                  <option value="All">All Document Types</option>
+                  <option value="Excel">Excel Workbooks</option>
+                  <option value="PDF">PDF Bank Statements</option>
+                  <option value="Word">Word Documents</option>
+                </select>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -158,8 +178,8 @@ const WorkingPapers = () => {
             <tbody>
               {filteredPapers.length === 0 ? (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-                    No working papers available.
+                  <td colSpan="8" style={{ textAlign: 'center', padding: '2rem' }}>
+                    No matching items found
                   </td>
                 </tr>
               ) : filteredPapers.map(wp => (

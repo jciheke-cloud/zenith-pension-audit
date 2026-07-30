@@ -12,6 +12,7 @@ const FindingsManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBu, setFilterBu] = useState('All');
   const [filterPriority, setFilterPriority] = useState('All');
+  const [showFilters, setShowFilters] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingFindingId, setEditingFindingId] = useState(null);
 
@@ -359,22 +360,31 @@ const FindingsManagement = () => {
       ) : (
         /* List View */
         <div className="glass-card">
-          <div className="filter-bar" style={{ background: 'transparent', padding: '0 0 1rem', borderBottom: '1px solid var(--border-color)', marginBottom: '1.2rem' }}>
-            <div style={{ position: 'relative', flex: 1 }}>
-              <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
-              <input type="text" placeholder="Search finding number, observation detail, or action owner..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2.4rem' }} />
+          <div className="filter-bar" style={{ background: 'transparent', padding: '0 0 1rem', borderBottom: '1px solid var(--border-color)', marginBottom: '1.2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
+              <div style={{ position: 'relative', flex: 1 }}>
+                <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
+                <input type="text" placeholder="Search finding number, observation detail, or action owner..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2.4rem' }} />
+              </div>
+              <button onClick={() => setShowFilters(!showFilters)} className="btn-secondary" style={{ padding: '0.55rem' }}>
+                <Filter size={16} />
+              </button>
             </div>
-            <select value={filterBu} onChange={e => setFilterBu(e.target.value)} className="form-select" style={{ width: '220px' }}>
-              <option value="All">All Business Units</option>
-              {businessUnits.map(b => <option key={b.id} value={b.name}>{b.name}</option>)}
-            </select>
-            <select value={filterPriority} onChange={e => setFilterPriority(e.target.value)} className="form-select" style={{ width: '180px' }}>
-              <option value="All">All Priorities</option>
-              <option value="Critical">Critical (80+)</option>
-              <option value="High">High (60-79)</option>
-              <option value="Medium">Medium (30-59)</option>
-              <option value="Low">Low (&lt;30)</option>
-            </select>
+            {showFilters && (
+              <div style={{ display: 'flex', gap: '1rem', width: '100%', flexWrap: 'wrap' }}>
+                <select value={filterBu} onChange={e => setFilterBu(e.target.value)} className="form-select" style={{ width: '220px' }}>
+                  <option value="All">All Business Units</option>
+                  {businessUnits.map(b => <option key={b.id} value={b.name}>{b.name}</option>)}
+                </select>
+                <select value={filterPriority} onChange={e => setFilterPriority(e.target.value)} className="form-select" style={{ width: '180px' }}>
+                  <option value="All">All Priorities</option>
+                  <option value="Critical">Critical (80+)</option>
+                  <option value="High">High (60-79)</option>
+                  <option value="Medium">Medium (30-59)</option>
+                  <option value="Low">Low (&lt;30)</option>
+                </select>
+              </div>
+            )}
           </div>
 
           <div className="data-table-container">
@@ -395,7 +405,11 @@ const FindingsManagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredFindings.map(f => (
+                {filteredFindings.length === 0 ? (
+                  <tr>
+                    <td colSpan="11" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No matching items found</td>
+                  </tr>
+                ) : filteredFindings.map(f => (
                   <tr key={f.findingNumber || f.id}>
                     <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{f.findingNumber || f.id || 'FND-001'}</td>
                     <td style={{ maxWidth: '340px' }}>

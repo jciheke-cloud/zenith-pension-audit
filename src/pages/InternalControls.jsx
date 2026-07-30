@@ -1,12 +1,14 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
-import { ShieldCheck, Plus, CheckCircle, AlertOctagon, Sliders, Layers } from 'lucide-react';
+import { ShieldCheck, Plus, CheckCircle, AlertOctagon, Sliders, Layers, Search, Filter } from 'lucide-react';
 import AuditDataUpload from '../components/AuditDataUpload';
 
 const InternalControls = () => {
   const { controls, setControls, addNotification } = useContext(AuditContext);
   const [filterType, setFilterType] = useState('All');
   const [filterAutomated, setFilterAutomated] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // New Control Form
@@ -19,9 +21,15 @@ const InternalControls = () => {
   const [owner, setOwner] = useState('Operations Team');
 
   const filteredControls = controls.filter(c => {
+    const query = searchTerm.toLowerCase();
+    const desc = (c.description || c.name || '').toLowerCase();
+    const code = (c.code || c.id || '').toLowerCase();
+    const owner = (c.owner || '').toLowerCase();
+    
+    const matchesSearch = desc.includes(query) || code.includes(query) || owner.includes(query);
     const matchesType = filterType === 'All' || c.type === filterType;
     const matchesAuto = filterAutomated === 'All' || c.automation === filterAutomated;
-    return matchesType && matchesAuto;
+    return matchesSearch && matchesType && matchesAuto;
   });
 
   const handleAddControl = (e) => {
@@ -96,26 +104,57 @@ const InternalControls = () => {
         </div>
       </div>
 
-      {/* Filter Bar */}
-      <div className="filter-bar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Filter Control Type:</span>
-          <select value={filterType} onChange={e => setFilterType(e.target.value)} className="form-select" style={{ width: '180px' }}>
-            <option value="All">All Types</option>
-            <option value="Preventive">Preventive</option>
-            <option value="Detective">Detective</option>
-            <option value="Corrective">Corrective</option>
-          </select>
+      {/* Filter / Search Bar */}
+      <div className="filter-bar" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        <div style={{ position: 'relative', flex: 1 }}>
+          <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
+          <input
+            type="text"
+            placeholder="Search controls by code, description, or owner..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="form-input"
+            style={{ paddingLeft: '2.4rem', width: '100%' }}
+          />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Automation Level:</span>
-          <select value={filterAutomated} onChange={e => setFilterAutomated(e.target.value)} className="form-select" style={{ width: '180px' }}>
-            <option value="All">All Levels</option>
-            <option value="Automated">Automated</option>
-            <option value="Semi-Automated">Semi-Automated</option>
-            <option value="Manual">Manual</option>
-          </select>
+        <div style={{ position: 'relative' }}>
+          <button 
+            className="btn-secondary" 
+            onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          >
+            <Filter size={16} />
+            <span>Filters</span>
+          </button>
+          
+          {showFilterDropdown && (
+            <div style={{ 
+              position: 'absolute', right: 0, top: '110%', background: 'var(--bg-dark, #1e293b)', 
+              border: '1px solid var(--border-color, rgba(255,255,255,0.1))', padding: '1rem', 
+              borderRadius: '8px', zIndex: 10, width: '220px', display: 'flex', flexDirection: 'column', gap: '1rem',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
+            }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Control Type</label>
+                <select value={filterType} onChange={e => setFilterType(e.target.value)} className="form-select" style={{ width: '100%' }}>
+                  <option value="All">All Types</option>
+                  <option value="Preventive">Preventive</option>
+                  <option value="Detective">Detective</option>
+                  <option value="Corrective">Corrective</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Automation Level</label>
+                <select value={filterAutomated} onChange={e => setFilterAutomated(e.target.value)} className="form-select" style={{ width: '100%' }}>
+                  <option value="All">All Levels</option>
+                  <option value="Automated">Automated</option>
+                  <option value="Semi-Automated">Semi-Automated</option>
+                  <option value="Manual">Manual</option>
+                </select>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -143,7 +182,11 @@ const InternalControls = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredControls.map(c => {
+              {filteredControls.length === 0 ? (
+                <tr>
+                  <td colSpan="8" style={{textAlign:'center', padding: '2rem'}}>No matching items found</td>
+                </tr>
+              ) : filteredControls.map(c => {
                 const de = c.designEff || c.designEffectiveness || 'Effective';
                 const oe = c.operatingEff || c.operatingEffectiveness || 'Effective';
                 const desc = c.description || c.name || 'Core Custody Internal Control Safeguard';

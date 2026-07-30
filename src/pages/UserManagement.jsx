@@ -95,6 +95,7 @@ export const UserManagement = () => {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [activeTab, setActiveTab] = useState('personnel'); // 'personnel' | 'rbac' | 'logs'
   const [showModal, setShowModal] = useState(false);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
 
   // Form State
@@ -493,41 +494,57 @@ export const UserManagement = () => {
               />
             </div>
 
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-              <select
-                value={roleFilter}
-                onChange={e => setRoleFilter(e.target.value)}
+            <div style={{ position: 'relative' }}>
+              <button 
+                onClick={() => setShowFilterDropdown(!showFilterDropdown)}
                 style={{
-                  padding: '0.65rem 1rem',
-                  borderRadius: '8px',
-                  background: 'rgba(15, 23, 42, 0.8)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: 'white',
-                  fontSize: '0.82rem'
+                  padding: '0.65rem 1rem', borderRadius: '8px', background: 'rgba(15, 23, 42, 0.8)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)', color: 'white', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer'
                 }}
               >
-                <option value="ALL">All Roles</option>
-                {AUDIT_RBAC_ROLES.map(r => (
-                  <option key={r.id} value={r.id}>{r.name}</option>
-                ))}
-              </select>
-
-              <select
-                value={statusFilter}
-                onChange={e => setStatusFilter(e.target.value)}
-                style={{
-                  padding: '0.65rem 1rem',
-                  borderRadius: '8px',
-                  background: 'rgba(15, 23, 42, 0.8)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: 'white',
-                  fontSize: '0.82rem'
-                }}
-              >
-                <option value="ALL">All Statuses</option>
-                <option value="Active">Active Credentials</option>
-                <option value="Suspended">Suspended</option>
-              </select>
+                <Filter size={16} /> Filters
+              </button>
+              
+              {showFilterDropdown && (
+                <div style={{
+                  position: 'absolute', right: 0, top: '110%', background: 'var(--bg-dark, #1e293b)', 
+                  border: '1px solid var(--border-color, rgba(255,255,255,0.1))', padding: '1rem', 
+                  borderRadius: '8px', zIndex: 10, width: '220px', display: 'flex', flexDirection: 'column', gap: '1rem',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
+                }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Role Filter</label>
+                    <select
+                      value={roleFilter}
+                      onChange={e => setRoleFilter(e.target.value)}
+                      style={{
+                        padding: '0.65rem 1rem', borderRadius: '8px', background: 'rgba(15, 23, 42, 0.8)',
+                        border: '1px solid rgba(255, 255, 255, 0.12)', color: 'white', fontSize: '0.82rem', width: '100%'
+                      }}
+                    >
+                      <option value="ALL">All Roles</option>
+                      {AUDIT_RBAC_ROLES.map(r => (
+                        <option key={r.id} value={r.id}>{r.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Status Filter</label>
+                    <select
+                      value={statusFilter}
+                      onChange={e => setStatusFilter(e.target.value)}
+                      style={{
+                        padding: '0.65rem 1rem', borderRadius: '8px', background: 'rgba(15, 23, 42, 0.8)',
+                        border: '1px solid rgba(255, 255, 255, 0.12)', color: 'white', fontSize: '0.82rem', width: '100%'
+                      }}
+                    >
+                      <option value="ALL">All Statuses</option>
+                      <option value="Active">Active Credentials</option>
+                      <option value="Suspended">Suspended</option>
+                    </select>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

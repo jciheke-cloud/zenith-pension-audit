@@ -10,6 +10,8 @@ const AuditPrograms = () => {
 
   const [selectedProgramId, setSelectedProgramId] = useState(auditPrograms[0]?.id || 'AP-01');
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('All');
+  const [showFilter, setShowFilter] = useState(false);
 
   const selectedProgram = auditPrograms.find(p => p.id === selectedProgramId) || auditPrograms[0];
 
@@ -21,10 +23,12 @@ const AuditPrograms = () => {
   const [procSample, setProcSample] = useState('25 Transactions');
   const [procRisk, setProcRisk] = useState('High');
 
-  const filteredProcedures = (selectedProgram?.procedures || []).filter(p =>
-    p.step.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.ref.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProcedures = (selectedProgram?.procedures || []).filter(p => {
+    const matchSearch = p.step.toLowerCase().includes(searchTerm.toLowerCase()) || (p.ref || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const pStatus = p.status || 'Pending';
+    const matchStatus = filterStatus === 'All' || pStatus.includes(filterStatus);
+    return matchSearch && matchStatus;
+  });
 
   const handleStartEdit = (proc) => {
     if (!verifyRbacOrAlert('edit', 'programs')) return;
@@ -191,16 +195,34 @@ const AuditPrograms = () => {
 
       {/* Search Bar */}
       <div className="filter-bar">
-        <div style={{ position: 'relative', flex: 1 }}>
-          <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
-          <input
-            type="text"
-            placeholder={`Search testing procedures in ${selectedProgram.title || selectedProgram.name || 'this program'}...`}
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="form-input"
-            style={{ paddingLeft: '2.4rem' }}
-          />
+        <div style={{ display: 'flex', gap: '0.8rem', width: '100%' }}>
+          <div style={{ position: 'relative', flex: 1 }}>
+            <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
+            <input
+              type="text"
+              placeholder={`Search testing procedures in ${selectedProgram.title || selectedProgram.name || 'this program'}...`}
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="form-input"
+              style={{ paddingLeft: '2.4rem' }}
+            />
+          </div>
+          <div style={{ position: 'relative' }}>
+            <button onClick={() => setShowFilter(!showFilter)} className="btn-secondary" style={{ padding: '0.6rem 1rem', height: '100%' }}>
+              <Filter size={16} /> Filter
+            </button>
+            {showFilter && (
+              <div style={{ position: 'absolute', right: 0, top: '110%', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.8rem', zIndex: 10, minWidth: '180px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.4rem' }}>By Status</label>
+                <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select" style={{ width: '100%' }}>
+                  <option value="All">All Statuses</option>
+                  <option value="Completed">Completed/Pass</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Pending">Pending Test</option>
+                </select>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -226,7 +248,12 @@ const AuditPrograms = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredProcedures.map(proc => (
+              {filteredProcedures.length === 0 ? (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No matching items found</td>
+                </tr>
+              ) : (
+              filteredProcedures.map(proc => (
                 <tr key={proc.id}>
                   <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{proc.ref || proc.id || 'PROC-01'}</td>
                   <td style={{ fontWeight: 600, maxWidth: '460px', lineHeight: '1.5' }}>
@@ -264,7 +291,7 @@ const AuditPrograms = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>

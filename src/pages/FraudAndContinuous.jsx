@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
-import { Eye, ShieldAlert, Plus, AlertOctagon, CheckCircle, Clock, RefreshCw, Layers } from 'lucide-react';
+import { Eye, ShieldAlert, Plus, AlertOctagon, CheckCircle, Clock, RefreshCw, Layers, Search, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const FraudAndContinuous = () => {
@@ -9,6 +9,22 @@ const FraudAndContinuous = () => {
 
   const [activeTab, setActiveTab] = useState('continuous'); // 'continuous' or 'fraud'
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterSeverity, setFilterSeverity] = useState('All');
+  const [filterStatus, setFilterStatus] = useState('All');
+  const [showFilters, setShowFilters] = useState(false);
+
+  const filteredContinuous = continuousExceptions.filter(ex => {
+    const matchSearch = !searchTerm || ex.ruleName?.toLowerCase().includes(searchTerm.toLowerCase()) || ex.details?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchSeverity = filterSeverity === 'All' || ex.severity === filterSeverity || (!ex.severity && filterSeverity === 'Medium');
+    return matchSearch && matchSeverity;
+  });
+
+  const filteredFraud = fraudCases.filter(fc => {
+    const matchSearch = !searchTerm || fc.title?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchStatus = filterStatus === 'All' || fc.status?.includes(filterStatus);
+    return matchSearch && matchStatus;
+  });
 
   // New Fraud Case State
   const [title, setTitle] = useState('');
@@ -119,11 +135,35 @@ const FraudAndContinuous = () => {
 
       {activeTab === 'continuous' ? (
         <div className="glass-card">
-          <div className="section-header-bar">
-            <div>
-              <h3 className="section-title">24/7 Automated Script Exception Alerts</h3>
-              <p className="section-subtitle">Real-time detection of Maker/Checker segregation of duties (SoD) breaches, dormant account activity, and RTGS mismatches</p>
+          <div className="section-header-bar" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'stretch' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 className="section-title">24/7 Automated Script Exception Alerts</h3>
+                <p className="section-subtitle">Real-time detection of Maker/Checker segregation of duties (SoD) breaches, dormant account activity, and RTGS mismatches</p>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <div style={{ position: 'relative' }}>
+                  <Search size={16} style={{ position: 'absolute', left: '10px', top: '10px', color: 'var(--text-muted)' }} />
+                  <input type="text" placeholder="Search exceptions..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2rem', width: '200px' }} />
+                </div>
+                <button onClick={() => setShowFilters(!showFilters)} className="btn-secondary" style={{ padding: '0.55rem' }}>
+                  <Filter size={16} />
+                </button>
+              </div>
             </div>
+            {showFilters && (
+              <div style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.03)', padding: '0.75rem', borderRadius: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Severity:</span>
+                  <select value={filterSeverity} onChange={e => setFilterSeverity(e.target.value)} className="form-select">
+                    <option value="All">All Severities</option>
+                    <option value="Critical">Critical</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="data-table-container">
@@ -141,7 +181,11 @@ const FraudAndContinuous = () => {
                 </tr>
               </thead>
               <tbody>
-                {continuousExceptions.map(ex => (
+                {filteredContinuous.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No matching items found</td>
+                  </tr>
+                ) : filteredContinuous.map(ex => (
                   <tr key={ex.id}>
                     <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{ex.id}</td>
                     <td style={{ fontWeight: 700, fontSize: '0.92rem', color: 'white' }}>{ex.ruleName || 'Continuous Auditing Alert Rule'}</td>
@@ -185,12 +229,36 @@ const FraudAndContinuous = () => {
       ) : (
         /* Fraud Cases Table */
         <div className="glass-card">
-          <div className="section-header-bar">
-            <div>
-              <h3 className="section-title">Forensic Fraud Investigation Register</h3>
-              <p className="section-subtitle">Tracking suspected irregularities, asset recovery progress, and disciplinary referrals</p>
+          <div className="section-header-bar" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'stretch' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 className="section-title">Forensic Fraud Investigation Register</h3>
+                <p className="section-subtitle">Tracking suspected irregularities, asset recovery progress, and disciplinary referrals</p>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <span className="badge-chip-danger">Confidential Forensic Portal</span>
+                <div style={{ position: 'relative', marginLeft: '0.5rem' }}>
+                  <Search size={16} style={{ position: 'absolute', left: '10px', top: '10px', color: 'var(--text-muted)' }} />
+                  <input type="text" placeholder="Search cases..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2rem', width: '200px' }} />
+                </div>
+                <button onClick={() => setShowFilters(!showFilters)} className="btn-secondary" style={{ padding: '0.55rem' }}>
+                  <Filter size={16} />
+                </button>
+              </div>
             </div>
-            <span className="badge-chip-danger">Confidential Forensic Portal</span>
+            {showFilters && (
+              <div style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.03)', padding: '0.75rem', borderRadius: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Status:</span>
+                  <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select">
+                    <option value="All">All Statuses</option>
+                    <option value="Investigation">Under Investigation</option>
+                    <option value="Referred">Referred to EFCC</option>
+                    <option value="Closed">Closed - Remediated</option>
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="data-table-container">
@@ -208,7 +276,11 @@ const FraudAndContinuous = () => {
                 </tr>
               </thead>
               <tbody>
-                {fraudCases.map(fc => (
+                {filteredFraud.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No matching items found</td>
+                  </tr>
+                ) : filteredFraud.map(fc => (
                   <tr key={fc.id}>
                     <td className="tabular-nums" style={{ fontWeight: 800, color: '#EF4444' }}>{fc.id}</td>
                     <td style={{ fontWeight: 700, fontSize: '0.95rem' }}>{fc.title || fc.caseTitle || 'Suspicious Activity / Irregularity Investigation'}</td>

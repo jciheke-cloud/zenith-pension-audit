@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
-import { Share2, RefreshCw, ShieldCheck, CheckCircle, Database, Layers, ArrowRight, AlertOctagon } from 'lucide-react';
+import { Share2, RefreshCw, ShieldCheck, CheckCircle, Database, Layers, ArrowRight, AlertOctagon, Search, Filter } from 'lucide-react';
 import AuditDataUpload from '../components/AuditDataUpload';
 
 const ErmSyncPage = () => {
@@ -12,6 +12,16 @@ const ErmSyncPage = () => {
     { id: 'sh-2', event: '10×10 Residual Risk Score Calibration Push', status: 'Success', itemsCount: findings.length, time: '15 mins ago' },
     { id: 'sh-3', event: 'CAP Remediation Status Pull from ERM Action Owners', status: 'Success', itemsCount: 12, time: '1 hour ago' }
   ]);
+  
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('All');
+  const [showFilters, setShowFilters] = useState(false);
+  
+  const filteredHistory = syncHistory.filter(h => {
+    const matchSearch = !searchTerm || h.event.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchStatus = filterStatus === 'All' || h.status === filterStatus;
+    return matchSearch && matchStatus;
+  });
 
   const [csvInput, setCsvInput] = useState('');
   const [uploadType, setUploadType] = useState('findings');
@@ -174,11 +184,34 @@ const ErmSyncPage = () => {
 
       {/* Sync History Log Table */}
       <div className="glass-card">
-        <div className="section-header-bar">
-          <div>
-            <h3 className="section-title">Bi-Directional Payload Exchange History</h3>
-            <p className="section-subtitle">Real-time audit trail of data streaming between Audit and ERM applications</p>
+        <div className="section-header-bar" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'stretch' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h3 className="section-title">Bi-Directional Payload Exchange History</h3>
+              <p className="section-subtitle">Real-time audit trail of data streaming between Audit and ERM applications</p>
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <div style={{ position: 'relative' }}>
+                <Search size={16} style={{ position: 'absolute', left: '10px', top: '10px', color: 'var(--text-muted)' }} />
+                <input type="text" placeholder="Search events..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2rem', width: '200px' }} />
+              </div>
+              <button onClick={() => setShowFilters(!showFilters)} className="btn-secondary" style={{ padding: '0.55rem' }}>
+                <Filter size={16} />
+              </button>
+            </div>
           </div>
+          {showFilters && (
+            <div style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.03)', padding: '0.75rem', borderRadius: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Status:</span>
+                <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select">
+                  <option value="All">All Statuses</option>
+                  <option value="Success">Success</option>
+                  <option value="Failed">Failed</option>
+                </select>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="data-table-container">
@@ -193,7 +226,11 @@ const ErmSyncPage = () => {
               </tr>
             </thead>
             <tbody>
-              {syncHistory.map(item => (
+              {filteredHistory.length === 0 ? (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No matching items found</td>
+                </tr>
+              ) : filteredHistory.map(item => (
                 <tr key={item.id}>
                   <td className="tabular-nums" style={{ fontWeight: 800, color: '#60a5fa' }}>{item.id}</td>
                   <td style={{ fontWeight: 700 }}>{item.event}</td>

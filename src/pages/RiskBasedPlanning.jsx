@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
-import { Sliders, RefreshCw, CheckCircle, ShieldAlert, AlertTriangle, Layers, ArrowRight } from 'lucide-react';
+import { Sliders, RefreshCw, CheckCircle, ShieldAlert, AlertTriangle, Layers, ArrowRight, Search, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AuditDataUpload from '../components/AuditDataUpload';
 
@@ -10,6 +10,8 @@ const RiskBasedPlanning = () => {
 
   const [tempWeights, setTempWeights] = useState({ ...scoringWeights });
   const [filterPriority, setFilterPriority] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [bannerMessage, setBannerMessage] = useState(null);
 
   const totalWeight = tempWeights.inherentRisk + tempWeights.financialExposure + tempWeights.regulatoryImpact +
@@ -56,8 +58,12 @@ const RiskBasedPlanning = () => {
   }).sort((a, b) => b.calculatedScore - a.calculatedScore);
 
   const filteredUniverse = scoredUniverse.filter(u => {
-    if (filterPriority === 'All') return true;
-    return u.priority === filterPriority;
+    const query = searchTerm.toLowerCase();
+    const name = (u.processName || u.title || '').toLowerCase();
+    const code = (u.code || u.id || '').toLowerCase();
+    const matchesSearch = name.includes(query) || code.includes(query);
+    const matchesPriority = filterPriority === 'All' || u.priority === filterPriority;
+    return matchesSearch && matchesPriority;
   });
 
   return (
@@ -227,30 +233,48 @@ const RiskBasedPlanning = () => {
         </div>
       </div>
 
-      {/* Filter Priority Bar */}
-      <div className="filter-bar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Filter Calculated Priority:</span>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            {['All', 'High', 'Medium', 'Low'].map(p => (
-              <button
-                key={p}
-                onClick={() => setFilterPriority(p)}
-                style={{
-                  padding: '0.45rem 1rem',
-                  borderRadius: 'var(--radius-sm)',
-                  border: filterPriority === p ? '1px solid var(--accent-primary)' : '1px solid var(--border-color)',
-                  background: filterPriority === p ? 'linear-gradient(135deg, #C81E1E, #991B1B)' : 'rgba(0,0,0,0.4)',
-                  color: 'white',
-                  fontWeight: 700,
-                  fontSize: '0.82rem',
-                  cursor: 'pointer'
-                }}
-              >
-                {p === 'All' ? 'All Units' : `${p} Priority`}
-              </button>
-            ))}
-          </div>
+      {/* Filter / Search Bar */}
+      <div className="filter-bar" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        <div style={{ position: 'relative', flex: 1 }}>
+          <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
+          <input
+            type="text"
+            placeholder="Search processes..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="form-input"
+            style={{ paddingLeft: '2.4rem', width: '100%' }}
+          />
+        </div>
+
+        <div style={{ position: 'relative' }}>
+          <button 
+            className="btn-secondary" 
+            onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          >
+            <Filter size={16} />
+            <span>Filters</span>
+          </button>
+          
+          {showFilterDropdown && (
+            <div style={{ 
+              position: 'absolute', right: 0, top: '110%', background: 'var(--bg-dark, #1e293b)', 
+              border: '1px solid var(--border-color, rgba(255,255,255,0.1))', padding: '1rem', 
+              borderRadius: '8px', zIndex: 10, width: '220px', display: 'flex', flexDirection: 'column', gap: '1rem',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
+            }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Priority</label>
+                <select value={filterPriority} onChange={e => setFilterPriority(e.target.value)} className="form-select" style={{ width: '100%' }}>
+                  <option value="All">All Priorities</option>
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+                </select>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -284,7 +308,11 @@ const RiskBasedPlanning = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredUniverse.map((unit, idx) => {
+              {filteredUniverse.length === 0 ? (
+                <tr>
+                  <td colSpan="13" style={{textAlign:'center', padding: '2rem'}}>No matching items found</td>
+                </tr>
+              ) : filteredUniverse.map((unit, idx) => {
                 const norm = (val, def) => {
                   const v = val !== undefined ? val : def;
                   return v > 10 ? Math.round((v / 100) * 10) : v;

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
-import { Scale, ShieldAlert, CheckCircle, Clock, Plus, FileText, ExternalLink } from 'lucide-react';
+import { Scale, ShieldAlert, CheckCircle, Clock, Plus, FileText, ExternalLink, Search, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const ComplianceAndRegulatory = () => {
@@ -9,6 +9,9 @@ const ComplianceAndRegulatory = () => {
 
   const [activeTab, setActiveTab] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('All');
+  const [showFilters, setShowFilters] = useState(false);
 
   // New Regulatory Review Form
   const [title, setTitle] = useState('');
@@ -18,8 +21,10 @@ const ComplianceAndRegulatory = () => {
   const [status, setStatus] = useState('Remediation Underway');
 
   const filteredReviews = regulatoryReviews.filter(r => {
-    if (activeTab === 'All') return true;
-    return r.regulatoryBody?.includes(activeTab);
+    const matchSearch = !searchTerm || r.title?.toLowerCase().includes(searchTerm.toLowerCase()) || r.id?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchTab = activeTab === 'All' || r.regulatoryBody?.includes(activeTab);
+    const matchStatus = filterStatus === 'All' || r.status?.includes(filterStatus);
+    return matchSearch && matchTab && matchStatus;
   });
 
   const handleAddReview = (e) => {
@@ -101,11 +106,35 @@ const ComplianceAndRegulatory = () => {
 
       {/* Regulatory Table */}
       <div className="glass-card">
-        <div className="section-header-bar">
-          <div>
-            <h3 className="section-title">Regulatory & External Examination Register</h3>
-            <p className="section-subtitle">Retesting verification status and statutory report tracking</p>
+        <div className="section-header-bar" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'stretch' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h3 className="section-title">Regulatory & External Examination Register</h3>
+              <p className="section-subtitle">Retesting verification status and statutory report tracking</p>
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <div style={{ position: 'relative' }}>
+                <Search size={16} style={{ position: 'absolute', left: '10px', top: '10px', color: 'var(--text-muted)' }} />
+                <input type="text" placeholder="Search reviews..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2rem', width: '200px' }} />
+              </div>
+              <button onClick={() => setShowFilters(!showFilters)} className="btn-secondary" style={{ padding: '0.55rem' }}>
+                <Filter size={16} />
+              </button>
+            </div>
           </div>
+          {showFilters && (
+            <div style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.03)', padding: '0.75rem', borderRadius: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Status:</span>
+                <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select">
+                  <option value="All">All Statuses</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Remediation">Remediation</option>
+                  <option value="Awaiting">Awaiting</option>
+                </select>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="data-table-container">
@@ -123,7 +152,11 @@ const ComplianceAndRegulatory = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredReviews.map(rev => {
+              {filteredReviews.length === 0 ? (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No matching items found</td>
+                </tr>
+              ) : filteredReviews.map(rev => {
                 const issues = rev.findingsCount !== undefined ? rev.findingsCount : rev.totalObservations || 3;
                 return (
                   <tr key={rev.id}>

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
-import { Briefcase, CheckCircle, AlertOctagon, FileText, Users, Clock, ShieldCheck, Plus, CheckSquare, MessageSquare } from 'lucide-react';
+import { Briefcase, CheckCircle, AlertOctagon, FileText, Users, Clock, ShieldCheck, Plus, CheckSquare, MessageSquare, Search, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const AuditEngagement = () => {
@@ -9,6 +9,9 @@ const AuditEngagement = () => {
 
   const [activeTab, setActiveTab] = useState('planning'); // 'planning', 'execution', 'qa_review'
   const [selectedPlanId, setSelectedPlanId] = useState(auditPlans[0]?.id || 'PLAN-2026-01');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('All');
+  const [showFilter, setShowFilter] = useState(false);
 
   const selectedPlan = auditPlans.find(p => p.id === selectedPlanId) || auditPlans[0];
 
@@ -68,6 +71,14 @@ const AuditEngagement = () => {
     setIsWpModalOpen(false);
     setWpTitle('');
   };
+
+  const filteredProcedures = (auditPrograms[0]?.procedures || []).filter(proc => {
+    const term = searchTerm.toLowerCase();
+    const matchSearch = (proc.step || proc.description || '').toLowerCase().includes(term) || (proc.ref || proc.id || '').toLowerCase().includes(term);
+    const pStatus = proc.status || 'Pending Test';
+    const matchStatus = filterStatus === 'All' || pStatus.includes(filterStatus);
+    return matchSearch && matchStatus;
+  });
 
   return (
     <div className="page-container">
@@ -224,10 +235,33 @@ const AuditEngagement = () => {
               <h3 className="section-title">Audit Program Procedures & Testing Checklist</h3>
               <p className="section-subtitle">Executing step-by-step procedures, sampling, and linking working paper evidence</p>
             </div>
-            <button onClick={() => setIsWpModalOpen(true)} className="btn-secondary">
-              <Plus size={16} />
-              <span>Attach Working Paper Evidence</span>
-            </button>
+            <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+              <div style={{ position: 'relative' }}>
+                <Search size={16} style={{ position: 'absolute', left: '12px', top: '10px', color: 'var(--text-muted)' }} />
+                <input type="text" placeholder="Search Procedures..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2.2rem', width: '200px' }} />
+              </div>
+              <div style={{ position: 'relative' }}>
+                <button onClick={() => setShowFilter(!showFilter)} className="btn-secondary" style={{ padding: '0.5rem 0.8rem' }}>
+                  <Filter size={16} /> Filter
+                </button>
+                {showFilter && (
+                  <div style={{ position: 'absolute', right: 0, top: '110%', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.8rem', zIndex: 10, minWidth: '180px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.4rem' }}>By Status</label>
+                    <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select" style={{ width: '100%' }}>
+                      <option value="All">All Statuses</option>
+                      <option value="Pass">Pass</option>
+                      <option value="Exception">Exception</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Pending">Pending</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+              <button onClick={() => setIsWpModalOpen(true)} className="btn-secondary">
+                <Plus size={16} />
+                <span>Attach Working Paper Evidence</span>
+              </button>
+            </div>
           </div>
 
           <div className="data-table-container">
@@ -243,7 +277,12 @@ const AuditEngagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {(auditPrograms[0]?.procedures || []).map(proc => (
+                {filteredProcedures.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No matching items found</td>
+                  </tr>
+                ) : (
+                filteredProcedures.map(proc => (
                   <tr key={proc.id}>
                     <td className="tabular-nums" style={{ fontWeight: 800, color: '#3B82F6' }}>{proc.ref || proc.id || 'PROC-01'}</td>
                     <td style={{ fontWeight: 600, maxWidth: '420px' }}>{proc.step || proc.description || 'Substantive verification and control testing step'}</td>
@@ -278,7 +317,7 @@ const AuditEngagement = () => {
                       </div>
                     </td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>

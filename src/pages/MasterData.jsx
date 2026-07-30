@@ -11,6 +11,7 @@ const MasterData = () => {
   const [activeTab, setActiveTab] = useState('bus'); // 'bus' or 'universe'
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBu, setFilterBu] = useState('All');
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
   // New & Edit BU Modal State
   const [isBuModalOpen, setIsBuModalOpen] = useState(false);
@@ -223,7 +224,7 @@ const MasterData = () => {
       </div>
 
       {/* Filter / Search Bar */}
-      <div className="filter-bar">
+      <div className="filter-bar" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: 1, minWidth: '280px' }}>
           <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
           <input
@@ -232,25 +233,44 @@ const MasterData = () => {
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             className="form-input"
-            style={{ paddingLeft: '2.4rem' }}
+            style={{ paddingLeft: '2.4rem', width: '100%' }}
           />
         </div>
 
         {activeTab === 'universe' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <Filter size={16} color="var(--text-muted)" />
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Filter Department:</span>
-            <select
-              value={filterBu}
-              onChange={e => setFilterBu(e.target.value)}
-              className="form-select"
-              style={{ width: '220px', padding: '0.6rem 0.8rem' }}
+          <div style={{ position: 'relative' }}>
+            <button 
+              className="btn-secondary" 
+              onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
             >
-              <option value="All">All Business Units</option>
-              {businessUnits.map(b => (
-                <option key={b.id} value={b.name}>{b.name} ({b.code})</option>
-              ))}
-            </select>
+              <Filter size={16} />
+              <span>Filters</span>
+            </button>
+            
+            {showFilterDropdown && (
+              <div style={{ 
+                position: 'absolute', right: 0, top: '110%', background: 'var(--bg-dark, #1e293b)', 
+                border: '1px solid var(--border-color, rgba(255,255,255,0.1))', padding: '1rem', 
+                borderRadius: '8px', zIndex: 10, width: '220px', display: 'flex', flexDirection: 'column', gap: '1rem',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
+              }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Filter Department</label>
+                  <select
+                    value={filterBu}
+                    onChange={e => setFilterBu(e.target.value)}
+                    className="form-select"
+                    style={{ width: '100%', padding: '0.6rem 0.8rem' }}
+                  >
+                    <option value="All">All Business Units</option>
+                    {businessUnits.map(b => (
+                      <option key={b.id} value={b.name}>{b.name} ({b.code})</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -280,7 +300,11 @@ const MasterData = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredBus.map(bu => {
+                {filteredBus.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" style={{textAlign:'center', padding: '2rem'}}>No matching items found</td>
+                  </tr>
+                ) : filteredBus.map(bu => {
                   const risk = bu.riskLevel || 'High';
                   return (
                     <tr key={bu.id}>
@@ -359,7 +383,11 @@ const MasterData = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredUniverse.map(item => (
+                {filteredUniverse.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" style={{textAlign:'center', padding: '2rem'}}>No matching items found</td>
+                  </tr>
+                ) : filteredUniverse.map(item => (
                   <tr key={item.id}>
                     <td className="tabular-nums" style={{ fontWeight: 800, color: '#3B82F6' }}>{getItemCode(item)}</td>
                     <td style={{ fontWeight: 700 }}>{getItemName(item)}</td>
