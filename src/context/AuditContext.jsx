@@ -285,7 +285,7 @@ export const AuditProvider = ({ children }) => {
   const fetchAuditData = async (silent = false) => {
     if (!silent) setIsSyncing(true);
     try {
-      const [universeData, findingsData, plansData, fetchedRisks, fetchedControls, fetchedActions, fetchedLosses] = await Promise.all([
+      const [universeData, findingsData, plansData, fetchedRisks, fetchedControls, fetchedActions, fetchedLosses, papersData] = await Promise.all([
         fetch(`${AUDIT_API}/api/audit/universe`).then(r => r.ok ? r.json() : []).catch(() => []),
         fetch(`${AUDIT_API}/api/audit/findings`).then(r => r.ok ? r.json() : []).catch(() => []),
         fetch(`${AUDIT_API}/api/audit/plans`).then(r => r.ok ? r.json() : []).catch(() => []),
@@ -293,6 +293,7 @@ export const AuditProvider = ({ children }) => {
         fetch(`${AUDIT_API}/api/controls`).then(r => r.ok ? r.json() : []).catch(() => []),
         fetch(`${AUDIT_API}/api/actions`).then(r => r.ok ? r.json() : []).catch(() => []),
         fetch(`${AUDIT_API}/api/losses`).then(r => r.ok ? r.json() : []).catch(() => []),
+        fetch(`${AUDIT_API}/api/audit/working-papers`).then(r => r.ok ? r.json() : []).catch(() => []),
       ]);
 
       if (Array.isArray(fetchedRisks)) setErmRisks(fetchedRisks);
@@ -304,17 +305,19 @@ export const AuditProvider = ({ children }) => {
 
 
       // Business Units Initialization & Persistence Sync
-      setBusinessUnits(prev => {
-        if (prev && prev.length > 0 && prev !== INITIAL_BUSINESS_UNITS) return prev;
-        try {
-          const saved = localStorage.getItem('zpc_audit_business_units');
-          if (saved) {
-            const parsed = JSON.parse(saved);
-            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-          }
-        } catch (e) { /* ignore */ }
-        return INITIAL_BUSINESS_UNITS;
-      });
+      if (Array.isArray(universeData) && universeData.length > 0) {
+        const mappedBUs = universeData.map(u => ({
+          id: u.id,
+          name: u.process_name || u.processName || u.title || 'Custody Process',
+          head: u.lead_auditor || u.leadAuditor || 'Department Head',
+          staffCount: Number(u.staff_count || u.staffCount || 15),
+          riskRating: u.priority || 'Medium',
+          coveragePct: u.overall_score ? Math.round((u.overall_score / 10) * 100) : 100
+        }));
+        setBusinessUnits(prev => mappedBUs.length > 0 ? mappedBUs : INITIAL_BUSINESS_UNITS);
+      } else {
+        setBusinessUnits(INITIAL_BUSINESS_UNITS);
+      }
 
       // Sync Controls to Internal Controls State
       if (Array.isArray(fetchedControls) && fetchedControls.length > 0) {
@@ -408,20 +411,33 @@ export const AuditProvider = ({ children }) => {
       }
 
       if (Array.isArray(plansData) && plansData.length > 0) {
-        setAuditPlans(plansData.map(p => ({
+        const mappedPlans = plansData.map(p => ({
           id: p.id,
-          planId: p.plan_id || p.planId || `PLAN-${p.id}`,
-          auditName: p.audit_name || p.auditName || p.title,
-          department: p.department || 'Custody Operations',
-          plannedHours: Number(p.planned_hours || p.plannedHours || 120),
-          actualHours: Number(p.actual_hours || p.actualHours || 40),
-          status: p.status || 'In Progress',
-          startDate: p.start_date || p.startDate || '2026-01-15',
-          endDate: p.end_date || p.endDate || '2026-03-31',
-          leadAuditor: p.lead_auditor || p.leadAuditor || 'Lead Auditor'
-        })));
+          planId: p.plan_id || `PLAN-${p.id}`,
+          auditName: p.audit_name || p.title || 'Audit Engagement',
+          department: p.department || 'General Operations',
+          budget: Number(p.budget || 0),
+          actualHours: Number(p.actual_hours || p.actualHours || 0),
+          status: p.status || 'Approved'
+        }));
+        setAuditPlans(prev => mappedPlans.length > 0 ? mappedPlans : INITIAL_ANNUAL_AUDIT_PLANS);
       } else {
         setAuditPlans(INITIAL_ANNUAL_AUDIT_PLANS);
+      }
+
+      if (Array.isArray(papersData) && papersData.length > 0) {
+        const mappedPapers = papersData.map(wp => ({
+          id: wp.id,
+          paperId: wp.paper_id || wp.paperId || `WP-${wp.id}`,
+          title: wp.title || wp.name || 'Working Paper',
+          type: wp.type || 'Test Evidence',
+          status: wp.status || 'Draft',
+          author: wp.author || wp.createdBy || 'Auditor',
+          date: wp.date || wp.createdAt || new Date().toISOString().split('T')[0]
+        }));
+        setWorkingPapers(prev => mappedPapers.length > 0 ? mappedPapers : INITIAL_WORKING_PAPERS);
+      } else {
+        setWorkingPapers(INITIAL_WORKING_PAPERS);
       }
 
       setLastSyncedAt(new Date());
@@ -1336,7 +1352,7 @@ export const AuditProvider = ({ children }) => {
   };
 
   // Add or approve annual audit plan
-  const saveAuditPlan = async (planData) => {
+  const saveAuditPlan = (planData) => {
     const targetId = planData.id || `PLAN-${Date.now()}`;
     const targetNumber = planData.planId || `PLAN-2026-${String(auditPlans.length + 1).padStart(2, '0')}`;
 
@@ -1353,49 +1369,39 @@ export const AuditProvider = ({ children }) => {
       lead_auditor: planData.leadAuditor || 'Lead Auditor'
     };
 
+    const formatted = {
+      id: targetId,
+      planId: targetNumber,
+      auditName: body.audit_name,
+      department: body.department,
+      plannedHours: body.planned_hours,
+      actualHours: body.actual_hours,
+      status: body.status,
+      startDate: body.start_date,
+      endDate: body.end_date,
+      leadAuditor: body.lead_auditor
+    };
+
+    if (planData.isExisting) {
+      setAuditPlans(prev => prev.map(p => p.id === formatted.id ? formatted : p));
+      addNotification('Audit Plan Updated', `${formatted.auditName} plan updated successfully.`, 'info');
+    } else {
+      setAuditPlans(prev => [formatted, ...prev]);
+      addNotification('Annual Audit Plan Added', `${formatted.auditName} created with ${formatted.plannedHours} planned hours.`, 'success');
+    }
+
     const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
+    
+    // Background optimistic API sync
     try {
-      let response;
-      if (planData.isExisting) {
-        response = await fetch(`${API_BASE}/api/audit/plans/${targetId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
-        });
-      } else {
-        response = await fetch(`${API_BASE}/api/audit/plans`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
-        });
-      }
-
-      if (!response.ok) throw new Error('Failed to save plan');
-      const saved = await response.json();
-
-      const formatted = {
-        id: saved.id,
-        planId: saved.plan_id,
-        auditName: saved.audit_name,
-        department: saved.department,
-        plannedHours: Number(saved.planned_hours),
-        actualHours: Number(saved.actual_hours),
-        status: saved.status,
-        startDate: saved.start_date,
-        endDate: saved.end_date,
-        leadAuditor: saved.lead_auditor
-      };
-
-      if (planData.isExisting) {
-        setAuditPlans(prev => prev.map(p => p.id === formatted.id ? formatted : p));
-        addNotification('Audit Plan Updated', `${formatted.auditName} plan updated successfully.`, 'info');
-      } else {
-        setAuditPlans(prev => [formatted, ...prev]);
-        addNotification('Annual Audit Plan Added', `${formatted.auditName} created with ${formatted.plannedHours} planned hours.`, 'success');
-      }
+      const url = planData.isExisting ? `${API_BASE}/api/audit/plans/${targetId}` : `${API_BASE}/api/audit/plans`;
+      fetch(url, {
+        method: planData.isExisting ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      }).catch(console.warn);
     } catch (err) {
-      console.error(err);
-      addToast('❌ Failed to save plan.', 'danger');
+      console.warn('Optimistic sync failed', err);
     }
   };
 
@@ -1409,6 +1415,17 @@ export const AuditProvider = ({ children }) => {
     };
     setWorkingPapers(prev => [newWp, ...prev]);
     addNotification('Working Paper Uploaded', `File "${newWp.fileName}" linked to finding/control.`, 'success');
+
+    const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
+    try {
+      fetch(`${API_BASE}/api/audit/working-papers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newWp)
+      }).catch(console.warn);
+    } catch (err) {
+      console.warn('Optimistic sync failed', err);
+    }
   };
 
   // Add new master business unit
@@ -1420,6 +1437,17 @@ export const AuditProvider = ({ children }) => {
     };
     setBusinessUnits(prev => [...prev, newBu]);
     addNotification('Master Data Updated', `Business Unit "${newBu.name}" added to Audit Universe foundation.`, 'success');
+
+    const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
+    try {
+      fetch(`${API_BASE}/api/audit/universe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newBu)
+      }).catch(console.warn);
+    } catch (err) {
+      console.warn('Optimistic sync failed', err);
+    }
   };
 
   return (
