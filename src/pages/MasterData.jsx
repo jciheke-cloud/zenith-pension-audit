@@ -22,6 +22,7 @@ const MasterData = () => {
   const [newBuHead, setNewBuHead] = useState('');
   const [newBuCode, setNewBuCode] = useState('');
   const [newBuRisk, setNewBuRisk] = useState('Medium');
+  const [newBuStaff, setNewBuStaff] = useState(15);
 
   // New & Edit Universe Process Modal State
   const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
@@ -42,6 +43,7 @@ const MasterData = () => {
     setNewBuHead(bu.head || bu.owner || '');
     setNewBuCode(bu.code || '');
     setNewBuRisk(bu.riskLevel || 'Medium');
+    setNewBuStaff(bu.staffCount !== undefined ? bu.staffCount : 15);
     setIsBuModalOpen(true);
   };
 
@@ -109,7 +111,8 @@ const MasterData = () => {
         name: newBuName,
         head: newBuHead || 'Unassigned Lead',
         code: newBuCode.toUpperCase(),
-        riskLevel: newBuRisk
+        riskLevel: newBuRisk,
+        staffCount: parseInt(newBuStaff, 10) || 0
       } : bu));
       addNotification('Business Unit Updated', `Business Unit "${newBuName}" updated successfully.`, 'success');
       logAuditAction('EDIT_BUSINESS_UNIT', 'Master Data', `Chief Auditor updated Business Unit: ${newBuName}`);
@@ -118,13 +121,14 @@ const MasterData = () => {
         name: newBuName,
         head: newBuHead || 'Unassigned Lead',
         code: newBuCode.toUpperCase(),
-        staffCount: 15,
+        staffCount: parseInt(newBuStaff, 10) || 0,
         riskLevel: newBuRisk
       });
     }
     setNewBuName('');
     setNewBuHead('');
     setNewBuCode('');
+    setNewBuStaff(15);
     setEditingBuId(null);
     setIsBuModalOpen(false);
   };
@@ -492,14 +496,20 @@ const MasterData = () => {
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Head of Department</label>
                 <input type="text" required placeholder="e.g. Lead Reviewer" value={newBuHead} onChange={e => setNewBuHead(e.target.value)} className="form-input" />
               </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Inherent Risk Level</label>
-                <select value={newBuRisk} onChange={e => setNewBuRisk(e.target.value)} className="form-select">
-                  <option value="Critical">Critical Risk</option>
-                  <option value="High">High Risk</option>
-                  <option value="Medium">Medium Risk</option>
-                  <option value="Low">Low Risk</option>
-                </select>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Staff Count</label>
+                  <input type="number" min="1" required placeholder="e.g. 15" value={newBuStaff} onChange={e => setNewBuStaff(e.target.value)} className="form-input" />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Inherent Risk Level</label>
+                  <select value={newBuRisk} onChange={e => setNewBuRisk(e.target.value)} className="form-select">
+                    <option value="Critical">Critical Risk</option>
+                    <option value="High">High Risk</option>
+                    <option value="Medium">Medium Risk</option>
+                    <option value="Low">Low Risk</option>
+                  </select>
+                </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
                 <button type="button" onClick={() => { setIsBuModalOpen(false); setEditingBuId(null); }} className="btn-secondary">Cancel</button>
