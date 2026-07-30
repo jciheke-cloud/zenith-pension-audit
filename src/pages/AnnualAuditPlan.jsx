@@ -14,7 +14,8 @@ const AnnualAuditPlan = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // New Plan State
+  // New & Edit Plan State
+  const [editingPlanId, setEditingPlanId] = useState(null);
   const [auditName, setAuditName] = useState('');
   const [department, setDepartment] = useState('Operations');
   const [riskRating, setRiskRating] = useState('High');
@@ -43,24 +44,62 @@ const AnnualAuditPlan = () => {
     return matchesDept && matchesStatus && matchesSearch;
   });
 
+  const handleStartEdit = (plan) => {
+    setEditingPlanId(plan.id);
+    setAuditName(plan.auditName || plan.title || '');
+    setDepartment(plan.department || plan.businessUnit || 'Operations');
+    setRiskRating(plan.riskRating || plan.priority || 'High');
+    setFrequency(plan.frequency || 'Quarterly');
+    setEstimatedHours(plan.estimatedHours || plan.budgetHours || 300);
+    setLeadAuditor(plan.leadAuditor || plan.owner || 'Senior Auditor');
+    setPlannedStartDate(plan.plannedStartDate || '2026-08-01');
+    setPlannedEndDate(plan.plannedEndDate || '2026-09-30');
+    setBudget(plan.budget !== undefined && !isNaN(plan.budget) ? plan.budget : 15.0);
+    setIsModalOpen(true);
+  };
+
   const handleCreatePlan = (e) => {
     e.preventDefault();
     if (!auditName) return;
-    saveAuditPlan({
-      auditName,
-      department,
-      riskRating,
-      frequency,
-      estimatedHours: parseInt(estimatedHours, 10),
-      leadAuditor,
-      teamMembers: ['Senior IT Auditor', 'QA Auditor'],
-      plannedStartDate,
-      plannedEndDate,
-      budget: parseFloat(budget),
-      status: 'Draft'
-    });
+    
+    if (editingPlanId) {
+      const existingPlan = auditPlans.find(p => p.id === editingPlanId);
+      if (existingPlan) {
+        saveAuditPlan({
+          ...existingPlan,
+          auditName,
+          department,
+          riskRating,
+          frequency,
+          estimatedHours: parseInt(estimatedHours, 10),
+          leadAuditor,
+          plannedStartDate,
+          plannedEndDate,
+          budget: parseFloat(budget),
+          isExisting: true
+        });
+        addNotification('Audit Plan Updated', `Audit Plan "${auditName}" successfully updated.`, 'success');
+      }
+    } else {
+      saveAuditPlan({
+        auditName,
+        department,
+        riskRating,
+        frequency,
+        estimatedHours: parseInt(estimatedHours, 10),
+        leadAuditor,
+        teamMembers: ['Senior IT Auditor', 'QA Auditor'],
+        plannedStartDate,
+        plannedEndDate,
+        budget: parseFloat(budget),
+        status: 'Draft'
+      });
+      addNotification('Audit Plan Created', `New plan "${auditName}" added to the 2026 Program.`, 'success');
+    }
+    
     setIsModalOpen(false);
     setAuditName('');
+    setEditingPlanId(null);
   };
 
   const handleCaeApprove = (id) => {
@@ -102,7 +141,7 @@ const AnnualAuditPlan = () => {
             <Sliders size={16} />
             <span>Risk-Based Prioritization Engine</span>
           </button>
-          <button onClick={() => setIsModalOpen(true)} className="btn-primary">
+          <button onClick={() => { setEditingPlanId(null); setAuditName(''); setIsModalOpen(true); }} className="btn-primary">
             <Plus size={16} />
             <span>Create Annual Audit Plan</span>
           </button>
@@ -264,6 +303,9 @@ const AnnualAuditPlan = () => {
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: '0.4rem' }}>
+                        <button onClick={() => handleStartEdit(plan)} className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem', color: '#60A5FA' }}>
+                          Edit
+                        </button>
                         {(plan.status === 'Draft' || !plan.status) && (
                           <button onClick={() => handleCaeApprove(plan.id)} className="btn-primary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem', background: 'rgba(139, 92, 246, 0.2)', color: '#C4B5FD' }}>
                             CAE Sign-Off
@@ -297,8 +339,8 @@ const AnnualAuditPlan = () => {
         <div className="modal-overlay">
           <div className="modal-content" style={{ maxWidth: '620px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Create Annual Audit Plan Entry</h3>
-              <button onClick={() => setIsModalOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{editingPlanId ? 'Edit Annual Audit Plan' : 'Create Annual Audit Plan Entry'}</h3>
+              <button onClick={() => { setIsModalOpen(false); setEditingPlanId(null); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
             </div>
             <form onSubmit={handleCreatePlan} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
@@ -356,8 +398,8 @@ const AnnualAuditPlan = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
-                <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary">Cancel</button>
-                <button type="submit" className="btn-primary">Add to Annual Plan</button>
+                <button type="button" onClick={() => { setIsModalOpen(false); setEditingPlanId(null); }} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary">{editingPlanId ? 'Save Changes' : 'Add to Annual Plan'}</button>
               </div>
             </form>
           </div>
