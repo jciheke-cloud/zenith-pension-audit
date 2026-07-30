@@ -242,7 +242,10 @@ export const AuditProvider = ({ children }) => {
   const [businessUnits, setBusinessUnits] = useState(() => {
     try {
       const saved = SecureStorageService.getItem('zpc_audit_business_units');
-      if (saved && Array.isArray(saved) && saved.length > 0) return saved;
+      if (saved && Array.isArray(saved) && saved.length > 0) {
+        if (saved.length < 12) return INITIAL_BUSINESS_UNITS;
+        return saved;
+      }
     } catch (e) { /* ignore */ }
     return INITIAL_BUSINESS_UNITS;
   });
