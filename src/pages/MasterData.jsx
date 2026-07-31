@@ -199,20 +199,19 @@ const MasterData = () => {
         <div className="header-actions">
           <button 
             onClick={() => setIsUserModalOpen(true)} 
-            className="btn-secondary"
-            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#6ee7b7' }}
+            className="btn-secondary flex items-center gap-1.5 border border-emerald-500/40 text-emerald-300"
           >
             <Users size={16} />
             <span>Audit User Management</span>
           </button>
           <AuditDataUpload targetModule="universe" buttonText="Batch Universe Ingestion" />
           {activeTab === 'bus' ? (
-            <button onClick={() => setIsBuModalOpen(true)} className="btn-primary">
+            <button onClick={() => setIsBuModalOpen(true)} className="btn-primary bg-[#C81E1E] hover:bg-[#a61919] text-white">
               <Plus size={16} />
               <span>Add Business Unit</span>
             </button>
           ) : (
-            <button onClick={() => setIsProcessModalOpen(true)} className="btn-primary">
+            <button onClick={() => setIsProcessModalOpen(true)} className="btn-primary bg-[#C81E1E] hover:bg-[#a61919] text-white">
               <Plus size={16} />
               <span>Add Auditable Process</span>
             </button>
@@ -221,72 +220,62 @@ const MasterData = () => {
       </div>
 
       {/* Tab Navigation */}
-      <div className="nav-tab-container" style={{ flexWrap: 'wrap' }}>
+      <div className="nav-tab-container flex-wrap">
         <button
           onClick={() => { setActiveTab('bus'); setSearchTerm(''); }}
-          className={`nav-tab-btn ${activeTab === 'bus' ? 'active' : ''}`}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+          className={`nav-tab-btn flex items-center gap-[0.6rem] ${activeTab === 'bus' ? 'active' : ''}`}
           title={`Click to manage ZPC organizational structure (${businessUnits.length} Business Units registered).`}
         >
           <Database size={16} />
-          <span style={{ fontWeight: 600 }}>Business Units</span>
-          <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
+          <span className="font-semibold">Business Units</span>
+          <span className="badge-chip bg-white/12 text-[0.72rem] py-[0.15rem] px-2 rounded-xl">
             {businessUnits.length} Units
           </span>
         </button>
         <button
           onClick={() => { setActiveTab('universe'); setSearchTerm(''); }}
-          className={`nav-tab-btn ${activeTab === 'universe' ? 'active' : ''}`}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+          className={`nav-tab-btn flex items-center gap-[0.6rem] ${activeTab === 'universe' ? 'active' : ''}`}
           title={`Click to manage the auditable processes matrix (${auditUniverse.length} processes registered across all departments).`}
         >
           <Layers size={16} />
-          <span style={{ fontWeight: 600 }}>Audit Universe Processes</span>
-          <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
+          <span className="font-semibold">Audit Universe Processes</span>
+          <span className="badge-chip bg-white/12 text-[0.72rem] py-[0.15rem] px-2 rounded-xl">
             {auditUniverse.length} Processes
           </span>
         </button>
       </div>
 
       {/* Filter / Search Bar */}
-      <div className="filter-bar" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <div style={{ position: 'relative', flex: 1, minWidth: '280px' }}>
-          <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
+      <div className="filter-bar flex gap-4 items-center">
+        <div className="relative flex-1 min-w-[280px]">
+          <Search size={16} className="absolute left-3 top-3 text-[var(--text-muted)]" />
           <input
             type="text"
             placeholder={activeTab === 'bus' ? 'Search BUs by name, code, head of department...' : 'Search auditable processes, code, or lead auditor...'}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            className="form-input"
-            style={{ paddingLeft: '2.4rem', width: '100%' }}
+            className="form-input pl-9 w-full"
           />
         </div>
 
         {activeTab === 'universe' && (
-          <div style={{ position: 'relative' }}>
+          <div className="relative">
             <button 
-              className="btn-secondary" 
+              className="btn-secondary flex items-center gap-[0.4rem]" 
               onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
             >
               <Filter size={16} />
               <span>Filters</span>
             </button>
             
             {showFilterDropdown && (
-              <div style={{ 
-                position: 'absolute', right: 0, top: '110%', background: 'var(--bg-dark, #1e293b)', 
-                border: '1px solid var(--border-color, rgba(255,255,255,0.1))', padding: '1rem', 
-                borderRadius: '8px', zIndex: 10, width: '260px', display: 'flex', flexDirection: 'column', gap: '1rem',
-                boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
-              }}>
+              <div className="absolute right-0 top-[110%] bg-slate-900/85 border border-white/10 p-4 rounded-lg z-10 w-[260px] flex flex-col gap-4 shadow-[0_4px_15px_rgba(0,0,0,0.5)]">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Department / BU</label>
+                  <label className="block text-[0.82rem] mb-[0.3rem]">Department / BU</label>
                   <select
                     value={filterBu}
                     onChange={e => setFilterBu(e.target.value)}
-                    className="form-select"
-                    style={{ width: '100%', padding: '0.6rem 0.8rem' }}
+                    className="form-select w-full py-[0.6rem] px-[0.8rem]"
                   >
                     <option value="All">All Business Units</option>
                     {businessUnits.map(b => (
@@ -296,12 +285,11 @@ const MasterData = () => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Audit Frequency</label>
+                  <label className="block text-[0.82rem] mb-[0.3rem]">Audit Frequency</label>
                   <select
                     value={filterFreq}
                     onChange={e => setFilterFreq(e.target.value)}
-                    className="form-select"
-                    style={{ width: '100%', padding: '0.6rem 0.8rem' }}
+                    className="form-select w-full py-[0.6rem] px-[0.8rem]"
                   >
                     <option value="All">Any Frequency</option>
                     <option value="Monthly">Monthly</option>
@@ -312,12 +300,11 @@ const MasterData = () => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Lead Auditor</label>
+                  <label className="block text-[0.82rem] mb-[0.3rem]">Lead Auditor</label>
                   <select
                     value={filterLead}
                     onChange={e => setFilterLead(e.target.value)}
-                    className="form-select"
-                    style={{ width: '100%', padding: '0.6rem 0.8rem' }}
+                    className="form-select w-full py-[0.6rem] px-[0.8rem]"
                   >
                     <option value="All">All Auditors</option>
                     {[...new Set(auditUniverse.map(item => getItemLead(item)))].filter(Boolean).map(leadName => (
@@ -328,7 +315,7 @@ const MasterData = () => {
                 
                 <button 
                   onClick={() => { setFilterBu('All'); setFilterFreq('All'); setFilterLead('All'); }} 
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-color)', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer', marginTop: '0.5rem', fontSize: '0.85rem' }}
+                  className="bg-white/5 border border-white/10 text-[var(--text-color)] p-2 rounded cursor-pointer mt-2 text-[0.85rem]"
                 >
                   Reset Filters
                 </button>
@@ -340,7 +327,7 @@ const MasterData = () => {
 
       {/* Content Area */}
       {activeTab === 'bus' ? (
-        <div className="glass-card">
+        <div className="glass-card bg-slate-900/85">
           <div className="section-header-bar">
             <div>
               <h3 className="section-title">Institutional Business Units Register</h3>
@@ -365,14 +352,14 @@ const MasterData = () => {
               <tbody>
                 {filteredBus.length === 0 ? (
                   <tr>
-                    <td colSpan="8" style={{textAlign:'center', padding: '2rem'}}>No matching items found</td>
+                    <td colSpan="8" className="text-center p-8">No matching items found</td>
                   </tr>
                 ) : filteredBus.map(bu => {
                   const risk = bu.riskLevel || 'High';
                   return (
                     <tr key={bu.id}>
-                      <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{bu.code || bu.id || 'BU-01'}</td>
-                      <td style={{ fontWeight: 700, fontSize: '0.95rem' }}>{bu.name || bu.department || 'Custody & Operations Unit'}</td>
+                      <td className="tabular-nums font-extrabold text-rose-300">{bu.code || bu.id || 'BU-01'}</td>
+                      <td className="font-bold text-[0.95rem]">{bu.name || bu.department || 'Custody & Operations Unit'}</td>
                       <td>{bu.head || bu.owner || 'Department Head / VP'}</td>
                       <td className="tabular-nums">{bu.staffCount !== undefined ? bu.staffCount : 24} Staff</td>
                       <td>
@@ -382,33 +369,31 @@ const MasterData = () => {
                         {(!risk || risk === 'Low') && <span className="badge-success">{risk || 'Low'} Risk</span>}
                       </td>
                       <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                          <div className="progress-container" style={{ width: '90px', height: '6px' }}>
+                        <div className="flex items-center gap-[0.6rem]">
+                          <div className="progress-container w-[90px] h-1.5">
                             <div
                               className={`progress-fill ${(bu.coveragePct || 85) >= 90 ? 'emerald' : (bu.coveragePct || 85) >= 80 ? 'blue' : 'amber'}`}
                               style={{ width: `${bu.coveragePct || 85}%` }}
                             />
                           </div>
-                          <span className="tabular-nums" style={{ fontWeight: 700 }}>{bu.coveragePct || 85}%</span>
+                          <span className="tabular-nums font-bold">{bu.coveragePct || 85}%</span>
                         </div>
                       </td>
                       <td>
                         <span className="badge-success">Active Universe</span>
                       </td>
                       <td>
-                        <div style={{ display: 'flex', gap: '0.4rem' }}>
+                        <div className="flex gap-[0.4rem]">
                           <button
                             onClick={() => handleStartEditBu(bu)}
-                            className="btn-secondary"
-                            style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('edit', 'universe') ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('edit', 'universe') ? '#60A5FA' : 'var(--text-muted)' }}
+                            className={`btn-secondary p-[0.35rem] px-2 ${checkRbacPermission('edit', 'universe') ? 'bg-blue-500/15 text-blue-400' : 'bg-white/5 text-[var(--text-muted)]'}`}
                             title={checkRbacPermission('edit', 'universe') ? "Edit Business Unit (✏️)" : "🔒 RBAC Restricted"}
                           >
                             <Edit2 size={13} />
                           </button>
                           <button
                             onClick={() => handleDeleteBu(bu.id, bu.name)}
-                            className="btn-secondary"
-                            style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('delete', 'universe') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('delete', 'universe') ? '#F87171' : 'var(--text-muted)' }}
+                            className={`btn-secondary p-[0.35rem] px-2 ${checkRbacPermission('delete', 'universe') ? 'bg-red-500/15 text-red-400' : 'bg-white/5 text-[var(--text-muted)]'}`}
                             title={checkRbacPermission('delete', 'universe') ? "Delete Business Unit (🗑️)" : "🔒 RBAC Restricted"}
                           >
                             <Trash2 size={13} />
@@ -423,7 +408,7 @@ const MasterData = () => {
           </div>
         </div>
       ) : (
-        <div className="glass-card">
+        <div className="glass-card bg-slate-900/85">
           <div className="section-header-bar">
             <div>
               <h3 className="section-title">Complete Audit Universe Inventory</h3>
@@ -448,33 +433,31 @@ const MasterData = () => {
               <tbody>
                 {filteredUniverse.length === 0 ? (
                   <tr>
-                    <td colSpan="8" style={{textAlign:'center', padding: '2rem'}}>No matching items found</td>
+                    <td colSpan="8" className="text-center p-8">No matching items found</td>
                   </tr>
                 ) : filteredUniverse.map(item => (
                   <tr key={item.id}>
-                    <td className="tabular-nums" style={{ fontWeight: 800, color: '#3B82F6' }}>{getItemCode(item)}</td>
-                    <td style={{ fontWeight: 700 }}>{getItemName(item)}</td>
+                    <td className="tabular-nums font-extrabold text-blue-500">{getItemCode(item)}</td>
+                    <td className="font-bold">{getItemName(item)}</td>
                     <td><span className="badge-chip-purple">{getItemBu(item)}</span></td>
                     <td className="tabular-nums">{item.frequency || 'Quarterly'}</td>
-                    <td className="tabular-nums" style={{ color: 'var(--text-muted)' }}>{item.lastAuditDate || item.lastAudited || '2026-03-31'}</td>
-                    <td style={{ fontSize: '0.84rem' }}>{getItemLead(item)}</td>
+                    <td className="tabular-nums text-[var(--text-muted)]">{item.lastAuditDate || item.lastAudited || '2026-03-31'}</td>
+                    <td className="text-[0.84rem]">{getItemLead(item)}</td>
                     <td>
                       <span className="badge-success">Auditable Unit</span>
                     </td>
                     <td>
-                      <div style={{ display: 'flex', gap: '0.4rem' }}>
+                      <div className="flex gap-[0.4rem]">
                         <button
                           onClick={() => handleStartEditProc(item)}
-                          className="btn-secondary"
-                          style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('edit', 'universe') ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('edit', 'universe') ? '#60A5FA' : 'var(--text-muted)' }}
+                          className={`btn-secondary p-[0.35rem] px-2 ${checkRbacPermission('edit', 'universe') ? 'bg-blue-500/15 text-blue-400' : 'bg-white/5 text-[var(--text-muted)]'}`}
                           title={checkRbacPermission('edit', 'universe') ? "Edit Auditable Process (✏️)" : "🔒 RBAC Restricted"}
                         >
                           <Edit2 size={13} />
                         </button>
                         <button
                           onClick={() => handleDeleteProc(item.id, getItemCode(item))}
-                          className="btn-secondary"
-                          style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('delete', 'universe') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('delete', 'universe') ? '#F87171' : 'var(--text-muted)' }}
+                          className={`btn-secondary p-[0.35rem] px-2 ${checkRbacPermission('delete', 'universe') ? 'bg-red-500/15 text-red-400' : 'bg-white/5 text-[var(--text-muted)]'}`}
                           title={checkRbacPermission('delete', 'universe') ? "Delete Auditable Process (🗑️)" : "🔒 RBAC Restricted"}
                         >
                           <Trash2 size={13} />
@@ -492,31 +475,31 @@ const MasterData = () => {
       {/* Add / Edit BU Modal */}
       {isBuModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '520px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{editingBuId ? 'Edit Business Unit' : 'Add New Business Unit'}</h3>
-              <button onClick={() => { setIsBuModalOpen(false); setEditingBuId(null); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+          <div className="modal-content max-w-[520px]">
+            <div className="flex justify-between items-center mb-[1.4rem]">
+              <h3 className="m-0 text-xl font-extrabold">{editingBuId ? 'Edit Business Unit' : 'Add New Business Unit'}</h3>
+              <button onClick={() => { setIsBuModalOpen(false); setEditingBuId(null); }} className="bg-transparent border-none text-[var(--text-muted)] cursor-pointer">✕</button>
             </div>
-            <form onSubmit={handleCreateBu} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleCreateBu} className="flex flex-col gap-4">
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>BU Name</label>
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">BU Name</label>
                 <input type="text" required placeholder="e.g. Retail Custody Operations" value={newBuName} onChange={e => setNewBuName(e.target.value)} className="form-input" />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Department Code (3-4 Chars)</label>
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Department Code (3-4 Chars)</label>
                 <input type="text" required placeholder="e.g. RTC" value={newBuCode} onChange={e => setNewBuCode(e.target.value)} className="form-input" />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Head of Department</label>
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Head of Department</label>
                 <input type="text" required placeholder="e.g. Lead Reviewer" value={newBuHead} onChange={e => setNewBuHead(e.target.value)} className="form-input" />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Staff Count</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Staff Count</label>
                   <input type="number" min="1" required placeholder="e.g. 15" value={newBuStaff} onChange={e => setNewBuStaff(e.target.value)} className="form-input" />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Inherent Risk Level</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Inherent Risk Level</label>
                   <select value={newBuRisk} onChange={e => setNewBuRisk(e.target.value)} className="form-select">
                     <option value="Critical">Critical Risk</option>
                     <option value="High">High Risk</option>
@@ -525,9 +508,9 @@ const MasterData = () => {
                   </select>
                 </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
+              <div className="flex justify-end gap-[0.85rem] mt-4">
                 <button type="button" onClick={() => { setIsBuModalOpen(false); setEditingBuId(null); }} className="btn-secondary">Cancel</button>
-                <button type="submit" className="btn-primary">{editingBuId ? 'Save Changes' : 'Create Business Unit'}</button>
+                <button type="submit" className="btn-primary bg-[#C81E1E] hover:bg-[#a61919] text-white">{editingBuId ? 'Save Changes' : 'Create Business Unit'}</button>
               </div>
             </form>
           </div>
@@ -537,23 +520,23 @@ const MasterData = () => {
       {/* Add / Edit Process Modal */}
       {isProcessModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '560px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{editingProcId ? 'Edit Auditable Process' : 'Add Auditable Process to Universe'}</h3>
-              <button onClick={() => { setIsProcessModalOpen(false); setEditingProcId(null); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+          <div className="modal-content max-w-[560px]">
+            <div className="flex justify-between items-center mb-[1.4rem]">
+              <h3 className="m-0 text-xl font-extrabold">{editingProcId ? 'Edit Auditable Process' : 'Add Auditable Process to Universe'}</h3>
+              <button onClick={() => { setIsProcessModalOpen(false); setEditingProcId(null); }} className="bg-transparent border-none text-[var(--text-muted)] cursor-pointer">✕</button>
             </div>
-            <form onSubmit={handleCreateProcess} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleCreateProcess} className="flex flex-col gap-4">
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Process / Auditable Unit Name</label>
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Process / Auditable Unit Name</label>
                 <input type="text" required placeholder="e.g. SWIFT Alliance Cloud Interface Governance" value={procName} onChange={e => setProcName(e.target.value)} className="form-input" />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Process Code</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Process Code</label>
                   <input type="text" required placeholder="e.g. SEC-SWF-02" value={procCode} onChange={e => setProcCode(e.target.value)} className="form-input" />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Business Unit</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Business Unit</label>
                   <select value={procBu} onChange={e => setProcBu(e.target.value)} className="form-select">
                     {businessUnits.map(b => (
                       <option key={b.id} value={b.name}>{b.name}</option>
@@ -561,9 +544,9 @@ const MasterData = () => {
                   </select>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Frequency</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Frequency</label>
                   <select value={procFreq} onChange={e => setProcFreq(e.target.value)} className="form-select">
                     <option value="Monthly">Monthly</option>
                     <option value="Quarterly">Quarterly</option>
@@ -572,13 +555,13 @@ const MasterData = () => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Assigned Lead Auditor</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Assigned Lead Auditor</label>
                   <input type="text" value={procLead} onChange={e => setProcLead(e.target.value)} className="form-input" />
                 </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
+              <div className="flex justify-end gap-[0.85rem] mt-4">
                 <button type="button" onClick={() => { setIsProcessModalOpen(false); setEditingProcId(null); }} className="btn-secondary">Cancel</button>
-                <button type="submit" className="btn-primary">{editingProcId ? 'Save Changes' : 'Add to Universe'}</button>
+                <button type="submit" className="btn-primary bg-[#C81E1E] hover:bg-[#a61919] text-white">{editingProcId ? 'Save Changes' : 'Add to Universe'}</button>
               </div>
             </form>
           </div>

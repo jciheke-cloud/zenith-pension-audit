@@ -128,18 +128,17 @@ const AuditPrograms = () => {
       </div>
 
       {/* Program Selector Pills */}
-      <div className="nav-tab-container" style={{ flexWrap: 'wrap' }}>
+      <div className="nav-tab-container flex-wrap">
         {auditPrograms.map(prog => (
           <button
             key={prog.id}
             onClick={() => { setSelectedProgramId(prog.id); setSearchTerm(''); }}
-            className={`nav-tab-btn ${selectedProgramId === prog.id ? 'active' : ''}`}
-            style={{ padding: '0.65rem 1.1rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+            className={`nav-tab-btn flex items-center gap-[0.6rem] px-[1.1rem] py-[0.65rem] ${selectedProgramId === prog.id ? 'active' : ''}`}
             title={`Click to load testing procedures for ${prog.title || prog.name || 'Standard Audit Program'}. Contains ${prog.procedures?.length || 0} specific verification steps.`}
           >
             <FileText size={16} />
-            <span style={{ fontWeight: 600 }}>{prog.title || prog.name || 'Standard Program'}</span>
-            <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
+            <span className="font-semibold">{prog.title || prog.name || 'Standard Program'}</span>
+            <span className="badge-chip bg-white/[0.12] text-[0.72rem] py-[0.15rem] px-2 rounded-xl">
               {prog.procedures?.length || 0} Test Procedures
             </span>
           </button>
@@ -148,28 +147,28 @@ const AuditPrograms = () => {
 
       {/* Program Header Summary */}
       {!selectedProgram ? (
-        <div className="glass-card" style={{ padding: '3rem', textAlign: 'center' }}>
-          <FileText size={48} style={{ color: 'var(--text-muted)', margin: '0 auto 1rem' }} />
+        <div className="glass-card p-12 text-center">
+          <FileText size={48} className="text-[var(--text-muted)] mx-auto mb-4" />
           <h3>No Audit Programs Found</h3>
-          <p style={{ color: 'var(--text-muted)' }}>There are currently no testing checklists available.</p>
+          <p className="text-[var(--text-muted)]">There are currently no testing checklists available.</p>
         </div>
       ) : (
       <>
-        <div className="glass-card" style={{ marginBottom: '1.75rem', background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%)' }}>
+        <div className="glass-card mb-7 bg-gradient-to-br from-slate-800/70 to-slate-900/90">
         <div className="flex-between">
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
+            <div className="flex items-center gap-[0.6rem] mb-[0.4rem] flex-wrap">
               {/* Labels removed per user request */}
             </div>
-            <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: 800, color: 'white' }}>{selectedProgram.title || selectedProgram.name || 'Standard Audit Program'}</h2>
-            <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-secondary)', maxWidth: '800px', lineHeight: '1.6' }}>
+            <h2 className="m-0 mb-2 text-[1.4rem] font-extrabold text-white">{selectedProgram.title || selectedProgram.name || 'Standard Audit Program'}</h2>
+            <p className="m-0 text-[0.88rem] text-[var(--text-secondary)] max-w-[800px] leading-relaxed">
               {selectedProgram.objectives || selectedProgram.description || 'Comprehensive testing checklist and field procedures for internal audit validation and regulatory compliance.'}
             </p>
           </div>
-          <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.6rem' }}>
+          <div className="text-right flex flex-col items-end gap-[0.6rem]">
             <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Total Procedures</span>
-              <span className="tabular-nums" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fda4af' }}>
+              <span className="text-[0.75rem] text-[var(--text-muted)] block">Total Procedures</span>
+              <span className="tabular-nums text-[1.8rem] font-extrabold text-[#fda4af]">
                 {selectedProgram.procedures?.length || 0}
               </span>
             </div>
@@ -178,8 +177,7 @@ const AuditPrograms = () => {
                 addNotification('Program Attached', `Program "${selectedProgram.title || selectedProgram.name}" linked to Active Audit Engagement.`, 'success');
                 navigate('/engagements');
               }} 
-              className="btn-primary" 
-              style={{ padding: '0.4rem 0.8rem', fontSize: '0.78rem' }}
+              className="btn-primary px-[0.8rem] py-[0.4rem] text-[0.78rem]"
             >
               Attach Program to Engagement ➔
             </button>
@@ -189,26 +187,25 @@ const AuditPrograms = () => {
 
       {/* Search Bar */}
       <div className="filter-bar">
-        <div style={{ display: 'flex', gap: '0.8rem', width: '100%' }}>
-          <div style={{ position: 'relative', flex: 1 }}>
-            <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
+        <div className="flex gap-[0.8rem] w-full">
+          <div className="relative flex-1">
+            <Search size={16} className="absolute left-3 top-3 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder={`Search testing procedures in ${selectedProgram.title || selectedProgram.name || 'this program'}...`}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="form-input"
-              style={{ paddingLeft: '2.4rem' }}
+              className="form-input pl-[2.4rem]"
             />
           </div>
-          <div style={{ position: 'relative' }}>
-            <button onClick={() => setShowFilter(!showFilter)} className="btn-secondary" style={{ padding: '0.6rem 1rem', height: '100%' }}>
+          <div className="relative">
+            <button onClick={() => setShowFilter(!showFilter)} className="btn-secondary px-4 py-[0.6rem] h-full">
               <Filter size={16} /> Filter
             </button>
             {showFilter && (
-              <div style={{ position: 'absolute', right: 0, top: '110%', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.8rem', zIndex: 10, minWidth: '180px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.4rem' }}>By Status</label>
-                <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select" style={{ width: '100%' }}>
+              <div className="absolute right-0 top-[110%] bg-[var(--bg-card)] border border-[var(--border-color)] rounded-md p-[0.8rem] z-10 min-w-[180px] shadow-lg">
+                <label className="block text-[0.75rem] font-semibold mb-[0.4rem]">By Status</label>
+                <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select w-full">
                   <option value="All">All Statuses</option>
                   <option value="Completed">Completed/Pass</option>
                   <option value="In Progress">In Progress</option>
@@ -225,7 +222,7 @@ const AuditPrograms = () => {
         <div className="section-header-bar">
           <div>
             <h3 className="section-title">Step-by-Step Testing Procedures & Sampling Methodology</h3>
-            <p className="section-subtitle">Comprehensive field checklist for: <strong style={{ color: '#60A5FA' }}>{selectedProgram.title || selectedProgram.name || 'Standard Audit Program'}</strong></p>
+            <p className="section-subtitle">Comprehensive field checklist for: <strong className="text-blue-400">{selectedProgram.title || selectedProgram.name || 'Standard Audit Program'}</strong></p>
           </div>
         </div>
 
@@ -244,40 +241,38 @@ const AuditPrograms = () => {
             <tbody>
               {filteredProcedures.length === 0 ? (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No matching items found</td>
+                  <td colSpan="6" className="text-center p-8">No matching items found</td>
                 </tr>
               ) : (
               filteredProcedures.map(proc => (
                 <tr key={proc.id}>
-                  <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{proc.ref || proc.id || 'PROC-01'}</td>
-                  <td style={{ fontWeight: 600, maxWidth: '460px', lineHeight: '1.5' }}>
-                    <div style={{ color: 'white', marginBottom: '0.2rem' }}>{proc.step}</div>
-                    {proc.expectedControl && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}><strong>Expected Control:</strong> {proc.expectedControl}</div>}
+                  <td className="tabular-nums font-extrabold text-[#fda4af]">{proc.ref || proc.id || 'PROC-01'}</td>
+                  <td className="font-semibold max-w-[460px] leading-relaxed">
+                    <div className="text-white mb-[0.2rem]">{proc.step}</div>
+                    {proc.expectedControl && <div className="text-[0.75rem] text-[var(--text-muted)]"><strong>Expected Control:</strong> {proc.expectedControl}</div>}
                   </td>
-                  <td className="tabular-nums" style={{ fontWeight: 700 }}>{proc.sampleSize || '30 Samples (100% Target)'}</td>
-                  <td><span className="badge-chip" style={{ background: 'rgba(255,255,255,0.06)' }}>{proc.riskLink || 'Custody Compliance Risk'}</span></td>
+                  <td className="tabular-nums font-bold">{proc.sampleSize || '30 Samples (100% Target)'}</td>
+                  <td><span className="badge-chip bg-white/[0.06]">{proc.riskLink || 'Custody Compliance Risk'}</span></td>
                   <td>
                     {(proc.status === 'Completed' || proc.status === 'Pass' || proc.status === 'Verified') && <span className="badge-success">Verified / Pass</span>}
                     {(proc.status === 'In Progress' || proc.status === 'Under Review') && <span className="badge-info">In Progress</span>}
                     {(!proc.status || proc.status === 'Open' || proc.status === 'Pending') && <span className="badge-warning">Pending Test</span>}
                   </td>
                   <td>
-                    <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                      <button onClick={() => navigate('/engagements')} className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }} title="Execute step in active field engagement">
+                    <div className="flex gap-[0.4rem] items-center">
+                      <button onClick={() => navigate('/engagements')} className="btn-secondary px-[0.65rem] py-[0.35rem] text-[0.75rem]" title="Execute step in active field engagement">
                         Execute ➔
                       </button>
                       <button
                         onClick={() => handleStartEdit(proc)}
-                        className="btn-secondary"
-                        style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('edit', 'programs') ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('edit', 'programs') ? '#60A5FA' : 'var(--text-muted)' }}
+                        className={`btn-secondary px-2 py-[0.35rem] ${checkRbacPermission('edit', 'programs') ? 'bg-blue-500/15 text-blue-400' : 'bg-white/5 text-[var(--text-muted)]'}`}
                         title={checkRbacPermission('edit', 'programs') ? "Edit Procedure (✏️)" : "🔒 RBAC Restricted"}
                       >
                         <Edit2 size={13} />
                       </button>
                       <button
                         onClick={() => handleDeleteProcedure(proc.id, proc.ref || proc.id)}
-                        className="btn-secondary"
-                        style={{ padding: '0.35rem 0.5rem', background: checkRbacPermission('delete', 'programs') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('delete', 'programs') ? '#F87171' : 'var(--text-muted)' }}
+                        className={`btn-secondary px-2 py-[0.35rem] ${checkRbacPermission('delete', 'programs') ? 'bg-red-500/15 text-red-400' : 'bg-white/5 text-[var(--text-muted)]'}`}
                         title={checkRbacPermission('delete', 'programs') ? "Delete Procedure (🗑️)" : "🔒 RBAC Restricted: Only CAE/Manager can delete"}
                       >
                         <Trash2 size={13} />
@@ -297,33 +292,33 @@ const AuditPrograms = () => {
       {/* Add / Edit Procedure Modal — moved outside selectedProgram conditional */}
       {isProcModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '560px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
+          <div className="modal-content max-w-[560px]">
+            <div className="flex justify-between items-center mb-[1.4rem]">
+              <h3 className="m-0 text-[1.25rem] font-extrabold">
                 {editingProcId ? 'Edit Procedure Step' : `Add Procedure to ${selectedProgram?.title || selectedProgram?.name || 'Audit Program'}`}
               </h3>
-              <button onClick={() => { setIsProcModalOpen(false); setEditingProcId(null); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+              <button onClick={() => { setIsProcModalOpen(false); setEditingProcId(null); }} className="bg-transparent border-none text-[var(--text-muted)] cursor-pointer">✕</button>
             </div>
-            <form onSubmit={handleAddProcedure} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleAddProcedure} className="flex flex-col gap-4">
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Procedure Ref Code</label>
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Procedure Ref Code</label>
                 <input type="text" required placeholder="e.g. CUST-PROC-05" value={procRef} onChange={e => setProcRef(e.target.value)} className="form-input" />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Testing Instruction Step</label>
-                <textarea rows={3} required placeholder="Detailed testing steps, verification of RTGS confirmations, checking sign-offs..." value={procStep} onChange={e => setProcStep(e.target.value)} className="form-input" style={{ width: '100%', resize: 'vertical' }} />
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Testing Instruction Step</label>
+                <textarea rows={3} required placeholder="Detailed testing steps, verification of RTGS confirmations, checking sign-offs..." value={procStep} onChange={e => setProcStep(e.target.value)} className="form-input w-full resize-y" />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Sample Size Target</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Sample Size Target</label>
                   <input type="text" value={procSample} onChange={e => setProcSample(e.target.value)} className="form-input" />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Linked Risk Area</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Linked Risk Area</label>
                   <input type="text" value={procRisk} onChange={e => setProcRisk(e.target.value)} className="form-input" />
                 </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
+              <div className="flex justify-end gap-[0.85rem] mt-4">
                 <button type="button" onClick={() => { setIsProcModalOpen(false); setEditingProcId(null); }} className="btn-secondary">Cancel</button>
                 <button type="submit" className="btn-primary">{editingProcId ? 'Save Changes' : 'Add Procedure'}</button>
               </div>

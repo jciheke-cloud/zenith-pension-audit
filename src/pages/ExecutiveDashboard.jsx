@@ -147,15 +147,15 @@ const ExecutiveDashboard = () => {
             Board & Executive Committee Oversight · Real-Time Audit Lifecycle, ERM Synchronization & 10×10 Risk Metrics.
           </p>
         </div>
-        <div className="header-actions" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-          <button onClick={() => navigate('/guide')} className="btn-secondary" style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.3)', fontWeight: 600 }}>
+        <div className="header-actions flex gap-3 items-center">
+          <button onClick={() => navigate('/guide')} className="btn-secondary bg-sky-400/15 text-sky-400 border border-sky-400/30 font-semibold">
             📖 Quick Start Guide & SOP
           </button>
           <button onClick={() => navigate('/annual-plan')} className="btn-secondary">
             <FileSpreadsheet size={16} />
             <span>Annual Plan</span>
           </button>
-          <button onClick={() => navigate('/findings')} className="btn-primary">
+          <button onClick={() => navigate('/findings')} className="btn-primary bg-[#C81E1E] text-white">
             <AlertOctagon size={16} />
             <span>Log Finding</span>
           </button>
@@ -163,160 +163,150 @@ const ExecutiveDashboard = () => {
       </div>
 
       {/* Interactive Quick Start Tutorial Card */}
-      <div className="glass-card" style={{ padding: '1.2rem 1.5rem', marginBottom: '1.5rem', borderLeft: '4px solid #38bdf8', background: 'rgba(56, 189, 248, 0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="glass-card bg-slate-900/85 py-[1.2rem] px-[1.5rem] mb-6 border-l-4 border-[#38bdf8] flex justify-between items-center flex-wrap gap-4">
         <div>
-          <h3 style={{ margin: '0 0 0.3rem 0', fontSize: '1.05rem', color: '#38bdf8', fontWeight: 800 }}>
+          <h3 className="m-0 mb-1 text-[1.05rem] text-[#38bdf8] font-extrabold">
             🚀 Zenith Pension Custodian Audit Portal
           </h3>
-          <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+          <p className="m-0 text-[0.84rem] text-[color:var(--text-muted)]">
             Audit Lifecycle: 1. Audit Universe ➔ 2. Annual Planning ➔ 3. Fieldwork & Working Papers ➔ 4. Findings & Remediation ➔ 5. BARC Board Deck.
           </p>
         </div>
-        <button onClick={() => navigate('/guide')} className="btn-secondary" style={{ fontSize: '0.8rem', padding: '0.45rem 1rem', background: '#38bdf8', color: '#0f172a', fontWeight: 800, border: 'none' }}>
+        <button onClick={() => navigate('/guide')} className="btn-secondary text-[0.8rem] px-4 py-[0.45rem] bg-[#38bdf8] text-[#0f172a] font-extrabold border-none">
           Open Full User Guide →
         </button>
       </div>
 
       {/* Repeat Finding Flag Banner */}
       {repeatFindingsCount > 0 && (
-        <div style={{
-          background: 'linear-gradient(90deg, rgba(225, 29, 72, 0.15) 0%, rgba(153, 27, 27, 0.25) 100%)',
-          border: '1px solid rgba(225, 29, 72, 0.4)',
-          borderRadius: 'var(--radius-md)',
-          padding: '1rem 1.4rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '1.75rem',
-          boxShadow: '0 0 20px rgba(225, 29, 72, 0.15)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+        <div className="bg-gradient-to-r from-rose-600/15 to-red-900/25 border border-rose-600/40 rounded-[var(--radius-md)] py-4 px-[1.4rem] flex items-center justify-between mb-7 shadow-[0_0_20px_rgba(225,29,72,0.15)]">
+          <div className="flex items-center gap-[0.85rem]">
             <ShieldAlert size={28} color="#f43f5e" />
             <div>
-              <h4 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: 'white' }}>
+              <h4 className="m-0 text-[0.98rem] font-extrabold text-white">
                 Repeat Findings Intelligence Alert: {repeatFindingsCount} Repeat Issues Active ({repeatFindingPct}% of Total Findings)
               </h4>
-              <p style={{ margin: 0, fontSize: '0.82rem', color: '#fda4af' }}>
+              <p className="m-0 text-[0.82rem] text-rose-300">
                 System identified recurring control deficiencies in <strong>Custody Operations</strong> and <strong>IT Gateway Security</strong> across consecutive audit cycles.
               </p>
             </div>
           </div>
-          <button onClick={() => navigate('/findings')} className="btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', background: '#e11d48' }}>
+          <button onClick={() => navigate('/findings')} className="btn-primary px-4 py-2 text-[0.8rem] bg-[#C81E1E] text-white">
             Inspect Repeat Issues ➔
           </button>
         </div>
       )}
 
       {/* Top Executive KPI Cards (Row 1) - Dynamically calculated from live DB / ERM data */}
-      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
-        <div className="glass-card" style={{ padding: '1.35rem', borderTop: '4px solid #10B981' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+      <div className="kpi-grid grid grid-cols-[repeat(auto-fit,minmax(230px,1fr))] gap-5 mb-6">
+        <div className="glass-card bg-slate-900/85 p-[1.35rem] border-t-4 border-[#10B981]">
+          <div className="flex justify-between items-center mb-[0.4rem]">
             <span className="card-title-sm">Annual Plan Completion</span>
             <CheckCircle size={20} color="#10B981" />
           </div>
-          <span className="card-metric" style={{ fontSize: '2rem', color: '#10B981' }}>
+          <span className="card-metric text-3xl text-[#10B981]">
             {planCompletionPct}%
           </span>
-          <div className="progress-container" style={{ marginTop: '0.6rem', height: '6px' }}>
-            <div className="progress-fill emerald" style={{ width: `${Math.max(10, planCompletionPct)}%` }} />
+          <div className="progress-container mt-[0.6rem] h-[6px]">
+            <div className={`progress-fill emerald w-[${Math.max(10, planCompletionPct)}%]`} />
           </div>
-          <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '0.5rem', display: 'block' }}>
+          <span className="text-[0.74rem] text-[color:var(--text-muted)] mt-2 block">
             {completedPlans} completed · {inProgressPlans} active engagements
           </span>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.35rem', borderTop: '4px solid #EF4444' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+        <div className="glass-card bg-slate-900/85 p-[1.35rem] border-t-4 border-[#EF4444]">
+          <div className="flex justify-between items-center mb-[0.4rem]">
             <span className="card-title-sm">High-Risk & Critical Findings</span>
             <AlertOctagon size={20} color="#EF4444" />
           </div>
-          <span className="card-metric" style={{ fontSize: '2rem', color: '#EF4444' }}>
+          <span className="card-metric text-3xl text-[#EF4444]">
             {highRiskFindings}
           </span>
-          <span style={{ fontSize: '0.74rem', color: '#fda4af', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.6rem' }}>
+          <span className="text-[0.74rem] text-[#fda4af] font-semibold flex items-center gap-[0.3rem] mt-[0.6rem]">
             Out of {totalFindings} total findings logged
           </span>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.35rem', borderTop: '4px solid #F59E0B' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+        <div className="glass-card bg-slate-900/85 p-[1.35rem] border-t-4 border-[#F59E0B]">
+          <div className="flex justify-between items-center mb-[0.4rem]">
             <span className="card-title-sm">Mgmt Action Closure Rate</span>
             <CheckSquare size={20} color="#F59E0B" />
           </div>
-          <span className="card-metric" style={{ fontSize: '2rem', color: '#F59E0B' }}>
+          <span className="card-metric text-3xl text-[#F59E0B]">
             {actionCompletionRate}%
           </span>
-          <div className="progress-container" style={{ marginTop: '0.6rem', height: '6px' }}>
-            <div className="progress-fill amber" style={{ width: `${Math.max(10, actionCompletionRate)}%` }} />
+          <div className="progress-container mt-[0.6rem] h-[6px]">
+            <div className={`progress-fill amber w-[${Math.max(10, actionCompletionRate)}%]`} />
           </div>
-          <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '0.5rem', display: 'block' }}>
+          <span className="text-[0.74rem] text-[color:var(--text-muted)] mt-2 block">
             {completedActions} closed / {totalFindings} total CAP actions
           </span>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.35rem', borderTop: '4px solid #3B82F6' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+        <div className="glass-card bg-slate-900/85 p-[1.35rem] border-t-4 border-[#3B82F6]">
+          <div className="flex justify-between items-center mb-[0.4rem]">
             <span className="card-title-sm">Overdue Findings</span>
             <Clock size={20} color="#3B82F6" />
           </div>
-          <span className="card-metric" style={{ fontSize: '2rem', color: overdueFindings > 0 ? '#EF4444' : '#10B981' }}>
+          <span className={`card-metric text-3xl ${overdueFindings > 0 ? 'text-[#EF4444]' : 'text-[#10B981]'}`}>
             {overdueFindings}
           </span>
-          <span style={{ fontSize: '0.74rem', color: overdueFindings > 0 ? '#fda4af' : '#34d399', fontWeight: 600, marginTop: '0.6rem', display: 'block' }}>
+          <span className={`text-[0.74rem] font-semibold mt-[0.6rem] block ${overdueFindings > 0 ? 'text-[#fda4af]' : 'text-[#34d399]'}`}>
             {overdueFindings > 0 ? 'Remediation deadline exceeded' : 'All target dates compliant'}
           </span>
         </div>
       </div>
 
       {/* Middle Operational Metrics (Row 2) */}
-      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
-        <div className="glass-card flex-between" style={{ padding: '1.2rem' }}>
+      <div className="kpi-grid grid grid-cols-[repeat(auto-fit,minmax(230px,1fr))] gap-5 mb-8">
+        <div className="glass-card bg-slate-900/85 flex-between p-[1.2rem]">
           <div>
             <span className="card-title-sm">Average Audit Rating</span>
-            <span className="card-metric" style={{ fontSize: '1.25rem', color: '#10B981', marginTop: '0.2rem' }}>{avgRatingLabel}</span>
+            <span className="card-metric text-xl text-[#10B981] mt-1">{avgRatingLabel}</span>
           </div>
           <Award size={32} color="#10B981" />
         </div>
 
-        <div className="glass-card flex-between" style={{ padding: '1.2rem' }}>
+        <div className="glass-card bg-slate-900/85 flex-between p-[1.2rem]">
           <div>
             <span className="card-title-sm">Auditable Universe Coverage</span>
-            <span className="card-metric" style={{ fontSize: '1.25rem', color: '#3B82F6', marginTop: '0.2rem' }}>{universeCoveragePct}%</span>
+            <span className="card-metric text-xl text-[#3B82F6] mt-1">{universeCoveragePct}%</span>
           </div>
           <Layers size={32} color="#3B82F6" />
         </div>
 
-        <div className="glass-card flex-between" style={{ padding: '1.2rem' }}>
+        <div className="glass-card bg-slate-900/85 flex-between p-[1.2rem]">
           <div>
             <span className="card-title-sm">Annual Audit Budget</span>
-            <span className="card-metric" style={{ fontSize: '1.25rem', marginTop: '0.2rem' }}>{currency === 'NGN' ? `₦${(totalBudgetNGN / 1000000).toFixed(1)}M` : `$${Math.round(totalBudgetNGN / 1500).toLocaleString()}`}</span>
+            <span className="card-metric text-xl mt-1">{currency === 'NGN' ? `₦${(totalBudgetNGN / 1000000).toFixed(1)}M` : `$${Math.round(totalBudgetNGN / 1500).toLocaleString()}`}</span>
           </div>
-          <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fda4af' }}>{currency === 'NGN' ? '₦' : '$'}</span>
+          <span className="text-[1.4rem] font-extrabold text-[#fda4af]">{currency === 'NGN' ? '₦' : '$'}</span>
         </div>
 
-        <div className="glass-card flex-between" style={{ padding: '1.2rem', borderColor: 'rgba(52, 211, 153, 0.4)' }}>
+        <div className="glass-card bg-slate-900/85 flex-between p-[1.2rem] border-[#34d399]/40">
           <div>
             <span className="card-title-sm">ERM Live Gateway</span>
-            <span className="card-metric" style={{ fontSize: '1.25rem', color: '#34d399', marginTop: '0.2rem' }}>Active 30s Sync</span>
+            <span className="card-metric text-xl text-[#34d399] mt-1">Active 30s Sync</span>
           </div>
           <Activity size={32} color="#34d399" />
         </div>
       </div>
 
       {/* Row 3: Balanced 2-Column Chart Layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))', gap: '1.75rem', marginBottom: '2rem' }}>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(460px,1fr))] gap-7 mb-8">
         {/* Chart 1: Findings by Business Unit / Function */}
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="glass-card bg-slate-900/85 p-6">
+          <div className="mb-4 flex justify-between items-center">
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>Audit Findings by Department / Unit</h3>
-              <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)' }}>Breakdown of high-risk vs medium-risk audit observations</p>
+              <h3 className="m-0 text-[1.05rem] font-extrabold text-white">Audit Findings by Department / Unit</h3>
+              <p className="m-0 text-[0.78rem] text-[color:var(--text-muted)]">Breakdown of high-risk vs medium-risk audit observations</p>
             </div>
-            <span className="badge-chip" style={{ fontSize: '0.72rem' }}>Live Breakdown</span>
+            <span className="badge-chip text-[0.72rem]">Live Breakdown</span>
           </div>
-          <div style={{ height: '270px', width: '100%' }}>
+          <div className="h-[270px] w-full">
                       {(buFindingsData.length === 0) ? (
-            <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+            <div className="flex h-full items-center justify-center text-[color:var(--text-muted)]">
               No Live Data — Awaiting Backend Sync
             </div>
           ) : (
@@ -335,17 +325,17 @@ const ExecutiveDashboard = () => {
         </div>
 
         {/* Chart 2: Findings by Severity (Donut Chart) */}
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="glass-card bg-slate-900/85 p-6">
+          <div className="mb-4 flex justify-between items-center">
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>Findings Severity Distribution (10×10 Matrix)</h3>
-              <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)' }}>Distribution across Critical, High, Medium, and Low severity tiers</p>
+              <h3 className="m-0 text-[1.05rem] font-extrabold text-white">Findings Severity Distribution (10×10 Matrix)</h3>
+              <p className="m-0 text-[0.78rem] text-[color:var(--text-muted)]">Distribution across Critical, High, Medium, and Low severity tiers</p>
             </div>
-            <span className="badge-chip-danger" style={{ fontSize: '0.72rem' }}>10×10 Risk Engine</span>
+            <span className="badge-chip-danger text-[0.72rem]">10×10 Risk Engine</span>
           </div>
-          <div style={{ height: '270px', width: '100%', display: 'flex', alignItems: 'center' }}>
+          <div className="h-[270px] w-full flex items-center">
             {severityData.length === 0 ? (
-              <div style={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+              <div className="flex w-full items-center justify-center text-[color:var(--text-muted)]">
                 No Live Data — Awaiting Backend Sync
               </div>
             ) : (
@@ -368,14 +358,14 @@ const ExecutiveDashboard = () => {
                     <Tooltip contentStyle={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }} />
                   </PieChart>
                 </ResponsiveContainer>
-                <div style={{ width: '45%', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                <div className="w-[45%] flex flex-col gap-[0.65rem]">
                   {severityData.map((item, idx) => (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: '0.5rem', background: 'rgba(255,255,255,0.02)', padding: '0.45rem 0.75rem', borderRadius: '6px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: item.color }} />
-                        <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-secondary)' }}>{item.name}</span>
+                    <div key={idx} className="flex items-center justify-between pr-2 bg-white/5 py-[0.45rem] px-3 rounded-md">
+                      <div className="flex items-center gap-2">
+                        <span className={`w-[10px] h-[10px] rounded-full bg-[${item.color}]`} />
+                        <span className="text-[0.82rem] font-semibold text-[color:var(--text-secondary)]">{item.name}</span>
                       </div>
-                      <span className="tabular-nums" style={{ fontWeight: 800, color: item.color, fontSize: '0.9rem' }}>{item.value}</span>
+                      <span className={`tabular-nums font-extrabold text-[0.9rem] text-[${item.color}]`}>{item.value}</span>
                     </div>
                   ))}
                 </div>
@@ -386,19 +376,19 @@ const ExecutiveDashboard = () => {
       </div>
 
       {/* Row 4: Engagement Hours & Issue Aging Chart Pair */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))', gap: '1.75rem', marginBottom: '2rem' }}>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(460px,1fr))] gap-7 mb-8">
         {/* Chart 3: Planned vs Actual Engagement Hours */}
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="glass-card bg-slate-900/85 p-6">
+          <div className="mb-4 flex justify-between items-center">
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>Audit Engagement Execution Hours</h3>
-              <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)' }}>Comparison of Budgeted Planned Hours vs Fieldwork Actual Hours</p>
+              <h3 className="m-0 text-[1.05rem] font-extrabold text-white">Audit Engagement Execution Hours</h3>
+              <p className="m-0 text-[0.78rem] text-[color:var(--text-muted)]">Comparison of Budgeted Planned Hours vs Fieldwork Actual Hours</p>
             </div>
-            <span className="badge-info" style={{ fontSize: '0.72rem' }}>Field Hours</span>
+            <span className="badge-info text-[0.72rem]">Field Hours</span>
           </div>
-          <div style={{ height: '250px', width: '100%' }}>
+          <div className="h-[250px] w-full">
                       {(displayPlanHoursData.length === 0) ? (
-            <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+            <div className="flex h-full items-center justify-center text-[color:var(--text-muted)]">
               No Live Data — Awaiting Backend Sync
             </div>
           ) : (
@@ -417,15 +407,15 @@ const ExecutiveDashboard = () => {
         </div>
 
         {/* Chart 4: Aging Horizon of Open Audit Issues */}
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="glass-card bg-slate-900/85 p-6">
+          <div className="mb-4 flex justify-between items-center">
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>Aging Horizon of Audit Issues</h3>
-              <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)' }}>Time elapsed since audit finding logging</p>
+              <h3 className="m-0 text-[1.05rem] font-extrabold text-white">Aging Horizon of Audit Issues</h3>
+              <p className="m-0 text-[0.78rem] text-[color:var(--text-muted)]">Time elapsed since audit finding logging</p>
             </div>
-            <span className="badge-warning" style={{ fontSize: '0.72rem' }}>Overdue Monitor</span>
+            <span className="badge-warning text-[0.72rem]">Overdue Monitor</span>
           </div>
-          <div style={{ height: '250px', width: '100%' }}>
+          <div className="h-[250px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={agingData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                 <XAxis dataKey="range" stroke="#94A3B8" fontSize={11} />
@@ -444,19 +434,19 @@ const ExecutiveDashboard = () => {
 
       
       {/* Row 5: PFC Specific Operational Audit Charts */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))', gap: '1.75rem', marginBottom: '2rem' }}>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(460px,1fr))] gap-7 mb-8">
         {/* Chart 5: Reconciliation Exceptions Aging */}
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="glass-card bg-slate-900/85 p-6">
+          <div className="mb-4 flex justify-between items-center">
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>Reconciliation Exceptions Aging</h3>
-              <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)' }}>Unreconciled items across contribution & payment accounts</p>
+              <h3 className="m-0 text-[1.05rem] font-extrabold text-white">Reconciliation Exceptions Aging</h3>
+              <p className="m-0 text-[0.78rem] text-[color:var(--text-muted)]">Unreconciled items across contribution & payment accounts</p>
             </div>
-            <span className="badge-warning" style={{ fontSize: '0.72rem' }}>Live API Feed</span>
+            <span className="badge-warning text-[0.72rem]">Live API Feed</span>
           </div>
-          <div style={{ height: '250px', width: '100%' }}>
+          <div className="h-[250px] w-full">
                       {(reconExceptionsData.length === 0) ? (
-            <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+            <div className="flex h-full items-center justify-center text-[color:var(--text-muted)]">
               No Live Data — Awaiting Backend Sync
             </div>
           ) : (
@@ -477,17 +467,17 @@ const ExecutiveDashboard = () => {
         </div>
 
         {/* Chart 6: PFA Instruction Defect Rate */}
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="glass-card bg-slate-900/85 p-6">
+          <div className="mb-4 flex justify-between items-center">
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'white' }}>PFA Instruction Defect Rate</h3>
-              <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)' }}>Percentage of rejected/failed PFA instructions over time</p>
+              <h3 className="m-0 text-[1.05rem] font-extrabold text-white">PFA Instruction Defect Rate</h3>
+              <p className="m-0 text-[0.78rem] text-[color:var(--text-muted)]">Percentage of rejected/failed PFA instructions over time</p>
             </div>
-            <span className="badge-info" style={{ fontSize: '0.72rem' }}>Trend Analysis</span>
+            <span className="badge-info text-[0.72rem]">Trend Analysis</span>
           </div>
-          <div style={{ height: '250px', width: '100%' }}>
+          <div className="h-[250px] w-full">
                       {(defectRateData.length === 0) ? (
-            <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+            <div className="flex h-full items-center justify-center text-[color:var(--text-muted)]">
               No Live Data — Awaiting Backend Sync
             </div>
           ) : (
@@ -505,30 +495,30 @@ const ExecutiveDashboard = () => {
       </div>
 
       {/* Heat Map of Auditable Units & High Priority Table */}
-      <div className="glass-card" style={{ padding: '1.5rem' }}>
-        <div className="section-header-bar" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'stretch', marginBottom: '1.25rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="glass-card bg-slate-900/85 p-6">
+        <div className="section-header-bar flex flex-col gap-4 items-stretch mb-5">
+          <div className="flex justify-between items-center flex-wrap gap-4">
             <div>
               <h3 className="section-title">High-Priority Auditable Units Heat Map Summary</h3>
               <p className="section-subtitle">Core custodial processes evaluated under the 6-Factor PENCOM Risk Matrix</p>
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <button onClick={() => navigate('/risk-scoring')} className="btn-secondary" style={{ marginRight: '1rem' }}>
+            <div className="flex gap-2 items-center">
+              <button onClick={() => navigate('/risk-scoring')} className="btn-secondary mr-4">
                 View 6-Factor Scoring Engine ➔
               </button>
-              <div style={{ position: 'relative' }}>
-                <Search size={16} style={{ position: 'absolute', left: '10px', top: '10px', color: 'var(--text-muted)' }} />
-                <input type="text" placeholder="Search processes..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2rem', width: '200px' }} />
+              <div className="relative">
+                <Search size={16} className="absolute left-[10px] top-[10px] text-[color:var(--text-muted)]" />
+                <input type="text" placeholder="Search processes..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input pl-8 w-[200px]" />
               </div>
-              <button onClick={() => setShowFilters(!showFilters)} className="btn-secondary" style={{ padding: '0.55rem' }}>
+              <button onClick={() => setShowFilters(!showFilters)} className="btn-secondary p-[0.55rem]">
                 <Filter size={16} />
               </button>
             </div>
           </div>
           {showFilters && (
-            <div style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.03)', padding: '0.75rem', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Department:</span>
+            <div className="flex gap-4 bg-white/5 p-3 rounded-lg">
+              <div className="flex items-center gap-2">
+                <span className="text-[0.8rem] text-[color:var(--text-muted)]">Department:</span>
                 <select value={filterDepartment} onChange={e => setFilterDepartment(e.target.value)} className="form-select">
                   <option value="All">All Departments</option>
                   <option value="Custody Operations">Custody Operations</option>
@@ -543,7 +533,7 @@ const ExecutiveDashboard = () => {
         <div className="data-table-container">
           
           {highPriorityUnits.length === 0 ? (
-            <div style={{ display: 'flex', padding: '2rem', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+            <div className="flex p-8 items-center justify-center text-[color:var(--text-muted)]">
               No Live Data — Awaiting Backend Sync
             </div>
           ) : (
@@ -563,12 +553,12 @@ const ExecutiveDashboard = () => {
               <tbody>
                 {filteredHighPriorityUnits.length === 0 ? (
                   <tr>
-                    <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No matching items found</td>
+                    <td colSpan="8" className="text-center p-8 text-[color:var(--text-muted)]">No matching items found</td>
                   </tr>
                 ) : filteredHighPriorityUnits.map(unit => (
                   <tr key={unit.id}>
-                    <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{unit.code || unit.unitId}</td>
-                    <td style={{ fontWeight: 700 }}>{unit.processName || unit.title}</td>
+                    <td className="tabular-nums font-extrabold text-[#fda4af]">{unit.code || unit.unitId}</td>
+                    <td className="font-bold">{unit.processName || unit.title}</td>
                     <td>{unit.businessUnit || unit.department}</td>
                     <td>
                       <span className="badge-danger">{unit.inherentRisk} / 10</span>
@@ -579,9 +569,9 @@ const ExecutiveDashboard = () => {
                     <td>
                       <span className="badge-chip-danger">🔴 HIGH PRIORITY</span>
                     </td>
-                    <td style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{unit.leadAuditor || 'Senior Auditor'}</td>
+                    <td className="text-[0.82rem] text-[color:var(--text-secondary)]">{unit.leadAuditor || 'Senior Auditor'}</td>
                     <td>
-                      <button onClick={() => navigate('/engagements')} className="btn-secondary" style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}>
+                      <button onClick={() => navigate('/engagements')} className="btn-secondary px-3 py-[0.35rem] text-[0.78rem]">
                         Launch Audit
                       </button>
                     </td>

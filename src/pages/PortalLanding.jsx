@@ -6,293 +6,121 @@ const PortalLanding = () => {
   const navigate = useNavigate();
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'radial-gradient(circle at 50% 0%, #0f172a 0%, #090d16 100%)',
-      color: '#f8fafc',
-      fontFamily: 'Inter, system-ui, sans-serif',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
+    <div className="min-h-screen bg-[radial-gradient(circle_at_50%_0%,#0f172a_0%,#090d16_100%)] text-slate-50 font-sans flex flex-col justify-between relative overflow-x-hidden overflow-y-auto">
       {/* Background Glow Overlay */}
-      <div style={{
-        position: 'absolute',
-        top: '-150px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '800px',
-        height: '400px',
-        background: 'radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(59, 130, 246, 0.08) 50%, transparent 70%)',
-        pointerEvents: 'none',
-        filter: 'blur(50px)'
-      }} />
+      <div className="absolute -top-[150px] left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[radial-gradient(circle,rgba(59,130,246,0.15)_0%,rgba(16,185,129,0.08)_50%,transparent_70%)] pointer-events-none blur-[50px]" />
 
       {/* Header Bar */}
-      <header style={{
-        padding: '1.5rem 3rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-        backdropFilter: 'blur(10px)',
-        zIndex: 10
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{
-            width: '42px',
-            height: '42px',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, #10b981, #059669)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
-          }}>
-            <Building2 size={24} color="#ffffff" />
+      <header className="px-12 py-6 flex items-center justify-between border-b border-white/10 backdrop-blur-md z-10">
+        <div className="flex items-center gap-3">
+          <div className="w-[42px] h-[42px] rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-700 flex items-center justify-center shadow-[0_4px_12px_rgba(16,185,129,0.3)]">
+            <Building2 size={24} className="text-white" />
           </div>
           <div>
-            <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.02em' }}>
+            <h2 className="m-0 text-[1.15rem] font-extrabold tracking-tight">
               ZENITH PENSION CUSTODIAN
             </h2>
-            <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>
-              RiskINTEGRA™ Institutional Audit & Assurance Portal
+            <p className="m-0 text-xs text-slate-400 font-medium">
+              RiskINTEGRA™ Institutional Governance Portal
             </p>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: '#94a3b8' }}>
-          <ShieldCheck size={16} color="#10b981" />
-          <span>PENCOM Regulated · PRA 2014 Section 63 Compliant</span>
+        <div className="flex items-center gap-2 text-sm text-slate-400">
+          <ShieldCheck size={16} className="text-emerald-500" />
+          <span>PENCOM Regulated · PRA 2014 Compliant</span>
         </div>
       </header>
 
       {/* Main Hero & Department Cards */}
-      <main style={{
-        flex: 1,
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '4rem 2rem',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 10,
-        width: '100%'
-      }}>
-        <div style={{ textAlign: 'center', maxWidth: '720px', marginBottom: '3.5rem' }}>
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.4rem 1rem',
-            borderRadius: '9999px',
-            background: 'rgba(16, 185, 129, 0.1)',
-            border: '1px solid rgba(16, 185, 129, 0.25)',
-            color: '#6ee7b7',
-            fontSize: '0.8rem',
-            fontWeight: 600,
-            marginBottom: '1.25rem'
-          }}>
+      <main className="flex-1 max-w-[1200px] mx-auto w-full px-8 py-16 flex flex-col items-center justify-center z-10">
+        <div className="text-center max-w-[720px] mb-14">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 text-sm font-semibold mb-5">
             <Lock size={14} />
             <span>Select Authorized Operational Portal</span>
           </div>
 
-          <h1 style={{
-            fontSize: '2.5rem',
-            fontWeight: 800,
-            lineHeight: 1.2,
-            margin: '0 0 1rem 0',
-            letterSpacing: '-0.03em',
-            background: 'linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>
-            Institutional Assurance & Internal Audit Portal
+          <h1 className="text-4xl md:text-[2.5rem] font-extrabold leading-tight mb-4 tracking-tight bg-gradient-to-b from-white to-slate-300 bg-clip-text text-transparent">
+            Institutional Governance & Assurance System
           </h1>
 
-          <p style={{ fontSize: '1rem', color: '#94a3b8', margin: 0, lineHeight: 1.6 }}>
-            Select your department portal below.
+          <p className="text-base text-slate-400 m-0 leading-relaxed">
+            Access your department’s dedicated risk intelligence or audit management portal.
           </p>
         </div>
 
         {/* Two Department Selection Cards */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: '2rem',
-          width: '100%',
-          maxWidth: '900px'
-        }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-[900px]">
           {/* Card 1: Risk Management (ERM) */}
           <div 
-            onClick={() => {
-              window.location.href = 'https://zpc.riskintegra-erm.nayandjoerisktechconsulting.com/login?dept=erm';
-            }}
-            style={{
-              background: 'linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8))',
-              border: '1px solid rgba(59, 130, 246, 0.25)',
-              borderRadius: '20px',
-              padding: '2.5rem 2rem',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-6px)';
-              e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.6)';
-              e.currentTarget.style.boxShadow = '0 20px 40px rgba(59, 130, 246, 0.25)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.25)';
-              e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.3)';
-            }}
+            onClick={() => { window.location.href = 'https://zpc.riskintegra-erm.nayandjoerisktechconsulting.com/'; }}
+            className="group bg-gradient-to-br from-slate-800/70 to-slate-900/80 border border-blue-500/25 rounded-[20px] p-10 cursor-pointer transition-all duration-300 ease-out flex flex-col justify-between shadow-[0_10px_30px_rgba(0,0,0,0.3)] relative overflow-hidden hover:-translate-y-1.5 hover:border-blue-500/60 hover:shadow-[0_20px_40px_rgba(59,130,246,0.25)]"
           >
             <div>
-              <div style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '14px',
-                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1))',
-                border: '1px solid rgba(59, 130, 246, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '1.5rem',
-                color: '#60a5fa'
-              }}>
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 flex items-center justify-center mb-6 text-blue-400">
                 <ShieldCheck size={30} />
               </div>
 
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: '0 0 0.5rem 0', color: '#ffffff' }}>
+              <h3 className="text-2xl font-extrabold mb-2 text-white">
                 Risk Management
               </h3>
-              <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: '0 0 1.5rem 0', lineHeight: 1.5 }}>
+              <p className="text-sm text-slate-400 mb-6 leading-relaxed">
                 Enterprise Risk Management (ERM), Loss Ledgers, Key Risk Indicators (KRIs), BowTie Analysis, and Capital Allocation.
               </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '2rem' }}>
+              <div className="flex flex-col gap-2 mb-8">
                 {['KRI Monitoring & Alert Engine', 'Loss Ledger & Event Tracking', 'Capital Allocation & Stress Testing'].map((feat, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: '#cbd5e1' }}>
-                    <CheckCircle2 size={14} color="#3b82f6" />
+                  <div key={i} className="flex items-center gap-2 text-sm text-slate-300">
+                    <CheckCircle2 size={14} className="text-blue-500" />
                     <span>{feat}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingTop: '1rem',
-              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-              color: '#60a5fa',
-              fontWeight: 700,
-              fontSize: '0.9rem'
-            }}>
+            <div className="flex items-center justify-between pt-4 border-t border-white/10 text-blue-400 font-bold text-sm">
               <span>Launch ERM Portal</span>
-              <ArrowRight size={18} />
+              <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
 
           {/* Card 2: Internal Audit */}
           <div 
-            onClick={() => navigate('/login?dept=audit')}
-            style={{
-              background: 'linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8))',
-              border: '1px solid rgba(16, 185, 129, 0.25)',
-              borderRadius: '20px',
-              padding: '2.5rem 2rem',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-6px)';
-              e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.6)';
-              e.currentTarget.style.boxShadow = '0 20px 40px rgba(16, 185, 129, 0.25)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.25)';
-              e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.3)';
-            }}
+            onClick={() => { navigate('/login?dept=audit'); }}
+            className="group bg-gradient-to-br from-slate-800/70 to-slate-900/80 border border-emerald-500/25 rounded-[20px] p-10 cursor-pointer transition-all duration-300 ease-out flex flex-col justify-between shadow-[0_10px_30px_rgba(0,0,0,0.3)] relative overflow-hidden hover:-translate-y-1.5 hover:border-emerald-500/60 hover:shadow-[0_20px_40px_rgba(16,185,129,0.25)]"
           >
             <div>
-              <div style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '14px',
-                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1))',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '1.5rem',
-                color: '#34d399'
-              }}>
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border border-emerald-500/30 flex items-center justify-center mb-6 text-emerald-400">
                 <Landmark size={30} />
               </div>
 
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: '0 0 0.5rem 0', color: '#ffffff' }}>
+              <h3 className="text-2xl font-extrabold mb-2 text-white">
                 Internal Audit
               </h3>
-              <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: '0 0 1.5rem 0', lineHeight: 1.5 }}>
+              <p className="text-sm text-slate-400 mb-6 leading-relaxed">
                 Risk-Based Annual Audit Plan, Audit Universe, 10×10 Escalation Matrix, Working Papers, and PENCOM Compliance.
               </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '2rem' }}>
+              <div className="flex flex-col gap-2 mb-8">
                 {['Risk-Weighted Annual Audit Plan', '10×10 Escalation Matrix & Findings', 'WORM-Compliant Audit Trail'].map((feat, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: '#cbd5e1' }}>
-                    <CheckCircle2 size={14} color="#10b981" />
+                  <div key={i} className="flex items-center gap-2 text-sm text-slate-300">
+                    <CheckCircle2 size={14} className="text-emerald-500" />
                     <span>{feat}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingTop: '1rem',
-              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-              color: '#34d399',
-              fontWeight: 700,
-              fontSize: '0.9rem'
-            }}>
+            <div className="flex items-center justify-between pt-4 border-t border-white/10 text-emerald-400 font-bold text-sm">
               <span>Launch Audit Portal</span>
-              <ArrowRight size={18} />
+              <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer style={{
-        padding: '1.5rem 3rem',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        fontSize: '0.75rem',
-        color: '#64748b',
-        zIndex: 10
-      }}>
+      <footer className="px-12 py-6 border-t border-white/10 flex items-center justify-between text-xs text-slate-500 z-10">
         <div>© 2026 Zenith Pension Custodian (ZPC) Limited. All Rights Reserved.</div>
         <div>RiskINTEGRA Enterprise Platform · Powered by Nay&JoeRiskAndTechConsulting</div>
       </footer>

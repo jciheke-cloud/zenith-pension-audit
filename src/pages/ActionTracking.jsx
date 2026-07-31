@@ -71,40 +71,40 @@ const ActionTracking = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginBottom: '1.75rem' }}>
-        <div className="glass-card" style={{ padding: '1.2rem', cursor: 'pointer', border: activeTab === 'All' ? '1px solid #C81E1E' : '1px solid var(--border-color)' }} onClick={() => setActiveTab('All')}>
+      <div className="kpi-grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-4 mb-7">
+        <div className={`glass-card p-5 cursor-pointer border ${activeTab === 'All' ? 'border-[#C81E1E]' : 'border-[var(--border-color)]'}`} onClick={() => setActiveTab('All')}>
           <span className="card-title-sm">Total Logged CAPs</span>
-          <span className="card-metric" style={{ fontSize: '1.8rem' }}>{findings.length}</span>
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.3rem' }}>All audit observations</span>
+          <span className="card-metric text-[1.8rem]">{findings.length}</span>
+          <span className="text-[0.72rem] text-[var(--text-muted)] block mt-1">All audit observations</span>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.2rem', cursor: 'pointer', border: activeTab === 'Open' ? '1px solid #EF4444' : '1px solid var(--border-color)' }} onClick={() => setActiveTab('Open')}>
+        <div className={`glass-card p-5 cursor-pointer border ${activeTab === 'Open' ? 'border-[#EF4444]' : 'border-[var(--border-color)]'}`} onClick={() => setActiveTab('Open')}>
           <span className="card-title-sm">Open CAPs</span>
-          <span className="card-metric" style={{ fontSize: '1.8rem', color: '#EF4444' }}>{openCount}</span>
-          <span style={{ fontSize: '0.72rem', color: '#fca5a5', display: 'block', marginTop: '0.3rem' }}>Action not started</span>
+          <span className="card-metric text-[1.8rem] text-[#EF4444]">{openCount}</span>
+          <span className="text-[0.72rem] text-[#fca5a5] block mt-1">Action not started</span>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.2rem', cursor: 'pointer', border: activeTab === 'In Progress' ? '1px solid #F59E0B' : '1px solid var(--border-color)' }} onClick={() => setActiveTab('In Progress')}>
+        <div className={`glass-card p-5 cursor-pointer border ${activeTab === 'In Progress' ? 'border-[#F59E0B]' : 'border-[var(--border-color)]'}`} onClick={() => setActiveTab('In Progress')}>
           <span className="card-title-sm">In Progress</span>
-          <span className="card-metric" style={{ fontSize: '1.8rem', color: '#F59E0B' }}>{inProgCount}</span>
-          <span style={{ fontSize: '0.72rem', color: '#fde047', display: 'block', marginTop: '0.3rem' }}>Remediation underway</span>
+          <span className="card-metric text-[1.8rem] text-[#F59E0B]">{inProgCount}</span>
+          <span className="text-[0.72rem] text-[#fde047] block mt-1">Remediation underway</span>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.2rem', cursor: 'pointer', border: activeTab === 'Awaiting Validation' ? '1px solid #3B82F6' : '1px solid var(--border-color)' }} onClick={() => setActiveTab('Awaiting Validation')}>
+        <div className={`glass-card p-5 cursor-pointer border ${activeTab === 'Awaiting Validation' ? 'border-[#3B82F6]' : 'border-[var(--border-color)]'}`} onClick={() => setActiveTab('Awaiting Validation')}>
           <span className="card-title-sm">Awaiting Retesting</span>
-          <span className="card-metric" style={{ fontSize: '1.8rem', color: '#3B82F6' }}>{awaitingCount}</span>
-          <span style={{ fontSize: '0.72rem', color: '#93c5fd', display: 'block', marginTop: '0.3rem' }}>Needs audit verification</span>
+          <span className="card-metric text-[1.8rem] text-[#3B82F6]">{awaitingCount}</span>
+          <span className="text-[0.72rem] text-[#93c5fd] block mt-1">Needs audit verification</span>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.2rem', cursor: 'pointer', border: activeTab === 'Closed' ? '1px solid #10B981' : '1px solid var(--border-color)' }} onClick={() => setActiveTab('Closed')}>
+        <div className={`glass-card p-5 cursor-pointer border ${activeTab === 'Closed' ? 'border-[#10B981]' : 'border-[var(--border-color)]'}`} onClick={() => setActiveTab('Closed')}>
           <span className="card-title-sm">Closed & Verified</span>
-          <span className="card-metric" style={{ fontSize: '1.8rem', color: '#10B981' }}>{closedCount}</span>
-          <span style={{ fontSize: '0.72rem', color: '#34d399', display: 'block', marginTop: '0.3rem' }}>Successfully remediated</span>
+          <span className="card-metric text-[1.8rem] text-[#10B981]">{closedCount}</span>
+          <span className="text-[0.72rem] text-[#34d399] block mt-1">Successfully remediated</span>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="nav-tab-container" style={{ flexWrap: 'wrap' }}>
+      <div className="nav-tab-container flex-wrap">
         {['All', 'Open', 'In Progress', 'Awaiting Validation', 'Closed', 'Overdue'].map(t => {
           const count = t === 'All' ? findings.length : t === 'Open' ? openCount : t === 'In Progress' ? inProgCount : t === 'Awaiting Validation' ? awaitingCount : t === 'Closed' ? closedCount : overdueCount;
           const label = t === 'All' ? 'All Actions' : t;
@@ -112,12 +112,11 @@ const ActionTracking = () => {
             <button
               key={t}
               onClick={() => setActiveTab(t)}
-              className={`nav-tab-btn ${activeTab === t ? 'active' : ''}`}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              className={`nav-tab-btn flex items-center gap-2 ${activeTab === t ? 'active' : ''}`}
               title={`Filter Corrective Action Plans by status: ${label} (${count} actions).`}
             >
-              <span style={{ fontWeight: 600 }}>{label}</span>
-              <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.45rem', borderRadius: '12px' }}>
+              <span className="font-semibold">{label}</span>
+              <span className="badge-chip bg-white/[0.12] text-[0.72rem] py-[0.15rem] px-[0.45rem] rounded-xl">
                 {count}
               </span>
             </button>
@@ -132,19 +131,19 @@ const ActionTracking = () => {
             <h3 className="section-title">Management Corrective Action Register</h3>
             <p className="section-subtitle">Retesting verification workflows and automated escalation tracking</p>
           </div>
-          <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
-            <div style={{ position: 'relative' }}>
-              <Search size={16} style={{ position: 'absolute', left: '12px', top: '10px', color: 'var(--text-muted)' }} />
-              <input type="text" placeholder="Search CAPs..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2.2rem', width: '220px' }} />
+          <div className="flex gap-[0.8rem] items-center">
+            <div className="relative">
+              <Search size={16} className="absolute left-3 top-[10px] text-[var(--text-muted)]" />
+              <input type="text" placeholder="Search CAPs..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input pl-[2.2rem] w-[220px]" />
             </div>
-            <div style={{ position: 'relative' }}>
-              <button onClick={() => setShowFilter(!showFilter)} className="btn-secondary" style={{ padding: '0.5rem 0.8rem' }}>
+            <div className="relative">
+              <button onClick={() => setShowFilter(!showFilter)} className="btn-secondary px-[0.8rem] py-2">
                 <Filter size={16} /> Filter
               </button>
               {showFilter && (
-                <div style={{ position: 'absolute', right: 0, top: '110%', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.8rem', zIndex: 10, minWidth: '180px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.4rem' }}>By Priority</label>
-                  <select value={filterPriority} onChange={e => setFilterPriority(e.target.value)} className="form-select" style={{ width: '100%' }}>
+                <div className="absolute right-0 top-[110%] bg-[var(--bg-card)] border border-[var(--border-color)] rounded-md p-[0.8rem] z-10 min-w-[180px] shadow-lg">
+                  <label className="block text-[0.75rem] font-semibold mb-[0.4rem]">By Priority</label>
+                  <select value={filterPriority} onChange={e => setFilterPriority(e.target.value)} className="form-select w-full">
                     <option value="All">All Priorities</option>
                     <option value="Critical">Critical</option>
                     <option value="High">High</option>
@@ -174,30 +173,30 @@ const ActionTracking = () => {
             <tbody>
               {filteredCAPs.length === 0 ? (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: 'center', padding: '2rem' }}>No matching items found</td>
+                  <td colSpan="8" className="text-center p-8">No matching items found</td>
                 </tr>
               ) : (
               filteredCAPs.map(cap => {
                 const isOverdue = cap.status !== 'Closed' && cap.targetDate < '2026-07-24';
                 return (
                   <tr key={cap.findingNumber || cap.id}>
-                    <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{cap.findingNumber || cap.id || 'FND-001'}</td>
-                    <td style={{ fontWeight: 700, maxWidth: '270px' }}>{cap.observation || cap.title || 'Substantive Control Verification'}</td>
+                    <td className="tabular-nums font-extrabold text-[#fda4af]">{cap.findingNumber || cap.id || 'FND-001'}</td>
+                    <td className="font-bold max-w-[270px]">{cap.observation || cap.title || 'Substantive Control Verification'}</td>
                     <td>
                       {cap.priority === 'Critical' && <span className="badge-danger">Critical</span>}
                       {cap.priority === 'High' && <span className="badge-warning">High</span>}
                       {cap.priority === 'Medium' && <span className="badge-info">Medium</span>}
                       {(!cap.priority || cap.priority === 'Low') && <span className="badge-success">{cap.priority || 'Low'}</span>}
                     </td>
-                    <td style={{ fontSize: '0.84rem' }}>{cap.actionOwner || cap.owner || 'Head of Custody / Operations'}</td>
-                    <td style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', maxWidth: '300px' }}>{cap.managementResponse || cap.actionPlan || 'Automated verification and control testing committed by management.'}</td>
+                    <td className="text-[0.84rem]">{cap.actionOwner || cap.owner || 'Head of Custody / Operations'}</td>
+                    <td className="text-[0.82rem] text-[var(--text-secondary)] max-w-[300px]">{cap.managementResponse || cap.actionPlan || 'Automated verification and control testing committed by management.'}</td>
                     <td>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                        <span className="tabular-nums" style={{ fontWeight: 700, fontSize: '0.82rem' }}>{cap.targetDate || cap.dueDate || '2026-09-30'}</span>
+                      <div className="flex flex-col gap-[0.2rem]">
+                        <span className="tabular-nums font-bold text-[0.82rem]">{cap.targetDate || cap.dueDate || '2026-09-30'}</span>
                         {isOverdue ? (
-                          <span className="badge-chip-danger" style={{ fontSize: '0.68rem' }}>⚠️ Overdue &gt; 24 Days</span>
+                          <span className="badge-chip-danger text-[0.68rem]">⚠️ Overdue &gt; 24 Days</span>
                         ) : (
-                          <span className="badge-chip-success" style={{ fontSize: '0.68rem' }}>✓ On Schedule</span>
+                          <span className="badge-chip-success text-[0.68rem]">✓ On Schedule</span>
                         )}
                       </div>
                     </td>
@@ -210,29 +209,29 @@ const ActionTracking = () => {
                       {(!cap.status || (cap.status !== 'Open' && cap.status !== 'In Progress' && cap.status !== 'Awaiting Validation' && cap.status !== 'Closed' && cap.status !== 'Overdue')) && <span className="badge-warning">{cap.status || 'Open'}</span>}
                     </td>
                     <td>
-                      <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                      <div className="flex gap-[0.4rem] flex-wrap">
                         {cap.status === 'Open' && (
-                          <button onClick={() => updateFindingStatus(cap.findingNumber, 'In Progress')} className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
+                          <button onClick={() => updateFindingStatus(cap.findingNumber, 'In Progress')} className="btn-secondary px-[0.65rem] py-[0.3rem] text-[0.75rem]">
                             Start Work
                           </button>
                         )}
                         {cap.status === 'In Progress' && (
-                          <button onClick={() => setProofModalCap(cap)} className="btn-primary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
+                          <button onClick={() => setProofModalCap(cap)} className="btn-primary px-[0.65rem] py-[0.3rem] text-[0.75rem]">
                             <Paperclip size={12} /> Submit Remediation Proof
                           </button>
                         )}
                         {cap.status === 'Awaiting Validation' && (
                           <>
-                            <button onClick={() => setRetestModalCap(cap)} className="btn-success" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
+                            <button onClick={() => setRetestModalCap(cap)} className="btn-success px-[0.65rem] py-[0.3rem] text-[0.75rem]">
                               <FileCheck size={12} /> Auditor Retest Sign-Off
                             </button>
-                            <button onClick={() => updateFindingStatus(cap.findingNumber, 'In Progress')} className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
+                            <button onClick={() => updateFindingStatus(cap.findingNumber, 'In Progress')} className="btn-secondary px-[0.65rem] py-[0.3rem] text-[0.75rem]">
                               ✕ Reject & Rework
                             </button>
                           </>
                         )}
                         {(cap.status === 'Open' || cap.status === 'Overdue' || isOverdue) && (
-                          <button onClick={() => handleSendReminder(cap)} className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem', color: '#fca5a5' }}>
+                          <button onClick={() => handleSendReminder(cap)} className="btn-secondary px-[0.65rem] py-[0.3rem] text-[0.75rem] text-[#fca5a5]">
                             <Send size={12} /> Escalate
                           </button>
                         )}
@@ -249,18 +248,18 @@ const ActionTracking = () => {
       {/* Proof Submission Modal */}
       {proofModalCap && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '520px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800 }}>Submit Remediation Proof (Action Owner)</h3>
-              <button onClick={() => setProofModalCap(null)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+          <div className="modal-content max-w-[520px]">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="m-0 text-[1.15rem] font-extrabold">Submit Remediation Proof (Action Owner)</h3>
+              <button onClick={() => setProofModalCap(null)} className="bg-transparent border-none text-[var(--text-muted)] cursor-pointer">✕</button>
             </div>
-            <form onSubmit={handleSubmitProof} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleSubmitProof} className="flex flex-col gap-4">
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Finding Reference</label>
-                <input type="text" disabled value={`${proofModalCap.findingNumber} - ${proofModalCap.observation}`} className="form-input" style={{ opacity: 0.8 }} />
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Finding Reference</label>
+                <input type="text" disabled value={`${proofModalCap.findingNumber} - ${proofModalCap.observation}`} className="form-input opacity-80" />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Action Owner Remediation Summary</label>
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Action Owner Remediation Summary</label>
                 <textarea 
                   required 
                   rows={3} 
@@ -271,10 +270,10 @@ const ActionTracking = () => {
                 />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Attach Evidence Document / System Screenshot</label>
-                <input type="file" className="form-input" style={{ padding: '0.4rem' }} />
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Attach Evidence Document / System Screenshot</label>
+                <input type="file" className="form-input p-[0.4rem]" />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
+              <div className="flex justify-end gap-[0.85rem] mt-4">
                 <button type="button" onClick={() => setProofModalCap(null)} className="btn-secondary">Cancel</button>
                 <button type="submit" className="btn-primary">Submit to Auditor for Retesting</button>
               </div>
@@ -286,18 +285,18 @@ const ActionTracking = () => {
       {/* Auditor Verification Sign-Off Modal */}
       {retestModalCap && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '540px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#10B981' }}>Auditor Verification & Retest Sign-Off</h3>
-              <button onClick={() => setRetestModalCap(null)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+          <div className="modal-content max-w-[540px]">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="m-0 text-[1.15rem] font-extrabold text-[#10B981]">Auditor Verification & Retest Sign-Off</h3>
+              <button onClick={() => setRetestModalCap(null)} className="bg-transparent border-none text-[var(--text-muted)] cursor-pointer">✕</button>
             </div>
-            <form onSubmit={handlePassRetest} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handlePassRetest} className="flex flex-col gap-4">
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Finding Reference</label>
-                <input type="text" disabled value={`${retestModalCap.findingNumber} - ${retestModalCap.observation}`} className="form-input" style={{ opacity: 0.8 }} />
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Finding Reference</label>
+                <input type="text" disabled value={`${retestModalCap.findingNumber} - ${retestModalCap.observation}`} className="form-input opacity-80" />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Auditor Verification & Retesting Evaluation</label>
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Auditor Verification & Retesting Evaluation</label>
                 <textarea 
                   required 
                   rows={3} 
@@ -307,10 +306,10 @@ const ActionTracking = () => {
                   placeholder="Detail auditor retesting steps performed, sample verified, and confirmation of control effectiveness..." 
                 />
               </div>
-              <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '0.8rem', borderRadius: '6px', fontSize: '0.78rem', color: '#34d399' }}>
+              <div className="bg-emerald-500/10 border border-emerald-500/30 p-[0.8rem] rounded-md text-[0.78rem] text-[#34d399]">
                 ✓ Submitting this sign-off will permanently close Finding {retestModalCap.findingNumber} and log an immutable audit log entry.
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '0.5rem' }}>
+              <div className="flex justify-end gap-[0.85rem] mt-2">
                 <button type="button" onClick={() => setRetestModalCap(null)} className="btn-secondary">Cancel</button>
                 <button type="submit" className="btn-success">✓ Sign-Off & Close Finding</button>
               </div>

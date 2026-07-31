@@ -33,77 +33,42 @@ export const ForceChangePassword = ({ email, onComplete }) => {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '1.5rem',
-      fontFamily: "'Inter', sans-serif"
-    }}>
-      <div style={{
-        background: 'rgba(30, 41, 59, 0.7)',
-        backdropFilter: 'blur(16px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        padding: '2.5rem',
-        borderRadius: '1rem',
-        width: '100%',
-        maxWidth: '440px',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🔐</div>
-          <h2 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-indigo-950 flex items-center justify-center p-6 font-sans">
+      <div className="bg-slate-800/70 backdrop-blur-md border border-white/10 p-10 rounded-2xl w-full max-w-[440px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+        <div className="text-center mb-8">
+          <div className="text-[2.5rem] mb-2">🔐</div>
+          <h2 className="text-white text-2xl font-extrabold m-0">
             Mandatory Password Change
           </h2>
-          <p style={{ color: '#94A3B8', fontSize: '0.88rem', marginTop: '0.5rem' }}>
+          <p className="text-slate-400 text-[0.88rem] mt-2">
             AWS Cognito requires you to update the temporary password for <strong>{email}</strong> before proceeding.
           </p>
         </div>
 
         {error && (
-          <div style={{
-            background: 'rgba(239, 68, 68, 0.15)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            color: '#F87171',
-            padding: '0.75rem',
-            borderRadius: '0.5rem',
-            fontSize: '0.82rem',
-            marginBottom: '1.5rem',
-            textAlign: 'center'
-          }}>
+          <div className="bg-red-500/15 border border-red-500/30 text-red-400 p-3 rounded-lg text-[0.82rem] mb-6 text-center">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div>
-            <label style={{ display: 'block', color: '#CBD5E1', fontSize: '0.82rem', fontWeight: 600, marginBottom: '0.4rem' }}>
+            <label className="block text-slate-300 text-[0.82rem] font-semibold mb-1.5">
               New Permanent Password
             </label>
-            <div style={{ position: 'relative' }}>
+            <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 required
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Minimum 8 characters..."
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 2.2rem 0.75rem 0.75rem',
-                  borderRadius: '0.5rem',
-                  background: 'rgba(15, 23, 42, 0.6)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  color: 'white',
-                  fontSize: '0.9rem',
-                  boxSizing: 'border-box'
-                }}
+                className="w-full pl-3 pr-10 py-3 rounded-lg bg-slate-900/60 border border-white/15 text-white text-[0.9rem] box-border outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"
               />
               <button 
                 type="button" 
                 onClick={() => setShowPassword(!showPassword)} 
-                style={{ position: 'absolute', right: '0.8rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-white/40 cursor-pointer hover:text-white/70"
               >
                 {showPassword ? '👁' : '👁️‍🗨️'}
               </button>
@@ -111,7 +76,7 @@ export const ForceChangePassword = ({ email, onComplete }) => {
           </div>
 
           <div>
-            <label style={{ display: 'block', color: '#CBD5E1', fontSize: '0.82rem', fontWeight: 600, marginBottom: '0.4rem' }}>
+            <label className="block text-slate-300 text-[0.82rem] font-semibold mb-1.5">
               Confirm Permanent Password
             </label>
             <input
@@ -120,34 +85,18 @@ export const ForceChangePassword = ({ email, onComplete }) => {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Re-enter new password..."
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                borderRadius: '0.5rem',
-                background: 'rgba(15, 23, 42, 0.6)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                color: 'white',
-                fontSize: '0.9rem',
-                boxSizing: 'border-box'
-              }}
+              className="w-full px-3 py-3 rounded-lg bg-slate-900/60 border border-white/15 text-white text-[0.9rem] box-border outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            style={{
-              marginTop: '0.5rem',
-              padding: '0.85rem',
-              borderRadius: '0.5rem',
-              border: 'none',
-              background: loading ? '#475569' : 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-              color: 'white',
-              fontWeight: 700,
-              fontSize: '0.95rem',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
-            }}
+            className={`mt-2 p-[0.85rem] rounded-lg border-none text-white font-bold text-[0.95rem] shadow-[0_4px_12px_rgba(16,185,129,0.3)] transition-opacity ${
+              loading 
+                ? 'bg-slate-600 cursor-not-allowed opacity-70' 
+                : 'bg-gradient-to-br from-emerald-500 to-emerald-600 cursor-pointer hover:opacity-90'
+            }`}
           >
             {loading ? 'Securing Session & Upgrading Claims...' : 'Save & Enter Portal ➔'}
           </button>

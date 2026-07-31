@@ -62,7 +62,7 @@ const InternalControls = () => {
             Evaluating preventive, detective, and corrective controls across Design Effectiveness (DE) and Operating Effectiveness (OE).
           </p>
         </div>
-        <div className="header-actions" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <div className="header-actions flex gap-3 items-center">
           <AuditDataUpload targetModule="controls" buttonText="Batch Ingest Controls" />
           <button onClick={() => setIsModalOpen(true)} className="btn-primary">
             <Plus size={16} />
@@ -72,72 +72,65 @@ const InternalControls = () => {
       </div>
 
       {/* KPI Row */}
-      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginBottom: '1.75rem' }}>
-        <div className="glass-card" style={{ padding: '1.25rem' }}>
+      <div className="kpi-grid grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-4 mb-7">
+        <div className="glass-card bg-slate-900/85 p-5">
           <span className="card-title-sm">Total Evaluated Controls</span>
-          <span className="card-metric" style={{ fontSize: '1.8rem' }}>{controls.length}</span>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Across 12 Business Units</span>
+          <span className="card-metric text-[1.8rem]">{controls.length}</span>
+          <span className="text-xs text-[var(--text-muted)]">Across 12 Business Units</span>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.25rem' }}>
+        <div className="glass-card bg-slate-900/85 p-5">
           <span className="card-title-sm">Preventive Controls</span>
-          <span className="card-metric" style={{ fontSize: '1.8rem', color: '#10B981' }}>
+          <span className="card-metric text-[1.8rem] text-emerald-500">
             {controls.filter(c => c.type === 'Preventive').length}
           </span>
-          <span style={{ fontSize: '0.75rem', color: '#34d399' }}>First line of operational defense</span>
+          <span className="text-xs text-emerald-400">First line of operational defense</span>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.25rem' }}>
+        <div className="glass-card bg-slate-900/85 p-5">
           <span className="card-title-sm">Automated Controls Ratio</span>
-          <span className="card-metric" style={{ fontSize: '1.8rem', color: '#3B82F6' }}>
+          <span className="card-metric text-[1.8rem] text-blue-500">
             {Math.round((controls.filter(c => c.automation === 'Automated').length / (controls.length || 1)) * 100)}%
           </span>
-          <span style={{ fontSize: '0.75rem', color: '#93c5fd' }}>System enforced rules</span>
+          <span className="text-xs text-blue-300">System enforced rules</span>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.25rem' }}>
+        <div className="glass-card bg-slate-900/85 p-5">
           <span className="card-title-sm">Operating Deficiencies</span>
-          <span className="card-metric" style={{ fontSize: '1.8rem', color: '#EF4444' }}>
+          <span className="card-metric text-[1.8rem] text-red-500">
             {controls.filter(c => c.operatingEff !== 'Effective').length}
           </span>
-          <span style={{ fontSize: '0.75rem', color: '#fca5a5' }}>Controls failing field testing</span>
+          <span className="text-xs text-red-300">Controls failing field testing</span>
         </div>
       </div>
 
       {/* Filter / Search Bar */}
-      <div className="filter-bar" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <div style={{ position: 'relative', flex: 1 }}>
-          <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
+      <div className="filter-bar flex gap-4 items-center">
+        <div className="relative flex-1">
+          <Search size={16} className="absolute left-3 top-3 text-[var(--text-muted)]" />
           <input
             type="text"
             placeholder="Search controls by code, description, or owner..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            className="form-input"
-            style={{ paddingLeft: '2.4rem', width: '100%' }}
+            className="form-input pl-[2.4rem] w-full"
           />
         </div>
 
-        <div style={{ position: 'relative' }}>
+        <div className="relative">
           <button 
-            className="btn-secondary" 
+            className="btn-secondary flex items-center gap-1.5" 
             onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
           >
             <Filter size={16} />
             <span>Filters</span>
           </button>
           
           {showFilterDropdown && (
-            <div style={{ 
-              position: 'absolute', right: 0, top: '110%', background: 'var(--bg-dark, #1e293b)', 
-              border: '1px solid var(--border-color, rgba(255,255,255,0.1))', padding: '1rem', 
-              borderRadius: '8px', zIndex: 10, width: '220px', display: 'flex', flexDirection: 'column', gap: '1rem',
-              boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
-            }}>
+            <div className="absolute right-0 top-[110%] bg-[var(--bg-dark,#1e293b)] border border-[var(--border-color,rgba(255,255,255,0.1))] p-4 rounded-lg z-10 w-[220px] flex flex-col gap-4 shadow-[0_4px_15px_rgba(0,0,0,0.5)]">
               <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Control Type</label>
-                <select value={filterType} onChange={e => setFilterType(e.target.value)} className="form-select" style={{ width: '100%' }}>
+                <label className="block text-[0.82rem] mb-1">Control Type</label>
+                <select value={filterType} onChange={e => setFilterType(e.target.value)} className="form-select w-full">
                   <option value="All">All Types</option>
                   <option value="Preventive">Preventive</option>
                   <option value="Detective">Detective</option>
@@ -145,8 +138,8 @@ const InternalControls = () => {
                 </select>
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Automation Level</label>
-                <select value={filterAutomated} onChange={e => setFilterAutomated(e.target.value)} className="form-select" style={{ width: '100%' }}>
+                <label className="block text-[0.82rem] mb-1">Automation Level</label>
+                <select value={filterAutomated} onChange={e => setFilterAutomated(e.target.value)} className="form-select w-full">
                   <option value="All">All Levels</option>
                   <option value="Automated">Automated</option>
                   <option value="Semi-Automated">Semi-Automated</option>
@@ -159,7 +152,7 @@ const InternalControls = () => {
       </div>
 
       {/* Controls Table */}
-      <div className="glass-card">
+      <div className="glass-card bg-slate-900/85">
         <div className="section-header-bar">
           <div>
             <h3 className="section-title">Key Internal Controls & Field Testing Matrix</h3>
@@ -184,7 +177,7 @@ const InternalControls = () => {
             <tbody>
               {filteredControls.length === 0 ? (
                 <tr>
-                  <td colSpan="8" style={{textAlign:'center', padding: '2rem'}}>No matching items found</td>
+                  <td colSpan="8" className="text-center p-8">No matching items found</td>
                 </tr>
               ) : filteredControls.map(c => {
                 const de = c.designEff || c.designEffectiveness || 'Effective';
@@ -192,8 +185,8 @@ const InternalControls = () => {
                 const desc = c.description || c.name || 'Core Custody Internal Control Safeguard';
                 return (
                   <tr key={c.id}>
-                    <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{c.code || c.id}</td>
-                    <td style={{ fontWeight: 700, maxWidth: '360px' }}>{desc}</td>
+                    <td className="tabular-nums font-extrabold text-rose-300">{c.code || c.id}</td>
+                    <td className="font-bold max-w-[360px]">{desc}</td>
                     <td>
                       {c.type === 'Preventive' && <span className="badge-success">Preventive</span>}
                       {c.type === 'Detective' && <span className="badge-info">Detective</span>}
@@ -202,7 +195,7 @@ const InternalControls = () => {
                     <td>
                       {c.automation === 'Automated' && <span className="badge-purple">Automated</span>}
                       {c.automation === 'Semi-Automated' && <span className="badge-chip">Semi-Automated</span>}
-                      {(!c.automation || c.automation === 'Manual') && <span className="badge-chip" style={{ background: 'rgba(239,68,68,0.15)', color: '#fca5a5' }}>{c.automation || 'Manual'}</span>}
+                      {(!c.automation || c.automation === 'Manual') && <span className="badge-chip bg-red-500/15 text-red-300">{c.automation || 'Manual'}</span>}
                     </td>
                     <td>
                       {de.includes('Effective') || de === 'Adequate' ? (
@@ -218,8 +211,8 @@ const InternalControls = () => {
                         <span className="badge-danger">✕ Deficient OE</span>
                       )}
                     </td>
-                    <td style={{ fontSize: '0.84rem' }}>{c.owner || 'Head of Operations'}</td>
-                    <td className="tabular-nums" style={{ color: 'var(--text-muted)' }}>{c.lastTested || c.lastTestedDate || '2026-06-28'}</td>
+                    <td className="text-[0.84rem]">{c.owner || 'Head of Operations'}</td>
+                    <td className="tabular-nums text-[var(--text-muted)]">{c.lastTested || c.lastTestedDate || '2026-06-28'}</td>
                   </tr>
                 );
               })}
@@ -231,29 +224,29 @@ const InternalControls = () => {
       {/* Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '560px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Add Internal Control to Register</h3>
-              <button onClick={() => setIsModalOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+          <div className="modal-content max-w-[560px]">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="m-0 text-xl font-extrabold">Add Internal Control to Register</h3>
+              <button onClick={() => setIsModalOpen(false)} className="bg-transparent border-none text-[var(--text-muted)] cursor-pointer">✕</button>
             </div>
-            <form onSubmit={handleAddControl} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem' }}>
+            <form onSubmit={handleAddControl} className="flex flex-col gap-4">
+              <div className="grid grid-cols-[1fr_2fr] gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Control Code</label>
+                  <label className="block text-sm font-bold mb-1.5 text-[var(--text-secondary)]">Control Code</label>
                   <input type="text" required placeholder="e.g. CTRL-OPS-05" value={code} onChange={e => setCode(e.target.value)} className="form-input" />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Control Owner</label>
+                  <label className="block text-sm font-bold mb-1.5 text-[var(--text-secondary)]">Control Owner</label>
                   <input type="text" required placeholder="e.g. Head of Custody" value={owner} onChange={e => setOwner(e.target.value)} className="form-input" />
                 </div>
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Control Activity Description</label>
-                <textarea rows={3} required placeholder="Describe control activity, dual authorization rules, system checks..." value={description} onChange={e => setDescription(e.target.value)} className="form-input" style={{ width: '100%', resize: 'vertical' }} />
+                <label className="block text-sm font-bold mb-1.5 text-[var(--text-secondary)]">Control Activity Description</label>
+                <textarea rows={3} required placeholder="Describe control activity, dual authorization rules, system checks..." value={description} onChange={e => setDescription(e.target.value)} className="form-input w-full resize-y" />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Control Type</label>
+                  <label className="block text-sm font-bold mb-1.5 text-[var(--text-secondary)]">Control Type</label>
                   <select value={type} onChange={e => setType(e.target.value)} className="form-select">
                     <option value="Preventive">Preventive</option>
                     <option value="Detective">Detective</option>
@@ -261,7 +254,7 @@ const InternalControls = () => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Automation Level</label>
+                  <label className="block text-sm font-bold mb-1.5 text-[var(--text-secondary)]">Automation Level</label>
                   <select value={automation} onChange={e => setAutomation(e.target.value)} className="form-select">
                     <option value="Automated">Automated</option>
                     <option value="Semi-Automated">Semi-Automated</option>
@@ -269,23 +262,23 @@ const InternalControls = () => {
                   </select>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Design Effectiveness (DE)</label>
+                  <label className="block text-sm font-bold mb-1.5 text-[var(--text-secondary)]">Design Effectiveness (DE)</label>
                   <select value={designEff} onChange={e => setDesignEff(e.target.value)} className="form-select">
                     <option value="Effective">Effective</option>
                     <option value="Deficient">Deficient</option>
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Operating Effectiveness (OE)</label>
+                  <label className="block text-sm font-bold mb-1.5 text-[var(--text-secondary)]">Operating Effectiveness (OE)</label>
                   <select value={opEff} onChange={e => setOpEff(e.target.value)} className="form-select">
                     <option value="Effective">Effective</option>
                     <option value="Deficient">Deficient</option>
                   </select>
                 </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
+              <div className="flex justify-end gap-3 mt-4">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary">Cancel</button>
                 <button type="submit" className="btn-primary">Save Control</button>
               </div>

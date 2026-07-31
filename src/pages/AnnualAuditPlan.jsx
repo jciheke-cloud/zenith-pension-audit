@@ -141,7 +141,7 @@ const AnnualAuditPlan = () => {
             <Sliders size={16} />
             <span>Risk-Based Prioritization Engine</span>
           </button>
-          <button onClick={() => { setEditingPlanId(null); setAuditName(''); setIsModalOpen(true); }} className="btn-primary">
+          <button onClick={() => { setEditingPlanId(null); setAuditName(''); setIsModalOpen(true); }} className="btn-primary bg-[#C81E1E]">
             <Plus size={16} />
             <span>Create Annual Audit Plan</span>
           </button>
@@ -149,59 +149,59 @@ const AnnualAuditPlan = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.25rem', marginBottom: '2rem' }}>
-        <div className="glass-card" style={{ padding: '1.4rem' }}>
+      <div className="kpi-grid grid grid-cols-4 gap-[1.25rem] mb-[2rem]">
+        <div className="glass-card bg-slate-900/85 p-[1.4rem]">
           <span className="card-title-sm">Annual Plan Completion %</span>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.6rem', marginTop: '0.4rem' }}>
-            <span className="card-metric" style={{ fontSize: '2.2rem', color: completionPct >= 50 ? '#10B981' : '#F59E0B' }}>
+          <div className="flex items-baseline gap-[0.6rem] mt-[0.4rem]">
+            <span className={`card-metric text-[2.2rem] ${completionPct >= 50 ? 'text-[#10B981]' : 'text-[#F59E0B]'}`}>
               {completionPct}%
             </span>
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>({completedCount} / {totalPlans} audits)</span>
+            <span className="text-[0.82rem] text-[var(--text-muted)]">({completedCount} / {totalPlans} audits)</span>
           </div>
-          <div className="progress-container" style={{ marginTop: '0.8rem' }}>
+          <div className="progress-container mt-[0.8rem]">
             <div className={`progress-fill ${completionPct >= 50 ? 'emerald' : 'amber'}`} style={{ width: `${completionPct}%` }} />
           </div>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.4rem' }}>
+        <div className="glass-card bg-slate-900/85 p-[1.4rem]">
           <span className="card-title-sm">Total Planned vs Actual Hours</span>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.6rem', marginTop: '0.4rem' }}>
-            <span className="card-metric" style={{ fontSize: '2rem', color: '#3B82F6' }}>
+          <div className="flex items-baseline gap-[0.6rem] mt-[0.4rem]">
+            <span className="card-metric text-[2rem] text-[#3B82F6]">
               {totalActHours.toLocaleString()}
             </span>
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>/ {totalEstHours.toLocaleString()} hrs</span>
+            <span className="text-[0.82rem] text-[var(--text-muted)]">/ {totalEstHours.toLocaleString()} hrs</span>
           </div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '0.8rem', display: 'block' }}>
+          <span className="text-[0.78rem] text-[var(--text-dim)] mt-[0.8rem] block">
             Variance: {(totalActHours - totalEstHours).toLocaleString()} hours
           </span>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.4rem' }}>
+        <div className="glass-card bg-slate-900/85 p-[1.4rem]">
           <span className="card-title-sm">Total Audit Budget ({currency})</span>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.6rem', marginTop: '0.4rem' }}>
-            <span className="card-metric" style={{ fontSize: '2.2rem', color: '#fda4af' }}>
+          <div className="flex items-baseline gap-[0.6rem] mt-[0.4rem]">
+            <span className="card-metric text-[2.2rem] text-[#fda4af]">
               {currency === 'NGN' ? `₦${totalBudget.toFixed(1)}M` : `$${(totalBudget * 0.65).toFixed(1)}K`}
             </span>
           </div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '0.8rem', display: 'block' }}>
+          <span className="text-[0.78rem] text-[var(--text-dim)] mt-[0.8rem] block">
             Allocated across 12 ZPC Business Units
           </span>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.4rem' }}>
+        <div className="glass-card bg-slate-900/85 p-[1.4rem]">
           <span className="card-title-sm">Active Engagements Status</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', marginTop: '0.8rem' }}>
+          <div className="flex items-center gap-[1.2rem] mt-[0.8rem]">
             <div>
-              <span className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 800, color: '#3B82F6' }}>{inProgressCount}</span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>In Progress</span>
+              <span className="tabular-nums text-[1.5rem] font-[800] text-[#3B82F6]">{inProgressCount}</span>
+              <span className="text-[0.75rem] text-[var(--text-muted)] block">In Progress</span>
             </div>
             <div>
-              <span className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 800, color: '#F59E0B' }}>{auditPlans.filter(p => p.status === 'Approved').length}</span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Approved</span>
+              <span className="tabular-nums text-[1.5rem] font-[800] text-[#F59E0B]">{auditPlans.filter(p => p.status === 'Approved').length}</span>
+              <span className="text-[0.75rem] text-[var(--text-muted)] block">Approved</span>
             </div>
             <div>
-              <span className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 800, color: '#EF4444' }}>{auditPlans.filter(p => p.status === 'Draft').length}</span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Drafts</span>
+              <span className="tabular-nums text-[1.5rem] font-[800] text-[#EF4444]">{auditPlans.filter(p => p.status === 'Draft').length}</span>
+              <span className="text-[0.75rem] text-[var(--text-muted)] block">Drafts</span>
             </div>
           </div>
         </div>
@@ -210,30 +210,30 @@ const AnnualAuditPlan = () => {
       {/* Old Filter Bar removed */}
 
       {/* Annual Plan Table */}
-      <div className="glass-card">
+      <div className="glass-card bg-slate-900/85">
         <div className="section-header-bar">
           <div>
             <h3 className="section-title">Comprehensive Statutory & Internal Audit Plan</h3>
             <p className="section-subtitle">Risk-weighted schedule of audits across ZPC custodial operations</p>
           </div>
-          <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
-            <div style={{ position: 'relative' }}>
-              <Search size={16} style={{ position: 'absolute', left: '12px', top: '10px', color: 'var(--text-muted)' }} />
-              <input type="text" placeholder="Search Plans..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2.2rem', width: '220px' }} />
+          <div className="flex gap-[0.8rem] items-center">
+            <div className="relative">
+              <Search size={16} className="absolute left-[12px] top-[10px] text-[var(--text-muted)]" />
+              <input type="text" placeholder="Search Plans..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input pl-[2.2rem] w-[220px]" />
             </div>
-            <div style={{ position: 'relative' }}>
-              <button onClick={() => setShowFilter(!showFilter)} className="btn-secondary" style={{ padding: '0.5rem 0.8rem' }}>
+            <div className="relative">
+              <button onClick={() => setShowFilter(!showFilter)} className="btn-secondary px-[0.8rem] py-[0.5rem]">
                 <Filter size={16} /> Filter
               </button>
               {showFilter && (
-                <div style={{ position: 'absolute', right: 0, top: '110%', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.8rem', zIndex: 10, minWidth: '220px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.4rem' }}>By Department</label>
-                  <select value={filterDept} onChange={e => setFilterDept(e.target.value)} className="form-select" style={{ width: '100%', marginBottom: '0.8rem' }}>
+                <div className="absolute right-0 top-[110%] bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[6px] p-[0.8rem] z-10 min-w-[220px] shadow-[0_4px_12px_rgba(0,0,0,0.2)]">
+                  <label className="block text-[0.75rem] font-[600] mb-[0.4rem]">By Department</label>
+                  <select value={filterDept} onChange={e => setFilterDept(e.target.value)} className="form-select w-full mb-[0.8rem]">
                     <option value="All">All Departments</option>
                     {businessUnits.map(b => <option key={b.id} value={b.name}>{b.name}</option>)}
                   </select>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.4rem' }}>By Status</label>
-                  <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select" style={{ width: '100%' }}>
+                  <label className="block text-[0.75rem] font-[600] mb-[0.4rem]">By Status</label>
+                  <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select w-full">
                     <option value="All">All Statuses</option>
                     <option value="Completed">Completed</option>
                     <option value="In Progress">In Progress</option>
@@ -266,7 +266,7 @@ const AnnualAuditPlan = () => {
             <tbody>
               {filteredPlans.length === 0 ? (
                 <tr>
-                  <td colSpan="11" style={{ textAlign: 'center', padding: '2rem' }}>No matching items found</td>
+                  <td colSpan="11" className="text-center p-[2rem]">No matching items found</td>
                 </tr>
               ) : (
               filteredPlans.map(plan => {
@@ -276,8 +276,8 @@ const AnnualAuditPlan = () => {
                 const bdg = plan.budget !== undefined && !isNaN(plan.budget) ? plan.budget : 18;
                 return (
                   <tr key={plan.id}>
-                    <td className="tabular-nums" style={{ fontWeight: 800, color: '#fda4af' }}>{plan.id}</td>
-                    <td style={{ fontWeight: 700, maxWidth: '280px' }}>{plan.auditName || plan.title || 'Risk-Based Assurance Review'}</td>
+                    <td className="tabular-nums font-[800] text-[#fda4af]">{plan.id}</td>
+                    <td className="font-[700] max-w-[280px]">{plan.auditName || plan.title || 'Risk-Based Assurance Review'}</td>
                     <td>{plan.department || plan.businessUnit || 'Operations & Custody'}</td>
                     <td>
                       {rating === 'Critical' && <span className="badge-danger">Critical</span>}
@@ -286,42 +286,42 @@ const AnnualAuditPlan = () => {
                       {(!rating || rating === 'Low') && <span className="badge-success">{rating || 'Low'}</span>}
                     </td>
                     <td className="tabular-nums">{plan.frequency || 'Annual'}</td>
-                    <td className="tabular-nums" style={{ fontWeight: 700 }}>{hrs} hrs</td>
-                    <td style={{ fontSize: '0.84rem' }}>{plan.leadAuditor || plan.owner || 'Lead Senior Auditor'}</td>
-                    <td className="tabular-nums" style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                    <td className="tabular-nums font-[700]">{hrs} hrs</td>
+                    <td className="text-[0.84rem]">{plan.leadAuditor || plan.owner || 'Lead Senior Auditor'}</td>
+                    <td className="tabular-nums text-[0.78rem] text-[var(--text-muted)]">
                       {timeline}
                     </td>
-                    <td className="tabular-nums" style={{ fontWeight: 700, color: '#34d399' }}>
+                    <td className="tabular-nums font-[700] text-[#34d399]">
                       {currency === 'NGN' ? `₦${bdg}M` : `$${(bdg * 0.65).toFixed(1)}K`}
                     </td>
                     <td>
                       {plan.status === 'Completed' && <span className="badge-success">Completed</span>}
                       {(plan.status === 'In Progress' || plan.status === 'Active') && <span className="badge-info">In Progress</span>}
-                      {plan.status === 'BAC Approved' && <span className="badge-success" style={{ background: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.4)' }}>✓ BAC Approved</span>}
+                      {plan.status === 'BAC Approved' && <span className="badge-success bg-[rgba(16,185,129,0.2)] border border-[rgba(16,185,129,0.4)]">✓ BAC Approved</span>}
                       {plan.status === 'CAE Approved' && <span className="badge-purple">CAE Signed-Off</span>}
-                      {(plan.status === 'Draft' || (!plan.status || (plan.status !== 'Completed' && plan.status !== 'In Progress' && plan.status !== 'Active' && plan.status !== 'BAC Approved' && plan.status !== 'CAE Approved'))) && <span className="badge-chip" style={{ background: 'rgba(255,255,255,0.08)', color: '#cbd5e1' }}>{plan.status || 'Draft'}</span>}
+                      {(plan.status === 'Draft' || (!plan.status || (plan.status !== 'Completed' && plan.status !== 'In Progress' && plan.status !== 'Active' && plan.status !== 'BAC Approved' && plan.status !== 'CAE Approved'))) && <span className="badge-chip bg-[rgba(255,255,255,0.08)] text-[#cbd5e1]">{plan.status || 'Draft'}</span>}
                     </td>
                     <td>
-                      <div style={{ display: 'flex', gap: '0.4rem' }}>
-                        <button onClick={() => handleStartEdit(plan)} className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem', color: '#60A5FA' }}>
+                      <div className="flex gap-[0.4rem]">
+                        <button onClick={() => handleStartEdit(plan)} className="btn-secondary px-[0.65rem] py-[0.3rem] text-[0.75rem] text-[#60A5FA]">
                           Edit
                         </button>
                         {(plan.status === 'Draft' || !plan.status) && (
-                          <button onClick={() => handleCaeApprove(plan.id)} className="btn-primary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem', background: 'rgba(139, 92, 246, 0.2)', color: '#C4B5FD' }}>
+                          <button onClick={() => handleCaeApprove(plan.id)} className="btn-primary bg-[#C81E1E] px-[0.65rem] py-[0.3rem] text-[0.75rem] !bg-[rgba(139,92,246,0.2)] !text-[#C4B5FD]">
                             CAE Sign-Off
                           </button>
                         )}
                         {plan.status === 'CAE Approved' && (
-                          <button onClick={() => handleBacApprove(plan.id)} className="btn-success" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
+                          <button onClick={() => handleBacApprove(plan.id)} className="btn-success px-[0.65rem] py-[0.3rem] text-[0.75rem]">
                             BAC Ratify
                           </button>
                         )}
                         {plan.status === 'BAC Approved' && (
-                          <button onClick={() => handleStartFieldwork(plan.id)} className="btn-primary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
+                          <button onClick={() => handleStartFieldwork(plan.id)} className="btn-primary bg-[#C81E1E] px-[0.65rem] py-[0.3rem] text-[0.75rem]">
                             Launch Fieldwork
                           </button>
                         )}
-                        <button onClick={() => navigate('/engagements', { state: { auditPlanRef: plan.id } })} className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
+                        <button onClick={() => navigate('/engagements', { state: { auditPlanRef: plan.id } })} className="btn-secondary px-[0.65rem] py-[0.3rem] text-[0.75rem]">
                           View Engagement
                         </button>
                       </div>
@@ -337,25 +337,25 @@ const AnnualAuditPlan = () => {
       {/* Create Plan Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '620px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{editingPlanId ? 'Edit Annual Audit Plan' : 'Create Annual Audit Plan Entry'}</h3>
-              <button onClick={() => { setIsModalOpen(false); setEditingPlanId(null); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+          <div className="modal-content max-w-[620px]">
+            <div className="flex justify-between items-center mb-[1.4rem]">
+              <h3 className="m-0 text-[1.25rem] font-[800]">{editingPlanId ? 'Edit Annual Audit Plan' : 'Create Annual Audit Plan Entry'}</h3>
+              <button onClick={() => { setIsModalOpen(false); setEditingPlanId(null); }} className="bg-transparent border-none text-[var(--text-muted)] cursor-pointer">✕</button>
             </div>
-            <form onSubmit={handleCreatePlan} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleCreatePlan} className="flex flex-col gap-[1rem]">
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Audit Engagement Name</label>
+                <label className="block text-[0.8rem] font-[700] mb-[0.4rem] text-[var(--text-secondary)]">Audit Engagement Name</label>
                 <input type="text" required placeholder="e.g. Q4 Custody Fee Revenue & Billing Reconciliation Audit" value={auditName} onChange={e => setAuditName(e.target.value)} className="form-input" />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="grid grid-cols-2 gap-[1rem]">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Department</label>
+                  <label className="block text-[0.8rem] font-[700] mb-[0.4rem] text-[var(--text-secondary)]">Department</label>
                   <select value={department} onChange={e => setDepartment(e.target.value)} className="form-select">
                     {businessUnits.map(b => <option key={b.id} value={b.name}>{b.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Inherent Risk Rating</label>
+                  <label className="block text-[0.8rem] font-[700] mb-[0.4rem] text-[var(--text-secondary)]">Inherent Risk Rating</label>
                   <select value={riskRating} onChange={e => setRiskRating(e.target.value)} className="form-select">
                     <option value="Critical">Critical</option>
                     <option value="High">High</option>
@@ -364,9 +364,9 @@ const AnnualAuditPlan = () => {
                   </select>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+              <div className="grid grid-cols-3 gap-[1rem]">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Frequency</label>
+                  <label className="block text-[0.8rem] font-[700] mb-[0.4rem] text-[var(--text-secondary)]">Frequency</label>
                   <select value={frequency} onChange={e => setFrequency(e.target.value)} className="form-select">
                     <option value="Monthly">Monthly</option>
                     <option value="Quarterly">Quarterly</option>
@@ -375,31 +375,31 @@ const AnnualAuditPlan = () => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Est. Hours</label>
+                  <label className="block text-[0.8rem] font-[700] mb-[0.4rem] text-[var(--text-secondary)]">Est. Hours</label>
                   <input type="number" value={estimatedHours} onChange={e => setEstimatedHours(e.target.value)} className="form-input" />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Budget (₦ Millions)</label>
+                  <label className="block text-[0.8rem] font-[700] mb-[0.4rem] text-[var(--text-secondary)]">Budget (₦ Millions)</label>
                   <input type="number" step="0.1" value={budget} onChange={e => setBudget(e.target.value)} className="form-input" />
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+              <div className="grid grid-cols-3 gap-[1rem]">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Lead Auditor</label>
+                  <label className="block text-[0.8rem] font-[700] mb-[0.4rem] text-[var(--text-secondary)]">Lead Auditor</label>
                   <input type="text" value={leadAuditor} onChange={e => setLeadAuditor(e.target.value)} className="form-input" />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Start Date</label>
+                  <label className="block text-[0.8rem] font-[700] mb-[0.4rem] text-[var(--text-secondary)]">Start Date</label>
                   <input type="date" value={plannedStartDate} onChange={e => setPlannedStartDate(e.target.value)} className="form-input" />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>End Date</label>
+                  <label className="block text-[0.8rem] font-[700] mb-[0.4rem] text-[var(--text-secondary)]">End Date</label>
                   <input type="date" value={plannedEndDate} onChange={e => setPlannedEndDate(e.target.value)} className="form-input" />
                 </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
+              <div className="flex justify-end gap-[0.85rem] mt-[1rem]">
                 <button type="button" onClick={() => { setIsModalOpen(false); setEditingPlanId(null); }} className="btn-secondary">Cancel</button>
-                <button type="submit" className="btn-primary">{editingPlanId ? 'Save Changes' : 'Add to Annual Plan'}</button>
+                <button type="submit" className="btn-primary bg-[#C81E1E]">{editingPlanId ? 'Save Changes' : 'Add to Annual Plan'}</button>
               </div>
             </form>
           </div>
