@@ -3,6 +3,7 @@ import { AuditContext } from '../context/AuditContext';
 import { FolderOpen, Plus, FileText, Download, Eye, CheckCircle, Search, Filter, ShieldCheck, Edit2, Trash2, Hash, Layers, CheckSquare, AlertTriangle, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AuditDataUpload from '../components/AuditDataUpload';
+import ConfirmModal from '../components/ConfirmModal';
 
 const WorkingPapers = () => {
   const { workingPapers, addWorkingPaper, setWorkingPapers, auditPlans, checkRbacPermission, verifyRbacOrAlert, addNotification } = useContext(AuditContext);
@@ -13,6 +14,7 @@ const WorkingPapers = () => {
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingWpId, setEditingWpId] = useState(null);
+  const [confirmData, setConfirmData] = useState({ isOpen: false, onConfirm: null, title: '', message: '' });
 
   // Inspector Drawer State
   const [inspectWp, setInspectWp] = useState(null);
@@ -41,9 +43,15 @@ const WorkingPapers = () => {
 
   const handleDeleteWp = (wpId, wpTitle) => {
     if (!verifyRbacOrAlert('delete', 'workingPapers')) return;
-    if (!window.confirm(`Are you sure you want to delete working paper "${wpTitle}"?`)) return;
-    setWorkingPapers(prev => prev.filter(w => w.id !== wpId));
-    addNotification('Working Paper Deleted', `Working paper "${wpTitle}" has been removed.`, 'info');
+    setConfirmData({
+      isOpen: true,
+      title: 'Delete Working Paper',
+      message: `Are you sure you want to delete working paper "${wpTitle}"?`,
+      onConfirm: () => {
+        setWorkingPapers(prev => prev.filter(w => w.id !== wpId));
+        addNotification('Working Paper Deleted', `Working paper "${wpTitle}" has been removed.`, 'info');
+      }
+    });
   };
 
   const filteredPapers = workingPapers.filter(wp => {
@@ -400,6 +408,13 @@ const WorkingPapers = () => {
           </div>
         </div>
       )}
+      <ConfirmModal 
+        isOpen={confirmData.isOpen} 
+        onClose={() => setConfirmData(prev => ({ ...prev, isOpen: false }))} 
+        onConfirm={confirmData.onConfirm} 
+        title={confirmData.title} 
+        message={confirmData.message} 
+      />
     </div>
   );
 };

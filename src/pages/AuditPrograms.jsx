@@ -2,16 +2,18 @@ import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { FileText, Plus, CheckSquare, Shield, Layers, Search, Filter, Edit2, Trash2 } from 'lucide-react';
 import AuditDataUpload from '../components/AuditDataUpload';
+import ConfirmModal from '../components/ConfirmModal';
 import { useNavigate } from 'react-router-dom';
 
 const AuditPrograms = () => {
-  const { auditPrograms, setAuditPrograms, addNotification, checkRbacPermission, verifyRbacOrAlert } = useContext(AuditContext);
+  const { auditPrograms, setAuditPrograms, addNotification, checkRbacPermission, verifyRbacOrAlert, addProcedureToProgram } = useContext(AuditContext);
   const navigate = useNavigate();
 
   const [selectedProgramId, setSelectedProgramId] = useState(auditPrograms[0]?.id || 'AP-01');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [showFilter, setShowFilter] = useState(false);
+  const [confirmData, setConfirmData] = useState({ isOpen: false, onConfirm: null, title: '', message: '' });
 
   const selectedProgram = auditPrograms.find(p => p.id === selectedProgramId) || auditPrograms[0];
 
@@ -31,7 +33,6 @@ const AuditPrograms = () => {
   });
 
   const handleStartEdit = (proc) => {
-    if (!verifyRbacOrAlert('edit', 'programs')) return;
     setEditingProcId(proc.id);
     setProcRef(proc.ref || '');
     setProcStep(proc.step || '');
@@ -42,17 +43,23 @@ const AuditPrograms = () => {
 
   const handleDeleteProcedure = (procId, procRefCode) => {
     if (!verifyRbacOrAlert('delete', 'programs')) return;
-    if (!window.confirm(`Are you sure you want to delete testing procedure ${procRefCode}?`)) return;
-    setAuditPrograms(prev => prev.map(prog => {
-      if (prog.id === selectedProgramId) {
-        return {
-          ...prog,
-          procedures: prog.procedures.filter(p => p.id !== procId)
-        };
+    setConfirmData({
+      isOpen: true,
+      title: 'Delete Procedure',
+      message: `Are you sure you want to delete testing procedure ${procRefCode}?`,
+      onConfirm: () => {
+        setAuditPrograms(prev => prev.map(prog => {
+          if (prog.id === selectedProgramId) {
+            return {
+              ...prog,
+              procedures: prog.procedures.filter(p => p.id !== procId)
+            };
+          }
+          return prog;
+        }));
+        addNotification('Procedure Deleted', `Procedure ${procRefCode} has been removed from "${selectedProgram.title || selectedProgram.name || 'this program'}".`, 'info');
       }
-      return prog;
-    }));
-    addNotification('Procedure Deleted', `Procedure ${procRefCode} has been removed from "${selectedProgram.title || selectedProgram.name || 'this program'}".`, 'info');
+    });
   };
 
   const handleAddProcedure = (e) => {
@@ -79,25 +86,15 @@ const AuditPrograms = () => {
       addNotification('Procedure Updated', `Testing step ${procRef.toUpperCase()} updated successfully.`, 'success');
     } else {
       const newProc = {
-        id: `proc-${Date.now()}`,
         ref: procRef.toUpperCase(),
         step: procStep,
         sampleSize: procSample,
         assignedTo: 'Lead Reviewer',
-        status: 'In Progress',
-        riskLink: procRisk || `${selectedProgram.title || selectedProgram.name || 'Standard'} Core Risk`
+        status: 'Pending',
+        riskLink: procRisk || `${selectedProgram?.title || selectedProgram?.name || 'Standard'} Core Risk`
       };
-
-      setAuditPrograms(prev => prev.map(prog => {
-        if (prog.id === selectedProgramId) {
-          return {
-            ...prog,
-            procedures: [...prog.procedures, newProc]
-          };
-        }
-        return prog;
-      }));
-      addNotification('Procedure Added', `Testing step ${newProc.ref} added to "${selectedProgram.title || selectedProgram.name || 'Standard Audit Program'}".`, 'success');
+      addProcedureToProgram(selectedProgram?.id || selectedProgramId, newProc);
+      addNotification('Procedure Added', `Testing step ${procRef.toUpperCase()} added to "${selectedProgram?.title || selectedProgram?.name || 'Standard Audit Program'}".`, 'success');
     }
 
     setIsProcModalOpen(false);
@@ -121,10 +118,7 @@ const AuditPrograms = () => {
             <span>Go to Active Engagements ➔</span>
           </button>
           <button 
-            onClick={() => {
-              if (!verifyRbacOrAlert('create', 'programs')) return;
-              setIsProcModalOpen(true);
-            }} 
+            onClick={() => setIsProcModalOpen(true)} 
             className="btn-primary"
           >
             <Plus size={16} />
@@ -297,7 +291,10 @@ const AuditPrograms = () => {
         </div>
       </div>
 
-      {/* Add / Edit Procedure Modal */}
+      </>
+      )}
+
+      {/* Add / Edit Procedure Modal — moved outside selectedProgram conditional */}
       {isProcModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content" style={{ maxWidth: '560px' }}>
@@ -334,8 +331,13 @@ const AuditPrograms = () => {
           </div>
         </div>
       )}
-      </>
-      )}
+      <ConfirmModal 
+        isOpen={confirmData.isOpen} 
+        onClose={() => setConfirmData(prev => ({ ...prev, isOpen: false }))} 
+        onConfirm={confirmData.onConfirm} 
+        title={confirmData.title} 
+        message={confirmData.message} 
+      />
     </div>
   );
 };

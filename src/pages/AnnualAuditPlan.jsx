@@ -32,7 +32,7 @@ const AnnualAuditPlan = () => {
   const inProgressCount = auditPlans.filter(p => p.status === 'In Progress').length;
   const completionPct = totalPlans > 0 ? Math.round((completedCount / totalPlans) * 100) : 0;
 
-  const totalEstHours = auditPlans.reduce((acc, curr) => acc + (curr.estimatedHours || 0), 0);
+  const totalEstHours = auditPlans.reduce((acc, curr) => acc + (curr.plannedHours || curr.estimatedHours || 0), 0);
   const totalActHours = auditPlans.reduce((acc, curr) => acc + (curr.actualHours || 0), 0);
   const totalBudget = auditPlans.reduce((acc, curr) => acc + (curr.budget || 0), 0);
 
@@ -50,10 +50,10 @@ const AnnualAuditPlan = () => {
     setDepartment(plan.department || plan.businessUnit || 'Operations');
     setRiskRating(plan.riskRating || plan.priority || 'High');
     setFrequency(plan.frequency || 'Quarterly');
-    setEstimatedHours(plan.estimatedHours || plan.budgetHours || 300);
+    setEstimatedHours(plan.plannedHours || plan.estimatedHours || plan.budgetHours || 300);
     setLeadAuditor(plan.leadAuditor || plan.owner || 'Senior Auditor');
-    setPlannedStartDate(plan.plannedStartDate || '2026-08-01');
-    setPlannedEndDate(plan.plannedEndDate || '2026-09-30');
+    setPlannedStartDate(plan.startDate || plan.plannedStartDate || '2026-08-01');
+    setPlannedEndDate(plan.endDate || plan.plannedEndDate || '2026-09-30');
     setBudget(plan.budget !== undefined && !isNaN(plan.budget) ? plan.budget : 15.0);
     setIsModalOpen(true);
   };
@@ -130,7 +130,7 @@ const AnnualAuditPlan = () => {
     <div className="page-container">
       <div className="module-header">
         <div>
-          <h1 className="module-title">Annual Audit Plan (2026 Audit Program)</h1>
+          <h1 className="module-title">Annual Audit Plan</h1>
           <p className="module-subtitle">
             Replacing static Excel spreadsheets with a live, risk-weighted annual audit engagement schedule and budget tracker.
           </p>
@@ -213,7 +213,7 @@ const AnnualAuditPlan = () => {
       <div className="glass-card">
         <div className="section-header-bar">
           <div>
-            <h3 className="section-title">2026 Comprehensive Statutory & Internal Audit Plan</h3>
+            <h3 className="section-title">Comprehensive Statutory & Internal Audit Plan</h3>
             <p className="section-subtitle">Risk-weighted schedule of audits across ZPC custodial operations</p>
           </div>
           <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
@@ -271,8 +271,8 @@ const AnnualAuditPlan = () => {
               ) : (
               filteredPlans.map(plan => {
                 const rating = plan.riskRating || plan.priority || 'High';
-                const hrs = plan.estimatedHours || plan.budgetHours || 180;
-                const timeline = plan.plannedStartDate ? `${plan.plannedStartDate} ➔ ${plan.plannedEndDate}` : plan.plannedQuarter || 'Q2 2026';
+                const hrs = plan.plannedHours || plan.estimatedHours || plan.budgetHours || 180;
+                const timeline = (plan.startDate || plan.plannedStartDate) ? `${plan.startDate || plan.plannedStartDate} ➔ ${plan.endDate || plan.plannedEndDate}` : plan.plannedQuarter || 'Q2 2026';
                 const bdg = plan.budget !== undefined && !isNaN(plan.budget) ? plan.budget : 18;
                 return (
                   <tr key={plan.id}>

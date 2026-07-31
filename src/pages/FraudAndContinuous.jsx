@@ -4,7 +4,7 @@ import { Eye, ShieldAlert, Plus, AlertOctagon, CheckCircle, Clock, RefreshCw, La
 import { useNavigate } from 'react-router-dom';
 
 const FraudAndContinuous = () => {
-  const { fraudCases, setFraudCases, continuousExceptions, setContinuousExceptions, saveFinding, addNotification } = useContext(AuditContext);
+  const { fraudCases, addFraudCase, continuousExceptions, setContinuousExceptions, saveFinding, addNotification } = useContext(AuditContext);
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('continuous'); // 'continuous' or 'fraud'
@@ -46,7 +46,7 @@ const FraudAndContinuous = () => {
       status,
       investigator: 'Forensic Audit & Internal Security'
     };
-    setFraudCases(prev => [newCase, ...prev]);
+    addFraudCase(newCase);
     addNotification('Fraud Investigation Logged', `Case ${newCase.id} (${newCase.title}) initiated.`, 'danger');
     setIsModalOpen(false);
     setTitle('');

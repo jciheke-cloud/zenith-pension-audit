@@ -285,7 +285,7 @@ export const AuditProvider = ({ children }) => {
   const fetchAuditData = async (silent = false) => {
     if (!silent) setIsSyncing(true);
     try {
-      const [universeData, findingsData, plansData, fetchedRisks, fetchedControls, fetchedActions, fetchedLosses, papersData] = await Promise.all([
+      const [universeData, findingsData, plansData, fetchedRisks, fetchedControls, fetchedActions, fetchedLosses, papersData, programsData, regulatoryData, fraudData, continuousData] = await Promise.all([
         fetch(`${AUDIT_API}/api/audit/universe`).then(r => r.ok ? r.json() : []).catch(() => []),
         fetch(`${AUDIT_API}/api/audit/findings`).then(r => r.ok ? r.json() : []).catch(() => []),
         fetch(`${AUDIT_API}/api/audit/plans`).then(r => r.ok ? r.json() : []).catch(() => []),
@@ -294,6 +294,10 @@ export const AuditProvider = ({ children }) => {
         fetch(`${AUDIT_API}/api/actions`).then(r => r.ok ? r.json() : []).catch(() => []),
         fetch(`${AUDIT_API}/api/losses`).then(r => r.ok ? r.json() : []).catch(() => []),
         fetch(`${AUDIT_API}/api/audit/working-papers`).then(r => r.ok ? r.json() : []).catch(() => []),
+        fetch(`${AUDIT_API}/api/audit/programs`).then(r => r.ok ? r.json() : []).catch(() => []),
+        fetch(`${AUDIT_API}/api/audit/regulatory`).then(r => r.ok ? r.json() : []).catch(() => []),
+        fetch(`${AUDIT_API}/api/audit/monitoring/fraud-cases`).then(r => r.ok ? r.json() : []).catch(() => []),
+        fetch(`${AUDIT_API}/api/audit/monitoring/continuous-exceptions`).then(r => r.ok ? r.json() : []).catch(() => []),
       ]);
 
       if (Array.isArray(fetchedRisks)) setErmRisks(fetchedRisks);
@@ -301,17 +305,15 @@ export const AuditProvider = ({ children }) => {
       if (Array.isArray(fetchedActions)) setErmActions(fetchedActions);
       if (Array.isArray(fetchedLosses)) setErmLosses(fetchedLosses);
 
-      // Sync Controls to Internal Controls State
-
-
       // Business Units Initialization & Persistence Sync
       if (Array.isArray(universeData) && universeData.length > 0) {
         const mappedBUs = universeData.map(u => ({
           id: u.id,
+          code: u.unit_id || u.unitId,
           name: u.process_name || u.processName || u.title || 'Custody Process',
           head: u.lead_auditor || u.leadAuditor || 'Department Head',
           staffCount: Number(u.staff_count || u.staffCount || 15),
-          riskRating: u.priority || 'Medium',
+          riskLevel: u.priority || 'Medium',
           coveragePct: u.overall_score ? Math.round((u.overall_score / 10) * 100) : 100
         }));
         setBusinessUnits(prev => mappedBUs.length > 0 ? mappedBUs : INITIAL_BUSINESS_UNITS);
@@ -325,8 +327,9 @@ export const AuditProvider = ({ children }) => {
           id: c.id ? `CTRL-${c.id}` : `CTRL-${Date.now()}`,
           code: c.reference_id || c.code || `CTRL-${c.id}`,
           description: c.title || c.description || c.event || 'Internal Safeguard Control',
-          type: c.type || 'Preventive',
-          automation: (typeof normalizeAutomation === 'function' ? normalizeAutomation(c.automation || c.automation_level || c.automation_type) : 'Automated'),
+          type: c.control_type || c.type || 'Preventative',
+          automation: c.control_nature || c.nature || 'Automated',
+          frequency: c.frequency || 'Daily',
           designEff: c.design_effectiveness || c.effectiveness || 'Effective',
           operatingEff: c.operating_effectiveness || c.effectiveness || 'Effective',
           owner: c.owner || 'Custody Operations Team',
@@ -418,26 +421,91 @@ export const AuditProvider = ({ children }) => {
           department: p.department || 'General Operations',
           budget: Number(p.budget || 0),
           actualHours: Number(p.actual_hours || p.actualHours || 0),
-          status: p.status || 'Approved'
+          status: p.status || 'Approved',
+          plannedHours: Number(p.planned_hours || p.plannedHours || 120),
+          startDate: p.start_date || p.startDate || '',
+          endDate: p.end_date || p.endDate || '',
+          leadAuditor: p.lead_auditor || p.leadAuditor || 'Lead Auditor'
         }));
         setAuditPlans(prev => mappedPlans.length > 0 ? mappedPlans : INITIAL_ANNUAL_AUDIT_PLANS);
       } else {
         setAuditPlans(INITIAL_ANNUAL_AUDIT_PLANS);
       }
 
-      if (Array.isArray(papersData) && papersData.length > 0) {
-        const mappedPapers = papersData.map(wp => ({
-          id: wp.id,
-          paperId: wp.paper_id || wp.paperId || `WP-${wp.id}`,
-          title: wp.title || wp.name || 'Working Paper',
-          type: wp.type || 'Test Evidence',
-          status: wp.status || 'Draft',
-          author: wp.author || wp.createdBy || 'Auditor',
-          date: wp.date || wp.createdAt || new Date().toISOString().split('T')[0]
-        }));
-        setWorkingPapers(prev => mappedPapers.length > 0 ? mappedPapers : INITIAL_WORKING_PAPERS);
+        if (Array.isArray(papersData) && papersData.length > 0) {
+          const mappedPapers = papersData.map(wp => ({
+            id: wp.id,
+            paperId: wp.paper_id || wp.paperId || `WP-${wp.id}`,
+            title: wp.title || wp.name || 'Working Paper',
+            fileType: wp.file_type || wp.type || 'PDF Document (.pdf)',
+            linkedAudit: wp.linked_audit || 'General Audit',
+            samplingMethod: wp.sampling_method || 'Risk-based',
+            sampleSize: wp.sample_size || 'N/A',
+            uploadedBy: wp.uploaded_by || wp.author || wp.createdBy || 'Auditor',
+            status: wp.status || 'Draft',
+            uploadDate: wp.upload_date || wp.date || wp.createdAt || new Date().toISOString().split('T')[0]
+          }));
+          setWorkingPapers(prev => mappedPapers.length > 0 ? mappedPapers : INITIAL_WORKING_PAPERS);
       } else {
         setWorkingPapers(INITIAL_WORKING_PAPERS);
+      }
+
+      // Audit Programs (with nested procedures)
+      if (Array.isArray(programsData) && programsData.length > 0) {
+        setAuditPrograms(programsData.map(p => ({
+          id: p.id,
+          title: p.title,
+          objectives: p.objectives || '',
+          category: p.category || 'General',
+          procedures: Array.isArray(p.procedures) ? p.procedures.map(pr => ({
+            id: pr.id,
+            ref: pr.ref || pr.reference || `PROC-${pr.id}`,
+            step: pr.step || pr.description || '',
+            sampleSize: pr.sampleSize || pr.sample_size || '25 Transactions',
+            riskLink: pr.riskLink || pr.risk_link || '',
+            assignedTo: pr.assignedTo || pr.assigned_to || 'Lead Reviewer',
+            status: pr.status || 'Pending'
+          })) : []
+        })));
+      }
+
+      // Regulatory Reviews
+      if (Array.isArray(regulatoryData) && regulatoryData.length > 0) {
+        setRegulatoryReviews(regulatoryData.map(r => ({
+          id: r.id,
+          title: r.title,
+          regulatoryBody: r.regulatory_body || r.regulatoryBody || 'PENCOM',
+          date: r.date,
+          findingsCount: Number(r.findings_count || r.findingsCount || 0),
+          status: r.status || 'Scheduled',
+          leadReviewer: r.lead_reviewer || r.leadReviewer || 'Chief Compliance Officer / CAE'
+        })));
+      }
+
+      // Fraud Cases
+      if (Array.isArray(fraudData) && fraudData.length > 0) {
+        setFraudCases(fraudData.map(f => ({
+          id: f.id,
+          title: f.title,
+          department: f.department,
+          dateOpened: f.date_opened || f.dateOpened,
+          financialImpact: Number(f.financial_impact || f.financialImpact || 0),
+          recoveredAmount: Number(f.recovered_amount || f.recoveredAmount || 0),
+          status: f.status || 'Under Investigation',
+          investigator: f.investigator || 'Forensic Audit & Internal Security'
+        })));
+      }
+
+      // Continuous Monitoring Exceptions
+      if (Array.isArray(continuousData) && continuousData.length > 0) {
+        setContinuousExceptions(continuousData.map(c => ({
+          id: c.id,
+          ruleName: c.rule_name || c.ruleName,
+          details: c.details,
+          severity: c.severity || 'Medium',
+          status: c.status || 'Open',
+          detectedAt: c.detected_at || c.detectedAt
+        })));
       }
 
       setLastSyncedAt(new Date());
@@ -586,7 +654,102 @@ export const AuditProvider = ({ children }) => {
     }
   };
 
-  // Automatic real-time 30-second background polling engine (fetches DB + syncs ERM automatically)
+  // ─── API-BACKED ACTION HANDLERS ────────────────────────────────────────────
+
+  // Add Regulatory Review (optimistic + persist)
+  const addRegulatoryReview = (reviewData) => {
+    const newRev = { id: reviewData.id || `reg-${Date.now()}`, ...reviewData };
+    setRegulatoryReviews(prev => [newRev, ...prev]);
+    fetch(`${AUDIT_API}/api/audit/regulatory`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: newRev.id,
+        title: newRev.title,
+        regulatory_body: newRev.regulatoryBody,
+        date: newRev.date,
+        findings_count: newRev.findingsCount || 0,
+        status: newRev.status || 'Scheduled',
+        lead_reviewer: newRev.leadReviewer || 'Chief Compliance Officer / CAE'
+      })
+    }).catch(err => console.warn('Regulatory review persist error:', err));
+  };
+
+  // Add Fraud Case (optimistic + persist)
+  const addFraudCase = (caseData) => {
+    const newCase = { id: caseData.id || `FRD-2026-${String(Date.now()).slice(-3)}`, ...caseData };
+    setFraudCases(prev => [newCase, ...prev]);
+    fetch(`${AUDIT_API}/api/audit/monitoring/fraud-cases`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: newCase.id,
+        title: newCase.title,
+        department: newCase.department,
+        date_opened: newCase.dateOpened || new Date().toISOString().split('T')[0],
+        financial_impact: newCase.financialImpact || 0,
+        recovered_amount: newCase.recoveredAmount || 0,
+        status: newCase.status || 'Under Investigation',
+        investigator: newCase.investigator || 'Forensic Audit & Internal Security'
+      })
+    }).catch(err => console.warn('Fraud case persist error:', err));
+  };
+
+  // Add Continuous Exception (optimistic + persist)
+  const addContinuousException = (exceptionData) => {
+    const newEx = { id: exceptionData.id || `CE-${Date.now()}`, ...exceptionData };
+    setContinuousExceptions(prev => [newEx, ...prev]);
+    fetch(`${AUDIT_API}/api/audit/monitoring/continuous-exceptions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: newEx.id,
+        rule_name: newEx.ruleName,
+        details: newEx.details,
+        severity: newEx.severity || 'Medium',
+        status: newEx.status || 'Open',
+        detected_at: newEx.detectedAt || new Date().toISOString().split('T')[0]
+      })
+    }).catch(err => console.warn('Continuous exception persist error:', err));
+  };
+
+  // Add Procedure to a Program (optimistic + persist)
+  const addProcedureToProgram = (programId, procedureData) => {
+    const tempId = `proc-${Date.now()}`;
+    setAuditPrograms(prev => prev.map(prog => {
+      if (prog.id === programId) {
+        return { ...prog, procedures: [...(prog.procedures || []), { id: tempId, ...procedureData }] };
+      }
+      return prog;
+    }));
+    return fetch(`${AUDIT_API}/api/audit/programs/${programId}/procedures`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ref: procedureData.ref,
+        step: procedureData.step,
+        sample_size: procedureData.sampleSize || '25 Transactions',
+        risk_link: procedureData.riskLink || '',
+        assigned_to: procedureData.assignedTo || 'Lead Reviewer',
+        status: procedureData.status || 'Pending'
+      })
+    })
+    .then(r => r.ok ? r.json() : null)
+    .then(saved => {
+      if (saved?.id) {
+        // Replace temp id with real DB id
+        setAuditPrograms(prev => prev.map(prog => {
+          if (prog.id === programId) {
+            return { ...prog, procedures: prog.procedures.map(p => p.id === tempId ? { ...p, id: saved.id } : p) };
+          }
+          return prog;
+        }));
+      }
+    })
+    .catch(err => console.warn('Procedure persist error:', err));
+  };
+
+
   useEffect(() => {
     const runRealtimeSync = async (silentMode = false) => {
       await fetchAuditData(silentMode);
@@ -1037,8 +1200,8 @@ export const AuditProvider = ({ children }) => {
     const roleId = getNormalizedRole(currentRole?.id || 'cae');
     // 'cae' and 'manager' have full write/delete across all modules
     if (roleId === 'cae' || roleId === 'manager') return true;
-    // 'senior' and 'qa' can edit/update status on testing, working papers, controls, findings, but NOT delete master universe or programs
-    if (action === 'edit' && ['senior', 'qa'].includes(roleId)) return true;
+    // 'senior' and 'qa' can create/edit/update on testing procedures, working papers, controls, findings, but NOT delete master universe or programs
+    if ((action === 'edit' || action === 'create') && ['senior', 'qa'].includes(roleId)) return true;
     if (action === 'delete' && ['senior', 'qa'].includes(roleId) && !['universe', 'programs', 'master'].includes(moduleName)) return true;
     // 'owner' (Auditee / Dept Head) can ONLY edit findings action plans or CAPs
     if (roleId === 'owner' && action === 'edit' && moduleName === 'findings') return true;
@@ -1352,7 +1515,7 @@ export const AuditProvider = ({ children }) => {
   };
 
   // Add or approve annual audit plan
-  const saveAuditPlan = (planData) => {
+  const saveAuditPlan = async (planData) => {
     const targetId = planData.id || `PLAN-${Date.now()}`;
     const targetNumber = planData.planId || `PLAN-2026-${String(auditPlans.length + 1).padStart(2, '0')}`;
 
@@ -1364,9 +1527,10 @@ export const AuditProvider = ({ children }) => {
       planned_hours: Number(planData.estimatedHours || planData.plannedHours) || 0,
       actual_hours: Number(planData.actualHours) || 0,
       status: planData.status || 'Draft',
-      start_date: planData.startDate || '',
-      end_date: planData.endDate || '',
-      lead_auditor: planData.leadAuditor || 'Lead Auditor'
+      start_date: planData.startDate || planData.plannedStartDate || '',
+      end_date: planData.endDate || planData.plannedEndDate || '',
+      lead_auditor: planData.leadAuditor || 'Lead Auditor',
+      budget: Number(planData.budget) || 0
     };
 
     const formatted = {
@@ -1379,7 +1543,8 @@ export const AuditProvider = ({ children }) => {
       status: body.status,
       startDate: body.start_date,
       endDate: body.end_date,
-      leadAuditor: body.lead_auditor
+      leadAuditor: body.lead_auditor,
+      budget: body.budget
     };
 
     if (planData.isExisting) {
@@ -1427,30 +1592,75 @@ export const AuditProvider = ({ children }) => {
       console.warn('Optimistic sync failed', err);
     }
   };
-
-  // Add new master business unit
-  const addBusinessUnit = (buData) => {
-    const newBu = {
-      ...buData,
-      id: `bu-${Date.now()}`,
-      coveragePct: 100
+    // Add new master business unit
+    const addBusinessUnit = (buData) => {
+      const newBu = {
+        ...buData,
+        id: `bu-${Date.now()}`,
+        coveragePct: 100
+      };
+      setBusinessUnits(prev => [...prev, newBu]);
+      addNotification('Master Data Updated', `Business Unit "${newBu.name}" added to Audit Universe foundation.`, 'success');
+  
+      const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
+      try {
+        const bodyPayload = {
+          unit_id: buData.code || 'PROC-GEN-01',
+          department: buData.name || 'Custody Operations',
+          process_name: buData.name || 'Operational Audit Process',
+          lead_auditor: buData.head || 'Lead Auditor',
+          staff_count: buData.staffCount !== undefined ? parseInt(buData.staffCount, 10) : 15,
+          priority: buData.riskLevel || 'Medium'
+        };
+        fetch(`${API_BASE}/api/audit/universe`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bodyPayload)
+        }).catch(console.warn);
+      } catch (err) {
+        console.warn('Optimistic sync failed', err);
+      }
     };
-    setBusinessUnits(prev => [...prev, newBu]);
-    addNotification('Master Data Updated', `Business Unit "${newBu.name}" added to Audit Universe foundation.`, 'success');
+    
+    const deleteBusinessUnit = (id) => {
+      setBusinessUnits(prev => prev.filter(bu => bu.id !== id));
+      const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
+      try {
+        fetch(`${API_BASE}/api/audit/universe/${id}`, {
+          method: 'DELETE'
+        }).catch(console.warn);
+      } catch (err) {
+        console.warn('Optimistic delete failed', err);
+      }
+    };
 
-    const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
-    try {
-      fetch(`${API_BASE}/api/audit/universe`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newBu)
-      }).catch(console.warn);
-    } catch (err) {
-      console.warn('Optimistic sync failed', err);
-    }
-  };
 
-  return (
+    // Edit master business unit
+
+    const editBusinessUnit = (id, buData) => {
+      setBusinessUnits(prev => prev.map(bu => bu.id === id ? { ...bu, ...buData } : bu));
+      addNotification('Master Data Updated', 'Business Unit updated successfully.', 'success');
+  
+      const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
+      try {
+        const bodyPayload = {
+          unit_id: buData.code || undefined,
+          department: buData.name || undefined,
+          process_name: buData.name || undefined,
+          lead_auditor: buData.head || undefined,
+          staff_count: buData.staffCount !== undefined ? parseInt(buData.staffCount, 10) : undefined,
+          priority: buData.riskLevel || undefined
+        };
+        fetch(`${API_BASE}/api/audit/universe/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bodyPayload)
+        }).catch(console.warn);
+      } catch (err) {
+        console.warn('Optimistic sync failed', err);
+      }
+    };
+return (
     <AuditContext.Provider
       value={{
         loading,
@@ -1472,7 +1682,9 @@ export const AuditProvider = ({ children }) => {
         completePasswordReset,
         businessUnits,
         addBusinessUnit,
-        setBusinessUnits,
+          editBusinessUnit,
+          deleteBusinessUnit,
+          setBusinessUnits,
         auditUniverse,
         setAuditUniverse,
         auditPlans,
@@ -1490,10 +1702,14 @@ export const AuditProvider = ({ children }) => {
         setControls,
         regulatoryReviews,
         setRegulatoryReviews,
+        addRegulatoryReview,
         fraudCases,
         setFraudCases,
+        addFraudCase,
         continuousExceptions,
         setContinuousExceptions,
+        addContinuousException,
+        addProcedureToProgram,
         clearAllMockData,
         syncFromErmSuite,
         ermRisks,

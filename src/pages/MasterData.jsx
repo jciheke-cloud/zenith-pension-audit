@@ -4,16 +4,18 @@ import { AuditContext } from '../context/AuditContext';
 import { Database, Plus, Search, Layers, ShieldCheck, Filter, Edit2, Trash2, Users } from 'lucide-react';
 import AuditDataUpload from '../components/AuditDataUpload';
 import AuditUserManagementModal from '../components/AuditUserManagementModal';
+import ConfirmModal from '../components/ConfirmModal';
 
 const MasterData = () => {
   const navigate = useNavigate();
-  const { businessUnits, addBusinessUnit, setBusinessUnits, auditUniverse, setAuditUniverse, addNotification, checkRbacPermission, verifyRbacOrAlert, logAuditAction } = useContext(AuditContext);
+  const { businessUnits, addBusinessUnit, editBusinessUnit, deleteBusinessUnit, setBusinessUnits, auditUniverse, setAuditUniverse, addNotification, checkRbacPermission, verifyRbacOrAlert, logAuditAction } = useContext(AuditContext);
   const [activeTab, setActiveTab] = useState('bus'); // 'bus' or 'universe'
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBu, setFilterBu] = useState('All');
   const [filterFreq, setFilterFreq] = useState('All');
   const [filterLead, setFilterLead] = useState('All');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [confirmData, setConfirmData] = useState({ isOpen: false, onConfirm: null, title: '', message: '' });
 
   // New & Edit BU Modal State
   const [isBuModalOpen, setIsBuModalOpen] = useState(false);
@@ -49,9 +51,15 @@ const MasterData = () => {
 
   const handleDeleteBu = (buId, buName) => {
     if (!verifyRbacOrAlert('delete', 'universe')) return;
-    if (!window.confirm(`Are you sure you want to delete Business Unit "${buName}"?`)) return;
-    setBusinessUnits(prev => prev.filter(b => b.id !== buId));
-    addNotification('Business Unit Deleted', `Unit "${buName}" removed from Audit Universe.`, 'info');
+    setConfirmData({
+      isOpen: true,
+      title: 'Delete Business Unit',
+      message: `Are you sure you want to delete Business Unit "${buName}"?`,
+      onConfirm: () => {
+        deleteBusinessUnit(buId);
+        addNotification('Business Unit Deleted', `Unit "${buName}" removed from Audit Universe.`, 'info');
+      }
+    });
   };
 
   const handleStartEditProc = (proc) => {
@@ -67,9 +75,15 @@ const MasterData = () => {
 
   const handleDeleteProc = (procId, procCodeVal) => {
     if (!verifyRbacOrAlert('delete', 'universe')) return;
-    if (!window.confirm(`Are you sure you want to delete auditable process "${procCodeVal}"?`)) return;
-    setAuditUniverse(prev => prev.filter(p => p.id !== procId));
-    addNotification('Process Deleted', `Auditable process "${procCodeVal}" removed from Master Universe.`, 'info');
+    setConfirmData({
+      isOpen: true,
+      title: 'Delete Process',
+      message: `Are you sure you want to delete auditable process "${procCodeVal}"?`,
+      onConfirm: () => {
+        setAuditUniverse(prev => prev.filter(p => p.id !== procId));
+        addNotification('Process Deleted', `Auditable process "${procCodeVal}" removed from Master Universe.`, 'info');
+      }
+    });
   };
 
   const getItemBu = (item) => item.businessUnit || item.department || item.business_unit || 'Custody Operations';
@@ -574,6 +588,13 @@ const MasterData = () => {
       <AuditUserManagementModal 
         isOpen={isUserModalOpen} 
         onClose={() => setIsUserModalOpen(false)} 
+      />
+      <ConfirmModal 
+        isOpen={confirmData.isOpen} 
+        onClose={() => setConfirmData(prev => ({ ...prev, isOpen: false }))} 
+        onConfirm={confirmData.onConfirm} 
+        title={confirmData.title} 
+        message={confirmData.message} 
       />
     </div>
   );

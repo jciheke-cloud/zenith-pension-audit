@@ -3,6 +3,7 @@ import { AuditContext } from '../context/AuditContext';
 import { AlertOctagon, Plus, ShieldAlert, RefreshCw, CheckCircle, Search, Filter, Sliders, Award, Edit2, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AuditDataUpload from '../components/AuditDataUpload';
+import ConfirmModal from '../components/ConfirmModal';
 
 const FindingsManagement = () => {
   const { findings, saveFinding, setFindings, businessUnits, addNotification, checkRbacPermission, verifyRbacOrAlert } = useContext(AuditContext);
@@ -15,6 +16,7 @@ const FindingsManagement = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingFindingId, setEditingFindingId] = useState(null);
+  const [confirmData, setConfirmData] = useState({ isOpen: false, onConfirm: null, title: '', message: '' });
 
   // New & Edit Finding Form State
   const [bu, setBu] = useState('Custody Operations');
@@ -52,9 +54,15 @@ const FindingsManagement = () => {
 
   const handleDeleteFinding = (fId, fNum) => {
     if (!verifyRbacOrAlert('delete', 'findings')) return;
-    if (!window.confirm(`Are you sure you want to delete finding "${fNum}"?`)) return;
-    setFindings(prev => prev.filter(item => item.id !== fId));
-    addNotification('Finding Deleted', `Finding "${fNum}" removed successfully.`, 'info');
+    setConfirmData({
+      isOpen: true,
+      title: 'Delete Finding',
+      message: `Are you sure you want to delete finding "${fNum}"?`,
+      onConfirm: () => {
+        setFindings(prev => prev.filter(item => item.id !== fId));
+        addNotification('Finding Deleted', `Finding "${fNum}" removed successfully.`, 'info');
+      }
+    });
   };
 
   const filteredFindings = findings.filter(f => {
@@ -560,6 +568,13 @@ const FindingsManagement = () => {
           </div>
         </div>
       )}
+      <ConfirmModal 
+        isOpen={confirmData.isOpen} 
+        onClose={() => setConfirmData(prev => ({ ...prev, isOpen: false }))} 
+        onConfirm={confirmData.onConfirm} 
+        title={confirmData.title} 
+        message={confirmData.message} 
+      />
     </div>
   );
 };

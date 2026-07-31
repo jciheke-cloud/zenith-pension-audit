@@ -4,7 +4,7 @@ import { Scale, ShieldAlert, CheckCircle, Clock, Plus, FileText, ExternalLink, S
 import { useNavigate } from 'react-router-dom';
 
 const ComplianceAndRegulatory = () => {
-  const { regulatoryReviews, setRegulatoryReviews, addNotification } = useContext(AuditContext);
+  const { regulatoryReviews, addRegulatoryReview, addNotification } = useContext(AuditContext);
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('All');
@@ -39,7 +39,7 @@ const ComplianceAndRegulatory = () => {
       status,
       leadReviewer: 'Chief Compliance Officer / CAE'
     };
-    setRegulatoryReviews(prev => [newRev, ...prev]);
+    addRegulatoryReview(newRev);
     addNotification('Regulatory Examination Logged', `${body} review "${title}" logged with ${findingsCount} observations.`, 'warning');
     setIsModalOpen(false);
     setTitle('');
