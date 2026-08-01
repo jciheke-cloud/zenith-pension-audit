@@ -305,21 +305,8 @@ export const AuditProvider = ({ children }) => {
       if (Array.isArray(fetchedActions)) setErmActions(fetchedActions);
       if (Array.isArray(fetchedLosses)) setErmLosses(fetchedLosses);
 
-      // Business Units Initialization & Persistence Sync
-      if (Array.isArray(universeData) && universeData.length > 0) {
-        const mappedBUs = universeData.map(u => ({
-          id: u.id,
-          code: u.unit_id || u.unitId,
-          name: u.process_name || u.processName || u.title || 'Custody Process',
-          head: u.lead_auditor || u.leadAuditor || 'Department Head',
-          staffCount: Number(u.staff_count || u.staffCount || 15),
-          riskLevel: u.priority || 'Medium',
-          coveragePct: u.overall_score ? Math.round((u.overall_score / 10) * 100) : 100
-        }));
-        setBusinessUnits(prev => mappedBUs.length > 0 ? mappedBUs : INITIAL_BUSINESS_UNITS);
-      } else {
-        setBusinessUnits(INITIAL_BUSINESS_UNITS);
-      }
+      // Removed bug: We no longer overwrite Business Units with Audit Universe data!
+      // Business Units are strictly loaded from SecureStorageService (LocalStorage).
 
       // Sync Controls to Internal Controls State
       if (Array.isArray(fetchedControls) && fetchedControls.length > 0) {
