@@ -239,16 +239,7 @@ export const AuditProvider = ({ children }) => {
     };
   }, [isAuthenticated, currentUser]);
 
-  const [businessUnits, setBusinessUnits] = useState(() => {
-    try {
-      const saved = SecureStorageService.getItem('zpc_audit_business_units');
-      if (saved && Array.isArray(saved) && saved.length > 0) {
-        if (saved.length < 12) return INITIAL_BUSINESS_UNITS;
-        return saved;
-      }
-    } catch (e) { /* ignore */ }
-    return INITIAL_BUSINESS_UNITS;
-  });
+  const [businessUnits, setBusinessUnits] = useState([]);
   const [auditUniverse, setAuditUniverse] = useState([]);
   const [auditPlans, setAuditPlans] = useState([]);
   const [auditPrograms, setAuditPrograms] = useState(INITIAL_AUDIT_PROGRAMS);
@@ -259,13 +250,7 @@ export const AuditProvider = ({ children }) => {
   const [fraudCases, setFraudCases] = useState(INITIAL_FRAUD_CASES);
   const [continuousExceptions, setContinuousExceptions] = useState(INITIAL_CONTINUOUS_EXCEPTIONS);
 
-  useEffect(() => {
-    try {
-      if (businessUnits && Array.isArray(businessUnits) && businessUnits.length > 0) {
-        SecureStorageService.setItem('zpc_audit_business_units', businessUnits);
-      }
-    } catch (e) { /* ignore */ }
-  }, [businessUnits]);
+
 
   // ── Real-time sync state ──────────────────────────────────────────
   const [isSyncing, setIsSyncing] = useState(false);
@@ -285,7 +270,7 @@ export const AuditProvider = ({ children }) => {
   const fetchAuditData = async (silent = false) => {
     if (!silent) setIsSyncing(true);
     try {
-      const [universeData, findingsData, plansData, fetchedRisks, fetchedControls, fetchedActions, fetchedLosses, papersData, programsData, regulatoryData, fraudData, continuousData] = await Promise.all([
+      const [universeData, findingsData, plansData, fetchedRisks, fetchedControls, fetchedActions, fetchedLosses, papersData, programsData, regulatoryData, fraudData, continuousData, businessUnitsData, auditLogsData] = await Promise.all([
         api.get(`/api/audit/universe`).then(r => r.data).catch(() => []),
         api.get(`/api/audit/findings`).then(r => r.data).catch(() => []),
         api.get(`/api/audit/plans`).then(r => r.data).catch(() => []),
@@ -298,6 +283,8 @@ export const AuditProvider = ({ children }) => {
         api.get(`/api/audit/regulatory`).then(r => r.data).catch(() => []),
         api.get(`/api/audit/fraud-cases`).then(r => r.data).catch(() => []),
         api.get(`/api/audit/continuous-exceptions`).then(r => r.data).catch(() => []),
+        api.get(`/api/business-units`).then(r => r.data).catch(() => []),
+        api.get(`/api/audit-logs`).then(r => r.data).catch(() => []),
       ]);
 
       if (Array.isArray(fetchedRisks)) setErmRisks(fetchedRisks);
@@ -305,8 +292,8 @@ export const AuditProvider = ({ children }) => {
       if (Array.isArray(fetchedActions)) setErmActions(fetchedActions);
       if (Array.isArray(fetchedLosses)) setErmLosses(fetchedLosses);
 
-      // Removed bug: We no longer overwrite Business Units with Audit Universe data!
-      // Business Units are strictly loaded from SecureStorageService (LocalStorage).
+      if (Array.isArray(businessUnitsData) && businessUnitsData.length > 0) setBusinessUnits(businessUnitsData);
+      if (Array.isArray(auditLogsData) && auditLogsData.length > 0) setAuditLogs(auditLogsData);
 
       // Sync Controls to Internal Controls State
       if (Array.isArray(fetchedControls) && fetchedControls.length > 0) {
@@ -863,35 +850,10 @@ export const AuditProvider = ({ children }) => {
     }
   ];
 
-  const [auditLogs, setAuditLogs] = useState(() => {
-    try {
-      const saved = localStorage.getItem('zpc_audit_logs');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch (e) { /* ignore */ }
-    return INITIAL_AUDIT_LOGS;
-  });
-
-  useEffect(() => {
-    api.get(`/api/audit-logs`)
-      .then(res => res.data)
-      .catch(() => null)
-      .then(data => {
-        if (Array.isArray(data) && data.length > 0) {
-          setAuditLogs(prev => {
-            const ids = new Set(prev.map(p => p.id));
-            const merged = [...data.filter(d => !ids.has(d.id)), ...prev];
-            return merged;
-          });
-        }
-      })
-      .catch(() => null);
-  }, []);
+  const [auditLogs, setAuditLogs] = useState([]);
 
   // Immutable WORM Audit Trail Logger (POST /api/audit-logs on AWS)
-  const logAuditAction = async (action, target, details) => {
+  const logAuditAction = (action, target, details) => {
     try {
       const payload = {
         id: `AUDIT-LOG-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
@@ -904,13 +866,9 @@ export const AuditProvider = ({ children }) => {
         status: 'SUCCESS'
       };
 
-      setAuditLogs(prev => {
-        const updated = [payload, ...prev];
-        try { localStorage.setItem('zpc_audit_logs', JSON.stringify(updated.slice(0, 300))); } catch (e) {}
-        return updated;
-      });
+      setAuditLogs(prev => [payload, ...prev]);
 
-      await api.post(`/api/audit-logs`, payload).catch(() => null);
+      api.post(`/api/audit-logs`, payload).catch(() => null);
 
       addNotification(
         'Audit Action Logged',
@@ -1537,24 +1495,14 @@ export const AuditProvider = ({ children }) => {
     const addBusinessUnit = async (buData) => {
       const newBu = {
         ...buData,
-        id: `bu-${Date.now()}`,
-        coveragePct: 100
+        id: `bu-${Date.now()}`
       };
       const previous = [...businessUnits];
       setBusinessUnits(prev => [...prev, newBu]);
-      addNotification('Master Data Updated', `Business Unit "${newBu.name}" added to Audit Universe foundation.`, 'success');
+      addNotification('Master Data Updated', `Business Unit "${newBu.name || ''}" added.`, 'success');
   
-      const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
       try {
-        const bodyPayload = {
-          unit_id: buData.code || 'PROC-GEN-01',
-          department: buData.name || 'Custody Operations',
-          process_name: buData.name || 'Operational Audit Process',
-          lead_auditor: buData.head || 'Lead Auditor',
-          staff_count: buData.staffCount !== undefined ? parseInt(buData.staffCount, 10) : 15,
-          priority: buData.riskLevel || 'Medium'
-        };
-        await api.post(`/api/audit/universe`, bodyPayload);
+        await api.post(`/api/business-units`, newBu);
       } catch (err) {
         console.error('Optimistic sync failed', err);
         window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '🚨 Database sync failed. Local changes were reverted.', type: 'danger' } }));
@@ -1562,36 +1510,32 @@ export const AuditProvider = ({ children }) => {
       }
     };
     
-    const deleteBusinessUnit = (id) => {
+    const deleteBusinessUnit = async (id) => {
+      const previous = [...businessUnits];
       setBusinessUnits(prev => prev.filter(bu => bu.id !== id));
-      const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
       try {
-        api.delete(`/api/audit/universe/${id}`).catch(console.warn);
+        await api.delete(`/api/business-units/${id}`);
       } catch (err) {
         console.warn('Optimistic delete failed', err);
+        window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '🚨 Database sync failed. Local changes were reverted.', type: 'danger' } }));
+        setBusinessUnits(previous);
       }
     };
 
 
     // Edit master business unit
 
-    const editBusinessUnit = (id, buData) => {
+    const editBusinessUnit = async (id, buData) => {
+      const previous = [...businessUnits];
       setBusinessUnits(prev => prev.map(bu => bu.id === id ? { ...bu, ...buData } : bu));
       addNotification('Master Data Updated', 'Business Unit updated successfully.', 'success');
   
-      const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
       try {
-        const bodyPayload = {
-          unit_id: buData.code || undefined,
-          department: buData.name || undefined,
-          process_name: buData.name || undefined,
-          lead_auditor: buData.head || undefined,
-          staff_count: buData.staffCount !== undefined ? parseInt(buData.staffCount, 10) : undefined,
-          priority: buData.riskLevel || undefined
-        };
-        api.put(`/api/audit/universe/${id}`, bodyPayload).catch(console.warn);
+        await api.put(`/api/business-units/${id}`, buData);
       } catch (err) {
         console.warn('Optimistic sync failed', err);
+        window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '🚨 Database sync failed. Local changes were reverted.', type: 'danger' } }));
+        setBusinessUnits(previous);
       }
     };
 return (
