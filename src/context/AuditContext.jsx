@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { Amplify } from 'aws-amplify';
 import { signIn, signOut, confirmSignIn, fetchAuthSession, fetchUserAttributes, resetPassword, confirmResetPassword } from 'aws-amplify/auth';
-
+import api from '../services/api';
 Amplify.configure({
   Auth: {
     Cognito: {
@@ -286,18 +286,18 @@ export const AuditProvider = ({ children }) => {
     if (!silent) setIsSyncing(true);
     try {
       const [universeData, findingsData, plansData, fetchedRisks, fetchedControls, fetchedActions, fetchedLosses, papersData, programsData, regulatoryData, fraudData, continuousData] = await Promise.all([
-        fetch(`${AUDIT_API}/api/audit/universe`).then(r => r.ok ? r.json() : []).catch(() => []),
-        fetch(`${AUDIT_API}/api/audit/findings`).then(r => r.ok ? r.json() : []).catch(() => []),
-        fetch(`${AUDIT_API}/api/audit/plans`).then(r => r.ok ? r.json() : []).catch(() => []),
-        fetch(`${AUDIT_API}/api/risks`).then(r => r.ok ? r.json() : []).catch(() => []),
-        fetch(`${AUDIT_API}/api/controls`).then(r => r.ok ? r.json() : []).catch(() => []),
-        fetch(`${AUDIT_API}/api/actions`).then(r => r.ok ? r.json() : []).catch(() => []),
-        fetch(`${AUDIT_API}/api/losses`).then(r => r.ok ? r.json() : []).catch(() => []),
-        fetch(`${AUDIT_API}/api/audit/working-papers`).then(r => r.ok ? r.json() : []).catch(() => []),
-        fetch(`${AUDIT_API}/api/audit/programs`).then(r => r.ok ? r.json() : []).catch(() => []),
-        fetch(`${AUDIT_API}/api/audit/regulatory`).then(r => r.ok ? r.json() : []).catch(() => []),
-        fetch(`${AUDIT_API}/api/audit/fraud-cases`).then(r => r.ok ? r.json() : []).catch(() => []),
-        fetch(`${AUDIT_API}/api/audit/continuous-exceptions`).then(r => r.ok ? r.json() : []).catch(() => []),
+        api.get(`/api/audit/universe`).then(r => r.data).catch(() => []),
+        api.get(`/api/audit/findings`).then(r => r.data).catch(() => []),
+        api.get(`/api/audit/plans`).then(r => r.data).catch(() => []),
+        api.get(`/api/risks`).then(r => r.data).catch(() => []),
+        api.get(`/api/controls`).then(r => r.data).catch(() => []),
+        api.get(`/api/actions`).then(r => r.data).catch(() => []),
+        api.get(`/api/losses`).then(r => r.data).catch(() => []),
+        api.get(`/api/audit/working-papers`).then(r => r.data).catch(() => []),
+        api.get(`/api/audit/programs`).then(r => r.data).catch(() => []),
+        api.get(`/api/audit/regulatory`).then(r => r.data).catch(() => []),
+        api.get(`/api/audit/fraud-cases`).then(r => r.data).catch(() => []),
+        api.get(`/api/audit/continuous-exceptions`).then(r => r.data).catch(() => []),
       ]);
 
       if (Array.isArray(fetchedRisks)) setErmRisks(fetchedRisks);
@@ -520,10 +520,10 @@ export const AuditProvider = ({ children }) => {
     if (!silent) setIsSyncing(true);
     try {
       const [fetchedRisks, fetchedControls, fetchedActions, fetchedLosses] = await Promise.all([
-        fetch(`${AUDIT_API}/api/risks`).then(r => r.ok ? r.json() : []).catch(() => []),
-        fetch(`${AUDIT_API}/api/controls`).then(r => r.ok ? r.json() : []).catch(() => []),
-        fetch(`${AUDIT_API}/api/actions`).then(r => r.ok ? r.json() : []).catch(() => []),
-        fetch(`${AUDIT_API}/api/losses`).then(r => r.ok ? r.json() : []).catch(() => []),
+        api.get(`/api/risks`).then(r => r.data).catch(() => []),
+        api.get(`/api/controls`).then(r => r.data).catch(() => []),
+        api.get(`/api/actions`).then(r => r.data).catch(() => []),
+        api.get(`/api/losses`).then(r => r.data).catch(() => []),
       ]);
 
       let syncCount = 0;
@@ -662,20 +662,15 @@ export const AuditProvider = ({ children }) => {
     const previous = [...regulatoryReviews];
     setRegulatoryReviews(prev => [newRev, ...prev]);
     try {
-      const response = await fetch(`${AUDIT_API}/api/audit/regulatory`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: newRev.id,
-          title: newRev.title,
-          regulatory_body: newRev.regulatoryBody,
-          date: newRev.date,
-          findings_count: newRev.findingsCount || 0,
-          status: newRev.status || 'Scheduled',
-          lead_reviewer: newRev.leadReviewer || 'Chief Compliance Officer / CAE'
-        })
+      await api.post(`/api/audit/regulatory`, {
+        id: newRev.id,
+        title: newRev.title,
+        regulatory_body: newRev.regulatoryBody,
+        date: newRev.date,
+        findings_count: newRev.findingsCount || 0,
+        status: newRev.status || 'Scheduled',
+        lead_reviewer: newRev.leadReviewer || 'Chief Compliance Officer / CAE'
       });
-      if (!response.ok) throw new Error('API Error');
     } catch (err) {
       console.error('Regulatory review persist error:', err);
       window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '🚨 Database sync failed. Local changes were reverted.', type: 'danger' } }));
@@ -689,21 +684,16 @@ export const AuditProvider = ({ children }) => {
     const previous = [...fraudCases];
     setFraudCases(prev => [newCase, ...prev]);
     try {
-      const response = await fetch(`${AUDIT_API}/api/audit/fraud-cases`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: newCase.id,
-          title: newCase.title,
-          department: newCase.department,
-          date_opened: newCase.dateOpened || new Date().toISOString().split('T')[0],
-          financial_impact: newCase.financialImpact || 0,
-          recovered_amount: newCase.recoveredAmount || 0,
-          status: newCase.status || 'Under Investigation',
-          investigator: newCase.investigator || 'Forensic Audit & Internal Security'
-        })
+      await api.post(`/api/audit/fraud-cases`, {
+        id: newCase.id,
+        title: newCase.title,
+        department: newCase.department,
+        date_opened: newCase.dateOpened || new Date().toISOString().split('T')[0],
+        financial_impact: newCase.financialImpact || 0,
+        recovered_amount: newCase.recoveredAmount || 0,
+        status: newCase.status || 'Under Investigation',
+        investigator: newCase.investigator || 'Forensic Audit & Internal Security'
       });
-      if (!response.ok) throw new Error('API Error');
     } catch (err) {
       console.error('Fraud case persist error:', err);
       window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '🚨 Database sync failed. Local changes were reverted.', type: 'danger' } }));
@@ -715,17 +705,13 @@ export const AuditProvider = ({ children }) => {
   const addContinuousException = (exceptionData) => {
     const newEx = { id: exceptionData.id || `CE-${Date.now()}`, ...exceptionData };
     setContinuousExceptions(prev => [newEx, ...prev]);
-    fetch(`${AUDIT_API}/api/audit/monitoring/continuous-exceptions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: newEx.id,
-        rule_name: newEx.ruleName,
-        details: newEx.details,
-        severity: newEx.severity || 'Medium',
-        status: newEx.status || 'Open',
-        detected_at: newEx.detectedAt || new Date().toISOString().split('T')[0]
-      })
+    api.post(`/api/audit/monitoring/continuous-exceptions`, {
+      id: newEx.id,
+      rule_name: newEx.ruleName,
+      details: newEx.details,
+      severity: newEx.severity || 'Medium',
+      status: newEx.status || 'Open',
+      detected_at: newEx.detectedAt || new Date().toISOString().split('T')[0]
     }).catch(err => console.warn('Continuous exception persist error:', err));
   };
 
@@ -733,24 +719,17 @@ export const AuditProvider = ({ children }) => {
   const addControl = (controlData) => {
     const newCtrl = { id: controlData.id || `CTRL-${Date.now()}`, ...controlData };
     setControls(prev => [newCtrl, ...prev]);
-    fetch(`${AUDIT_API}/api/controls`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: newCtrl.id,
-        code: newCtrl.code,
-        title: newCtrl.description,
-        description: newCtrl.description,
-        type: newCtrl.type,
-        automation_level: newCtrl.automation,
-        design_effectiveness: newCtrl.designEff,
-        operating_effectiveness: newCtrl.operatingEff,
-        owner: newCtrl.owner,
-        last_tested: newCtrl.lastTested || new Date().toISOString().split('T')[0]
-      })
-    })
-    .then(r => {
-      if (!r.ok) throw new Error('API Error');
+    api.post(`/api/controls`, {
+      id: newCtrl.id,
+      code: newCtrl.code,
+      title: newCtrl.description,
+      description: newCtrl.description,
+      type: newCtrl.type,
+      automation_level: newCtrl.automation,
+      design_effectiveness: newCtrl.designEff,
+      operating_effectiveness: newCtrl.operatingEff,
+      owner: newCtrl.owner,
+      last_tested: newCtrl.lastTested || new Date().toISOString().split('T')[0]
     })
     .catch(err => {
       console.warn('Control persist error:', err);
@@ -772,19 +751,16 @@ export const AuditProvider = ({ children }) => {
       }
       return prog;
     }));
-    return fetch(`${AUDIT_API}/api/audit/programs/${programId}/procedures`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ref: procedureData.ref,
-        step: procedureData.step,
-        sample_size: procedureData.sampleSize || '25 Transactions',
-        risk_link: procedureData.riskLink || '',
-        assigned_to: procedureData.assignedTo || 'Lead Reviewer',
-        status: procedureData.status || 'Pending'
-      })
+    return api.post(`/api/audit/programs/${programId}/procedures`, {
+      ref: procedureData.ref,
+      step: procedureData.step,
+      sample_size: procedureData.sampleSize || '25 Transactions',
+      risk_link: procedureData.riskLink || '',
+      assigned_to: procedureData.assignedTo || 'Lead Reviewer',
+      status: procedureData.status || 'Pending'
     })
-    .then(r => r.ok ? r.json() : null)
+    .then(response => response.data)
+    .catch(() => null)
     .then(saved => {
       if (saved?.id) {
         // Replace temp id with real DB id
@@ -912,8 +888,9 @@ export const AuditProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    fetch(`${AUDIT_API}/api/audit-logs`)
-      .then(res => res.ok ? res.json() : null)
+    api.get(`/api/audit-logs`)
+      .then(res => res.data)
+      .catch(() => null)
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
           setAuditLogs(prev => {
@@ -946,11 +923,7 @@ export const AuditProvider = ({ children }) => {
         return updated;
       });
 
-      await fetch(`${AUDIT_API}/api/audit-logs`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).catch(() => null);
+      await api.post(`/api/audit-logs`, payload).catch(() => null);
 
       addNotification(
         'Audit Action Logged',
@@ -1013,12 +986,7 @@ export const AuditProvider = ({ children }) => {
     try {
       const target = next.find(item => item.id === id || item.findingNumber === id);
       if (target) {
-        const response = await fetch(`${API_BASE}/api/audit/findings/${target.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status, remediation_notes: remediationNotes })
-        });
-        if (!response.ok) throw new Error('API Error');
+        await api.put(`/api/audit/findings/${target.id}`, { status, remediation_notes: remediationNotes });
       }
     } catch (err) {
       console.error(err);
@@ -1295,7 +1263,7 @@ export const AuditProvider = ({ children }) => {
   const clearAllMockData = () => {
     // Data is fully database-backed; just reload fresh records from the API
     const API_BASE = (import.meta.env.VITE_AWS_API_URL || '').replace(/\/$/, '');
-    fetch(`${API_BASE}/api/audit/findings`).then(r => r.ok ? r.json() : []).then(data => { if (Array.isArray(data)) setFindings(data.map(f => ({ id: f.id, findingNumber: f.finding_number, businessUnit: f.business_unit, observation: f.observation, criteria: f.criteria, rootCause: f.root_cause, likelihood: Number(f.likelihood), impact: Number(f.impact), residualRisk: Number(f.residual_risk), priority: f.priority, severity: f.severity, status: f.status, managementResponse: f.management_response, remediationDate: f.remediation_date, auditor: f.auditor }))); }).catch(console.error);
+    api.get(`/api/audit/findings`).then(r => r.data).catch(() => []).then(data => { if (Array.isArray(data)) setFindings(data.map(f => ({ id: f.id, findingNumber: f.finding_number, businessUnit: f.business_unit, observation: f.observation, criteria: f.criteria, rootCause: f.root_cause, likelihood: Number(f.likelihood), impact: Number(f.impact), residualRisk: Number(f.residual_risk), priority: f.priority, severity: f.severity, status: f.status, managementResponse: f.management_response, remediationDate: f.remediation_date, auditor: f.auditor }))); }).catch(console.error);
     addNotification('Data Refreshed', 'All audit records reloaded from the institutional database.', 'success');
   };
 
@@ -1305,13 +1273,8 @@ export const AuditProvider = ({ children }) => {
     
     if (type === 'findings') {
       try {
-        const response = await fetch(`${API_BASE}/api/audit/findings/bulk`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ s3Key })
-        });
-        if (!response.ok) throw new Error('Bulk insert failed');
-        const result = await response.json();
+        const response = await api.post(`/api/audit/findings/bulk`, { s3Key });
+        const result = response.data;
         const inserted = Array.isArray(result) ? result : (result.records || []);
         
         // Map database format back to frontend
@@ -1343,13 +1306,8 @@ export const AuditProvider = ({ children }) => {
       }
     } else if (type === 'universe') {
       try {
-        const response = await fetch(`${API_BASE}/api/audit/universe/bulk`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ s3Key })
-        });
-        if (!response.ok) throw new Error('Bulk insert failed');
-        const result = await response.json();
+        const response = await api.post(`/api/audit/universe/bulk`, { s3Key });
+        const result = response.data;
         const inserted = Array.isArray(result) ? result : (result.records || []);
 
         const mapped = inserted.map(u => ({
@@ -1376,13 +1334,8 @@ export const AuditProvider = ({ children }) => {
       }
     } else if (type === 'plans') {
       try {
-        const response = await fetch(`${API_BASE}/api/audit/plans/bulk`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ s3Key })
-        });
-        if (!response.ok) throw new Error('Bulk insert failed');
-        const result = await response.json();
+        const response = await api.post(`/api/audit/plans/bulk`, { s3Key });
+        const result = response.data;
         const inserted = Array.isArray(result) ? result : (result.records || []);
 
         const mapped = inserted.map(p => ({
@@ -1500,14 +1453,12 @@ export const AuditProvider = ({ children }) => {
 
     const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
     try {
-      const url = findingData.isExisting ? `${API_BASE}/api/audit/findings/${targetId}` : `${API_BASE}/api/audit/findings`;
-      const response = await fetch(url, {
-        method: findingData.isExisting ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-
-      if (!response.ok) throw new Error('Failed to save finding');
+      const url = findingData.isExisting ? `/api/audit/findings/${targetId}` : `/api/audit/findings`;
+      if (findingData.isExisting) {
+        await api.put(url, body);
+      } else {
+        await api.post(url, body);
+      }
     } catch (err) {
       console.error(err);
       window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '🚨 Database sync failed. Local changes were reverted.', type: 'danger' } }));
@@ -1561,13 +1512,12 @@ export const AuditProvider = ({ children }) => {
     
     // Background optimistic API sync
     try {
-      const url = planData.isExisting ? `${API_BASE}/api/audit/plans/${targetId}` : `${API_BASE}/api/audit/plans`;
-      const response = await fetch(url, {
-        method: planData.isExisting ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      if (!response.ok) throw new Error('API Error');
+      const url = planData.isExisting ? `/api/audit/plans/${targetId}` : `/api/audit/plans`;
+      if (planData.isExisting) {
+        await api.put(url, body);
+      } else {
+        await api.post(url, body);
+      }
     } catch (err) {
       console.error('Optimistic sync failed', err);
       window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '🚨 Database sync failed. Local changes were reverted.', type: 'danger' } }));
@@ -1589,12 +1539,7 @@ export const AuditProvider = ({ children }) => {
 
     const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
     try {
-      const response = await fetch(`${API_BASE}/api/audit/working-papers`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newWp)
-      });
-      if (!response.ok) throw new Error('API Error');
+      await api.post(`/api/audit/working-papers`, newWp);
     } catch (err) {
       console.error('Optimistic sync failed', err);
       window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '🚨 Database sync failed. Local changes were reverted.', type: 'danger' } }));
@@ -1622,12 +1567,7 @@ export const AuditProvider = ({ children }) => {
           staff_count: buData.staffCount !== undefined ? parseInt(buData.staffCount, 10) : 15,
           priority: buData.riskLevel || 'Medium'
         };
-        const response = await fetch(`${API_BASE}/api/audit/universe`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(bodyPayload)
-        });
-        if (!response.ok) throw new Error('API Error');
+        await api.post(`/api/audit/universe`, bodyPayload);
       } catch (err) {
         console.error('Optimistic sync failed', err);
         window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '🚨 Database sync failed. Local changes were reverted.', type: 'danger' } }));
@@ -1639,9 +1579,7 @@ export const AuditProvider = ({ children }) => {
       setBusinessUnits(prev => prev.filter(bu => bu.id !== id));
       const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
       try {
-        fetch(`${API_BASE}/api/audit/universe/${id}`, {
-          method: 'DELETE'
-        }).catch(console.warn);
+        api.delete(`/api/audit/universe/${id}`).catch(console.warn);
       } catch (err) {
         console.warn('Optimistic delete failed', err);
       }
@@ -1664,11 +1602,7 @@ export const AuditProvider = ({ children }) => {
           staff_count: buData.staffCount !== undefined ? parseInt(buData.staffCount, 10) : undefined,
           priority: buData.riskLevel || undefined
         };
-        fetch(`${API_BASE}/api/audit/universe/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(bodyPayload)
-        }).catch(console.warn);
+        api.put(`/api/audit/universe/${id}`, bodyPayload).catch(console.warn);
       } catch (err) {
         console.warn('Optimistic sync failed', err);
       }
