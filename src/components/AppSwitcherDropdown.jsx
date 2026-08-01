@@ -43,7 +43,7 @@ const AppSwitcherDropdown = () => {
   const handleSwitchToErm = () => {
     // Clear any stale local storage override that points to audit-portal
     const stored = localStorage.getItem('ZPC_ERM_URL_OVERRIDE');
-    if (stored && (stored.includes('audit-portal') || stored.includes('localhost'))) {
+    if (stored && stored.includes('audit-portal')) {
       localStorage.removeItem('ZPC_ERM_URL_OVERRIDE');
     }
 

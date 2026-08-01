@@ -110,7 +110,7 @@ const FraudAndContinuous = () => {
   const runScripts = async () => {
     setIsRunningScripts(true);
     try {
-      const AUDIT_API = import.meta.env?.VITE_AUDIT_API || 'http://localhost:5000';
+      const AUDIT_API = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
       const response = await fetch(`${AUDIT_API}/api/audit/continuous-scripts/run`, {
         method: 'POST',
       });
