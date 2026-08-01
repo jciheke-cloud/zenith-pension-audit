@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { FolderOpen, Plus, FileText, Download, Eye, CheckCircle, Search, Filter, ShieldCheck, Edit2, Trash2, Hash, Layers, CheckSquare, AlertTriangle, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +6,7 @@ import AuditDataUpload from '../components/AuditDataUpload';
 import ConfirmModal from '../components/ConfirmModal';
 
 const WorkingPapers = () => {
-  const { workingPapers, addWorkingPaper, setWorkingPapers, auditPlans, checkRbacPermission, verifyRbacOrAlert, addNotification } = useContext(AuditContext);
+  const { workingPapers, addWorkingPaper, setWorkingPapers, auditPlans, checkRbacPermission, verifyRbacOrAlert, addNotification, updateWorkingPaper } = useContext(AuditContext);
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -30,6 +30,35 @@ const WorkingPapers = () => {
 
   // Sample testing grid inside inspector
   const [sampleRows, setSampleRows] = useState([]);
+
+  useEffect(() => {
+    if (inspectWp) {
+      if (inspectWp.sampleRows) {
+        setSampleRows(inspectWp.sampleRows);
+      } else {
+        const match = String(inspectWp.sampleSize || '5').match(/\d+/);
+        const count = match ? parseInt(match[0], 10) : 5;
+        const rows = Array.from({ length: Math.min(count, 50) }, (_, i) => ({
+          ref: `S-${String(i + 1).padStart(3, '0')}`,
+          description: 'Transaction verification against RTGS statements',
+          result: 'Pending',
+          notes: ''
+        }));
+        setSampleRows(rows);
+      }
+    } else {
+      setSampleRows([]);
+    }
+  }, [inspectWp]);
+
+  const handleSaveSamples = () => {
+    if (updateWorkingPaper) {
+      updateWorkingPaper(inspectWp.id, { sampleRows });
+    } else {
+      setWorkingPapers(prev => prev.map(wp => wp.id === inspectWp.id ? { ...wp, sampleRows } : wp));
+    }
+    addNotification('Samples Saved', 'Sample test execution updated.', 'success');
+  };
 
   const handleStartEdit = (wp) => {
     if (!verifyRbacOrAlert('edit', 'workingPapers')) return;
@@ -301,30 +330,48 @@ const WorkingPapers = () => {
                     <tr>
                       <th>Sample #</th>
                       <th>Sample Test Item Description</th>
-                      <th>Expected Result</th>
                       <th>Actual Test Result</th>
-                      <th>Exception?</th>
+                      <th>Notes</th>
                     </tr>
                   </thead>
                   <tbody>
                     {sampleRows.length === 0 ? (
                       <tr>
-                        <td colSpan="5" className="text-center p-8 text-[var(--text-muted)]">
+                        <td colSpan="4" className="text-center p-8 text-[var(--text-muted)]">
                           No test evidence attached yet.
                         </td>
                       </tr>
-                    ) : sampleRows.map(row => (
-                      <tr key={row.id}>
-                        <td className="tabular-nums font-bold text-blue-400">{row.id}</td>
-                        <td className="text-[0.82rem]">{row.desc}</td>
-                        <td className="text-[0.8rem] text-[var(--text-muted)]">{row.expected}</td>
-                        <td className="text-[0.82rem] font-semibold">{row.actual}</td>
+                    ) : sampleRows.map((row, idx) => (
+                      <tr key={row.ref || idx}>
+                        <td className="tabular-nums font-bold text-blue-400">{row.ref}</td>
+                        <td className="text-[0.82rem]">{row.description}</td>
                         <td>
-                          {row.exception === 'Yes' ? (
-                            <span className="badge-danger">⚠️ Exception Detected</span>
-                          ) : (
-                            <span className="badge-success">✓ Passed</span>
-                          )}
+                          <select 
+                            value={row.result}
+                            onChange={(e) => {
+                              const newRows = [...sampleRows];
+                              newRows[idx].result = e.target.value;
+                              setSampleRows(newRows);
+                            }}
+                            className="form-select text-[0.8rem] py-1 px-2 bg-slate-800 border border-slate-600 rounded text-white"
+                          >
+                            <option value="Pending">Pending</option>
+                            <option value="Pass">Pass</option>
+                            <option value="Fail">Fail</option>
+                          </select>
+                        </td>
+                        <td>
+                          <input 
+                            type="text"
+                            value={row.notes}
+                            onChange={(e) => {
+                              const newRows = [...sampleRows];
+                              newRows[idx].notes = e.target.value;
+                              setSampleRows(newRows);
+                            }}
+                            className="form-input text-[0.8rem] py-1 px-2 w-full bg-slate-800 border border-slate-600 rounded text-white"
+                            placeholder="Add notes..."
+                          />
                         </td>
                       </tr>
                     ))}
@@ -334,6 +381,7 @@ const WorkingPapers = () => {
             </div>
 
             <div className="flex justify-end gap-[0.8rem] border-t border-white/[0.08] pt-4">
+              <button onClick={handleSaveSamples} className="btn-primary">Save Samples</button>
               <button onClick={() => setInspectWp(null)} className="btn-secondary">Close Inspector</button>
             </div>
           </div>

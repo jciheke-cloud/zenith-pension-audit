@@ -4,15 +4,42 @@ import { Share2, RefreshCw, ShieldCheck, CheckCircle, Database, Layers, ArrowRig
 import AuditDataUpload from '../components/AuditDataUpload';
 
 const ErmSyncPage = () => {
-  const { auditUniverse, findings, clearAllMockData, syncFromErmSuite, bulkUploadRecords, addNotification } = useContext(AuditContext);
+  const { auditUniverse, findings, clearAllMockData, syncFromErmSuite, bulkUploadRecords, addNotification, getApiBase } = useContext(AuditContext);
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState('2 minutes ago');
-  const [syncHistory, setSyncHistory] = useState([
-    { id: 'sh-1', event: 'Audit Universe Sync to ERM Risk Register', status: 'Success', itemsCount: auditUniverse.length, time: '2 mins ago' },
-    { id: 'sh-2', event: '10×10 Residual Risk Score Calibration Push', status: 'Success', itemsCount: findings.length, time: '15 mins ago' },
-    { id: 'sh-3', event: 'CAP Remediation Status Pull from ERM Action Owners', status: 'Success', itemsCount: 12, time: '1 hour ago' }
-  ]);
+  const [syncHistory, setSyncHistory] = useState([]);
+  const [connectionStatus, setConnectionStatus] = useState('Checking...');
   
+  React.useEffect(() => {
+    // Fetch real sync history from audit logs
+    const API_BASE = getApiBase();
+    fetch(`${API_BASE}/api/audit-logs?action=ERM_SYNC`)
+      .then(r => r.ok ? r.json() : [])
+      .then(logs => {
+        if (logs.length > 0) {
+          const mappedLogs = logs.map(l => ({
+            id: l.id,
+            event: l.description,
+            status: 'Success',
+            itemsCount: 'Many',
+            time: new Date(l.created_at).toLocaleString()
+          }));
+          setSyncHistory(mappedLogs);
+          setLastSyncTime(new Date(logs[0].created_at).toLocaleString());
+        } else {
+          setSyncHistory([
+            { id: 'sh-1', event: 'Initial Setup', status: 'Success', itemsCount: 0, time: 'System start' }
+          ]);
+        }
+      })
+      .catch(() => setSyncHistory([]));
+      
+    // Health check
+    fetch(`${API_BASE}/api/audit/plans?limit=1`)
+      .then(r => r.ok ? setConnectionStatus('Connected') : setConnectionStatus('Disconnected'))
+      .catch(() => setConnectionStatus('Disconnected'));
+  }, []);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [showFilters, setShowFilters] = useState(false);
@@ -33,10 +60,23 @@ const ErmSyncPage = () => {
       const nowStr = new Date().toLocaleTimeString();
       setLastSyncTime('Just now');
       syncFromErmSuite && syncFromErmSuite();
-      setSyncHistory(prev => [
-        { id: `sh-${Date.now()}`, event: 'Direct Live ERM -> Audit Risk & Universe Ingestion', status: 'Success', itemsCount: auditUniverse.length + findings.length, time: `Today at ${nowStr}` },
-        ...prev
-      ]);
+      
+      const newLog = { id: `sh-${Date.now()}`, event: 'Direct Live ERM -> Audit Risk & Universe Ingestion', status: 'Success', itemsCount: auditUniverse.length + findings.length, time: `Today at ${nowStr}` };
+      setSyncHistory(prev => [newLog, ...prev]);
+      
+      // Send real log
+      const API_BASE = getApiBase();
+      fetch(`${API_BASE}/api/audit-logs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'ERM_SYNC',
+          entity: 'ERM_BRIDGE',
+          description: 'Direct Live ERM -> Audit Risk & Universe Ingestion',
+          performed_by: 'Audit Sync Engine'
+        })
+      }).catch(console.error);
+      
     }, 1000);
   };
 
@@ -132,7 +172,9 @@ const ErmSyncPage = () => {
           <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.4rem 1.8rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)', display: 'flex', flexDirection: 'column', gap: '0.6rem', minWidth: '280px' }}>
             <div className="flex-between">
               <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Connection Status</span>
-              
+              <span className={`badge-${connectionStatus === 'Connected' ? 'success' : 'danger'}`} style={{ padding: '0.2rem 0.6rem' }}>
+                {connectionStatus === 'Connected' ? '🟢 Online' : '🔴 Offline'}
+              </span>
             </div>
             <div className="flex-between">
               <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Last Payload Exchange</span>
@@ -156,7 +198,7 @@ const ErmSyncPage = () => {
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.6', margin: '0 0 1rem' }}>
             Every auditable process defined in Master Data (`Operations`, `Custody Asset Safekeeping`, `SWIFT Gateway`) maps 1:1 to a risk universe entry in the ZPC Enterprise Risk Register.
           </p>
-          <span className="badge-chip-info">14 Linked Universe Processes</span>
+          <span className="badge-chip-info">{auditUniverse.length} Linked Universe Processes</span>
         </div>
 
         <div className="glass-card" style={{ padding: '1.5rem', borderTop: '4px solid #EF4444' }}>

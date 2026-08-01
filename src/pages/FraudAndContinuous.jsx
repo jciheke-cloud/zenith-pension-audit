@@ -13,6 +13,7 @@ const FraudAndContinuous = () => {
   const [filterSeverity, setFilterSeverity] = useState('All');
   const [filterStatus, setFilterStatus] = useState('All');
   const [showFilters, setShowFilters] = useState(false);
+  const [isRunningScripts, setIsRunningScripts] = useState(false);
 
   const filteredContinuous = continuousExceptions.filter(ex => {
     const matchSearch = !searchTerm || ex.ruleName?.toLowerCase().includes(searchTerm.toLowerCase()) || ex.details?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -81,6 +82,25 @@ const FraudAndContinuous = () => {
     }));
   };
 
+  const runScripts = async () => {
+    setIsRunningScripts(true);
+    try {
+      const AUDIT_API = import.meta.env?.VITE_AUDIT_API || 'http://localhost:5000';
+      const response = await fetch(`${AUDIT_API}/api/audit/continuous-scripts/run`, {
+        method: 'POST',
+      });
+      if (response.ok) {
+        addNotification('Success', 'Triggered continuous monitoring job on the backend.', 'success');
+      } else {
+        addNotification('Error', 'Failed to trigger continuous monitoring job.', 'danger');
+      }
+    } catch (err) {
+      addNotification('Error', 'Failed to trigger continuous monitoring job.', 'danger');
+    } finally {
+      setIsRunningScripts(false);
+    }
+  };
+
   return (
     <div className="page-container">
       <div className="module-header">
@@ -97,9 +117,18 @@ const FraudAndContinuous = () => {
               <span>Log Fraud Investigation Case</span>
             </button>
           ) : (
-            <button onClick={() => addNotification('Continuous Scripts Run', 'All 18 automated continuous auditing verification scripts executed successfully across RTGS and SWIFT logs.', 'success')} className="btn-secondary">
-              <RefreshCw size={16} />
-              <span>Run Continuous Audit Scripts Now</span>
+            <button onClick={runScripts} disabled={isRunningScripts} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {isRunningScripts ? (
+                <>
+                  <RefreshCw size={16} className="animate-spin" />
+                  <span>Running continuous monitoring job on the backend...</span>
+                </>
+              ) : (
+                <>
+                  <RefreshCw size={16} />
+                  <span>Run Continuous Audit Scripts</span>
+                </>
+              )}
             </button>
           )}
         </div>

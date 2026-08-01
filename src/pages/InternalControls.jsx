@@ -4,7 +4,7 @@ import { ShieldCheck, Plus, CheckCircle, AlertOctagon, Sliders, Layers, Search, 
 import AuditDataUpload from '../components/AuditDataUpload';
 
 const InternalControls = () => {
-  const { controls, setControls, addNotification } = useContext(AuditContext);
+  const { controls, setControls, addControl, addNotification } = useContext(AuditContext);
   const [filterType, setFilterType] = useState('All');
   const [filterAutomated, setFilterAutomated] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
@@ -46,7 +46,7 @@ const InternalControls = () => {
       owner,
       lastTested: new Date().toISOString().split('T')[0]
     };
-    setControls(prev => [newControl, ...prev]);
+    addControl(newControl);
     addNotification('Control Logged', `Internal control ${newControl.code} added to testing register.`, 'success');
     setIsModalOpen(false);
     setCode('');

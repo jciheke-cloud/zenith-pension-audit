@@ -1,6 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { FileCheck, Download, Award, ShieldCheck, CheckCircle, FileText, Share2, Layers, AlertOctagon } from 'lucide-react';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const ReportsAndCommittee = () => {
   const { auditPlans, findings, clientProfile, currency, addNotification } = useContext(AuditContext);
@@ -20,8 +22,69 @@ const ReportsAndCommittee = () => {
   const handleGenerateReport = () => {
     setIsGenerating(true);
     setTimeout(() => {
-      setIsGenerating(false);
-      addNotification('Report Generated & Exported', `${reportType} for "${selectedPlan.auditName}" compiled successfully with 10×10 matrix tables.`, 'success');
+      try {
+        const doc = new jsPDF();
+        
+        // Header
+        doc.setFontSize(20);
+        doc.setTextColor(200, 30, 30);
+        doc.text(clientProfile.toUpperCase(), 14, 22);
+        
+        doc.setFontSize(12);
+        doc.setTextColor(100, 100, 100);
+        doc.text('INTERNAL AUDIT DEPARTMENT', 14, 30);
+        
+        // Report Meta
+        doc.setFontSize(16);
+        doc.setTextColor(0, 0, 0);
+        doc.text(reportType, 14, 45);
+        
+        doc.setFontSize(11);
+        doc.text(`Engagement: ${selectedPlan.auditName}`, 14, 55);
+        doc.text(`Period: ${selectedPlan.plannedStartDate} to ${selectedPlan.plannedEndDate}`, 14, 62);
+        doc.text(`Overall Audit Rating: ${selectedPlan.auditRating || 'Satisfactory'}`, 14, 69);
+        doc.text(`Total Observations Logged: ${linkedFindings.length}`, 14, 76);
+        
+        // Table
+        doc.setFontSize(14);
+        doc.text('Key Observations & 10x10 Risk Evaluation', 14, 92);
+        
+        if (linkedFindings.length > 0) {
+          const tableData = linkedFindings.map(f => [
+            f.findingNumber,
+            f.observation,
+            `L${f.likelihood} x I${f.impact} = ${f.residualRisk}`,
+            f.priority
+          ]);
+          
+          doc.autoTable({
+            startY: 98,
+            head: [['Finding Ref', 'Observation', 'Score (LxI=R)', 'Priority']],
+            body: tableData,
+            theme: 'striped',
+            headStyles: { fillColor: [200, 30, 30] },
+            columnStyles: {
+              0: { cellWidth: 35 },
+              2: { cellWidth: 30 },
+              3: { cellWidth: 30 }
+            }
+          });
+        } else {
+          doc.setFontSize(10);
+          doc.text('No significant risk observations recorded for this engagement.', 14, 102);
+        }
+        
+        // Save
+        const filename = `${selectedPlan.id}_${reportType.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+        doc.save(filename);
+        
+        addNotification('Report Generated & Exported', `${reportType} for "${selectedPlan.auditName}" compiled successfully with 10×10 matrix tables.`, 'success');
+      } catch (err) {
+        console.error('PDF Generation Error:', err);
+        addNotification('Generation Failed', 'Failed to compile PDF document.', 'danger');
+      } finally {
+        setIsGenerating(false);
+      }
     }, 800);
   };
 
@@ -246,16 +309,18 @@ const ReportsAndCommittee = () => {
             <h3 className="section-title" className="mb-[0.8rem]">Committee Governance KPIs</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
               <div className="flex-between" style={{ padding: '0.85rem', background: 'rgba(18, 26, 41, 0.65)', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Statutory Meetings Held (2026)</span>
-                <span className="tabular-nums" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#34d399' }}>2 / 4 Quarterly</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Audit Engagements Completed</span>
+                <span className="tabular-nums" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#34d399' }}>{auditPlans.filter(p => p.status === 'Completed').length} / {auditPlans.length}</span>
               </div>
               <div className="flex-between" style={{ padding: '0.85rem', background: 'rgba(18, 26, 41, 0.65)', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Charter Compliance Status</span>
-                <span className="badge-success">100% Compliant</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>High-Risk Critical Findings (Unresolved)</span>
+                <span className={`tabular-nums ${findings.filter(f => f.priority === 'Critical' && f.status === 'Open').length > 0 ? 'text-red-500 font-bold' : 'text-green-500'}`}>
+                  {findings.filter(f => f.priority === 'Critical' && f.status === 'Open').length} Open
+                </span>
               </div>
               <div className="flex-between" style={{ padding: '0.85rem', background: 'rgba(18, 26, 41, 0.65)', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>PenCom Statutory Return Status</span>
-                <span className="badge-purple">Form IA-01 Submitted</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Statutory Return Status</span>
+                <span className="badge-purple">Form IA-01 Generated</span>
               </div>
             </div>
           </div>
