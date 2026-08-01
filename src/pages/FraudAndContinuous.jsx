@@ -106,7 +106,7 @@ const FraudAndContinuous = () => {
       </div>
 
       {/* Tabs */}
-      <div className="nav-tab-container" style={{ flexWrap: 'wrap' }}>
+      <div className="nav-tab-container flex-wrap">
         <button
           onClick={() => setActiveTab('continuous')}
           className={`nav-tab-btn ${activeTab === 'continuous' ? 'active' : ''}`}
@@ -114,7 +114,7 @@ const FraudAndContinuous = () => {
           title={`Click to monitor automated real-time transaction anomalies (` + continuousExceptions.filter(e => e.status !== 'Cleared / Verified Normal').length + ` active exception alerts).`}
         >
           <Eye size={16} />
-          <span style={{ fontWeight: 600 }}>Continuous Auditing Exception Feed</span>
+          <span className="font-semibold">Continuous Auditing Exception Feed</span>
           <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
             {continuousExceptions.filter(e => e.status !== 'Cleared / Verified Normal').length} Active Alerts
           </span>
@@ -126,7 +126,7 @@ const FraudAndContinuous = () => {
           title={`Click to review confidential forensic investigations and whistleblowing cases (${fraudCases.length} open/closed cases).`}
         >
           <ShieldAlert size={16} />
-          <span style={{ fontWeight: 600 }}>Forensic Fraud Investigations</span>
+          <span className="font-semibold">Forensic Fraud Investigations</span>
           <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
             {fraudCases.length} Cases
           </span>
@@ -142,7 +142,7 @@ const FraudAndContinuous = () => {
                 <p className="section-subtitle">Real-time detection of Maker/Checker segregation of duties (SoD) breaches, dormant account activity, and RTGS mismatches</p>
               </div>
               <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                <div style={{ position: 'relative' }}>
+                <div className="relative">
                   <Search size={16} style={{ position: 'absolute', left: '10px', top: '10px', color: 'var(--text-muted)' }} />
                   <input type="text" placeholder="Search exceptions..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2rem', width: '200px' }} />
                 </div>
@@ -153,7 +153,7 @@ const FraudAndContinuous = () => {
             </div>
             {showFilters && (
               <div style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.03)', padding: '0.75rem', borderRadius: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div className="flex items-center gap-2">
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Severity:</span>
                   <select value={filterSeverity} onChange={e => setFilterSeverity(e.target.value)} className="form-select">
                     <option value="All">All Severities</option>
@@ -183,7 +183,7 @@ const FraudAndContinuous = () => {
               <tbody>
                 {filteredContinuous.length === 0 ? (
                   <tr>
-                    <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No matching items found</td>
+                    <td colSpan="8" className="text-center p-8 text-[var(--text-muted)]">No matching items found</td>
                   </tr>
                 ) : filteredContinuous.map(ex => (
                   <tr key={ex.id}>
@@ -196,7 +196,7 @@ const FraudAndContinuous = () => {
                       {ex.severity === 'High' && <span className="badge-warning">High Severity</span>}
                       {(!ex.severity || ex.severity === 'Medium' || ex.severity === 'Low') && <span className="badge-info">{ex.severity || 'Medium'} Severity</span>}
                     </td>
-                    <td className="tabular-nums" style={{ color: 'var(--text-muted)' }}>{ex.timestamp || '2026-07-13'}</td>
+                    <td className="tabular-nums" className="text-[var(--text-muted)]">{ex.timestamp || '2026-07-13'}</td>
                     <td>
                       {(ex.status === 'Under Review' || ex.status?.includes('Investigation') || ex.status?.includes('Open')) && <span className="badge-warning">{ex.status || 'Under Review'}</span>}
                       {(ex.status === 'Cleared / Verified Normal' || ex.status?.includes('Resolved') || ex.status?.includes('Cleared')) && <span className="badge-success">Cleared / Verified</span>}
@@ -204,13 +204,13 @@ const FraudAndContinuous = () => {
                       {(!ex.status || (!ex.status.includes('Review') && !ex.status.includes('Investigation') && !ex.status.includes('Open') && !ex.status.includes('Cleared') && !ex.status.includes('Resolved') && !ex.status.includes('Escalated') && !ex.status.includes('Flagged'))) && <span className="badge-info">{ex.status || 'Active Alert'}</span>}
                     </td>
                     <td>
-                      <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                      <div className="flex gap-[0.4rem] flex-wrap">
                         {ex.status === 'Under Review' && (
                           <>
-                            <button onClick={() => handleClearException(ex.id)} className="btn-success" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
+                            <button onClick={() => handleClearException(ex.id)} className="btn-success px-[0.65rem] py-[0.3rem] text-[0.75rem]">
                               ✓ Clear Exception
                             </button>
-                            <button onClick={() => handleEscalateExceptionToFinding(ex)} className="btn-primary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
+                            <button onClick={() => handleEscalateExceptionToFinding(ex)} className="btn-primary px-[0.65rem] py-[0.3rem] text-[0.75rem]">
                               <AlertOctagon size={13} /> Escalate to Finding
                             </button>
                           </>
@@ -248,7 +248,7 @@ const FraudAndContinuous = () => {
             </div>
             {showFilters && (
               <div style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.03)', padding: '0.75rem', borderRadius: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div className="flex items-center gap-2">
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Status:</span>
                   <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select">
                     <option value="All">All Statuses</option>
@@ -278,7 +278,7 @@ const FraudAndContinuous = () => {
               <tbody>
                 {filteredFraud.length === 0 ? (
                   <tr>
-                    <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No matching items found</td>
+                    <td colSpan="8" className="text-center p-8 text-[var(--text-muted)]">No matching items found</td>
                   </tr>
                 ) : filteredFraud.map(fc => (
                   <tr key={fc.id}>
@@ -306,23 +306,23 @@ const FraudAndContinuous = () => {
       {/* Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '560px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Initiate Fraud Investigation Case</h3>
-              <button onClick={() => setIsModalOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+          <div className="modal-content" className="max-w-[560px]">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="m-0 text-xl font-extrabold">Initiate Fraud Investigation Case</h3>
+              <button onClick={() => setIsModalOpen(false)} className="bg-transparent border-none text-[var(--text-muted)] cursor-pointer">✕</button>
             </div>
-            <form onSubmit={handleCreateCase} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleCreateCase} className="flex flex-col gap-4">
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Investigation Title / Suspected Irregularity</label>
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Investigation Title / Suspected Irregularity</label>
                 <input type="text" required placeholder="e.g. Unauthorized Fee Reversal & Duplicate Sweep Attempt" value={title} onChange={e => setTitle(e.target.value)} className="form-input" />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Department</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Department</label>
                   <input type="text" value={dept} onChange={e => setDept(e.target.value)} className="form-input" required />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Status</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Status</label>
                   <select value={status} onChange={e => setStatus(e.target.value)} className="form-select">
                     <option value="Under Investigation">Under Investigation</option>
                     <option value="Referred to Law Enforcement / EFCC">Referred to EFCC / Police</option>
@@ -330,17 +330,17 @@ const FraudAndContinuous = () => {
                   </select>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Potential Financial Impact</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Potential Financial Impact</label>
                   <input type="text" value={impact} onChange={e => setImpact(e.target.value)} className="form-input" />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Recovered / Frozen Amount</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Recovered / Frozen Amount</label>
                   <input type="text" value={recovered} onChange={e => setRecovered(e.target.value)} className="form-input" />
                 </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
+              <div className="flex justify-end gap-[0.85rem] mt-4">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary">Cancel</button>
                 <button type="submit" className="btn-primary">Initiate Case</button>
               </div>

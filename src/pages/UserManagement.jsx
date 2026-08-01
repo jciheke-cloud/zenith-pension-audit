@@ -608,7 +608,7 @@ export const UserManagement = () => {
                       </div>
 
                       {/* Role Pill */}
-                      <div style={{ marginBottom: '1rem' }}>
+                      <div className="mb-4">
                         <span style={{
                           display: 'inline-block',
                           padding: '0.3rem 0.75rem',
@@ -721,7 +721,7 @@ export const UserManagement = () => {
                   {role.description}
                 </p>
 
-                <div style={{ marginBottom: '1rem' }}>
+                <div className="mb-4">
                   <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#e2e8f0', marginBottom: '0.5rem' }}>
                     Granted Privilege Scope:
                   </div>
@@ -770,7 +770,7 @@ export const UserManagement = () => {
           overflow: 'hidden'
         }}>
           <div style={{ padding: '1.2rem 1.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>Audit Logs</h3>
+            <h3 className="m-0 text-xl font-extrabold">Audit Logs</h3>
           </div>
 
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
@@ -839,7 +839,7 @@ export const UserManagement = () => {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                 <Shield size={20} style={{ color: '#f472b6' }} />
-                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
+                <h3 className="m-0 text-xl font-extrabold">
                   {editingUser ? 'Edit Audit Personnel Profile' : 'Provision New Audit Credentials'}
                 </h3>
               </div>

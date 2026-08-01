@@ -114,7 +114,7 @@ const ErmSyncPage = () => {
       {/* Sync Bridge Architectural Showcase */}
       <div className="glass-card" style={{ marginBottom: '2rem', background: 'linear-gradient(135deg, rgba(200, 30, 30, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%)', border: '1px solid rgba(200, 30, 30, 0.5)' }}>
         <div className="flex-between" style={{ flexWrap: 'wrap', gap: '1.5rem' }}>
-          <div style={{ maxWidth: '600px' }}>
+          <div className="max-w-[600px]">
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem' }}>
               <Share2 size={24} color="#C81E1E" />
               <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fda4af', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
@@ -151,7 +151,7 @@ const ErmSyncPage = () => {
         <div className="glass-card" style={{ padding: '1.5rem', borderTop: '4px solid #3B82F6' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.8rem' }}>
             <Database size={24} color="#3B82F6" />
-            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Audit Universe ➔ ERM Risk Register</h3>
+            <h3 className="m-0 text-xl font-extrabold">Audit Universe ➔ ERM Risk Register</h3>
           </div>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.6', margin: '0 0 1rem' }}>
             Every auditable process defined in Master Data (`Operations`, `Custody Asset Safekeeping`, `SWIFT Gateway`) maps 1:1 to a risk universe entry in the ZPC Enterprise Risk Register.
@@ -162,7 +162,7 @@ const ErmSyncPage = () => {
         <div className="glass-card" style={{ padding: '1.5rem', borderTop: '4px solid #EF4444' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.8rem' }}>
             <AlertOctagon size={24} color="#EF4444" />
-            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>10×10 Findings ➔ Residual Risk Heat Map</h3>
+            <h3 className="m-0 text-xl font-extrabold">10×10 Findings ➔ Residual Risk Heat Map</h3>
           </div>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.6', margin: '0 0 1rem' }}>
             Whenever a critical finding is logged with Likelihood × Impact &ge; 80, the ERM heat map automatically highlights the department in Red and prompts executive risk review.
@@ -191,7 +191,7 @@ const ErmSyncPage = () => {
               <p className="section-subtitle">Real-time audit trail of data streaming between Audit and ERM applications</p>
             </div>
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <div style={{ position: 'relative' }}>
+              <div className="relative">
                 <Search size={16} style={{ position: 'absolute', left: '10px', top: '10px', color: 'var(--text-muted)' }} />
                 <input type="text" placeholder="Search events..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2rem', width: '200px' }} />
               </div>
@@ -202,7 +202,7 @@ const ErmSyncPage = () => {
           </div>
           {showFilters && (
             <div style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.03)', padding: '0.75rem', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div className="flex items-center gap-2">
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Status:</span>
                 <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select">
                   <option value="All">All Statuses</option>
@@ -228,14 +228,14 @@ const ErmSyncPage = () => {
             <tbody>
               {filteredHistory.length === 0 ? (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No matching items found</td>
+                  <td colSpan="5" className="text-center p-8 text-[var(--text-muted)]">No matching items found</td>
                 </tr>
               ) : filteredHistory.map(item => (
                 <tr key={item.id}>
                   <td className="tabular-nums" style={{ fontWeight: 800, color: '#60a5fa' }}>{item.id}</td>
                   <td style={{ fontWeight: 700 }}>{item.event}</td>
                   <td className="tabular-nums" style={{ fontWeight: 800 }}>{item.itemsCount} Records</td>
-                  <td className="tabular-nums" style={{ color: 'var(--text-muted)' }}>{item.time}</td>
+                  <td className="tabular-nums" className="text-[var(--text-muted)]">{item.time}</td>
                   <td>
                     <span className="badge-success">✓ {item.status}</span>
                   </td>
@@ -283,7 +283,7 @@ const ErmSyncPage = () => {
             </select>
           </div>
           
-          <div style={{ marginTop: '0.5rem' }}>
+          <div className="mt-2">
             <AuditDataUpload targetModule={uploadType} buttonText={`Launch Batch ${uploadType.toUpperCase()} Uploader`} />
           </div>
         </div>

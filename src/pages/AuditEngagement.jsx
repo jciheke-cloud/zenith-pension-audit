@@ -112,7 +112,7 @@ const AuditEngagement = () => {
         <div className="glass-card" style={{ padding: '3rem', textAlign: 'center' }}>
           <Briefcase size={48} style={{ color: 'var(--text-muted)', margin: '0 auto 1rem' }} />
           <h3>No Active Engagements</h3>
-          <p style={{ color: 'var(--text-muted)' }}>There are currently no active audit engagements in your database.</p>
+          <p className="text-[var(--text-muted)]">There are currently no active audit engagements in your database.</p>
           <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Please create an annual audit plan first, or sync via the ERM bridge.</p>
         </div>
       ) : (
@@ -142,7 +142,7 @@ const AuditEngagement = () => {
       </div>
 
       {/* Engagement Stage Navigation Tabs */}
-      <div className="nav-tab-container" style={{ flexWrap: 'wrap' }}>
+      <div className="nav-tab-container flex-wrap">
         <button
           onClick={() => setActiveTab('planning')}
           className={`nav-tab-btn ${activeTab === 'planning' ? 'active' : ''}`}
@@ -150,7 +150,7 @@ const AuditEngagement = () => {
           title="Phase 1: Review pre-engagement scope, audit criteria, statutory mandates, and assigned audit team members."
         >
           <Briefcase size={16} />
-          <span style={{ fontWeight: 600 }}>Planning & Scope Definition</span>
+          <span className="font-semibold">Planning & Scope Definition</span>
           <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
             Phase 1
           </span>
@@ -162,7 +162,7 @@ const AuditEngagement = () => {
           title={`Phase 2: Execute step-by-step testing procedures, verify sampling evidence, and record audit observations (${auditPrograms[0]?.procedures?.length || 4} testing procedures available).`}
         >
           <CheckSquare size={16} />
-          <span style={{ fontWeight: 600 }}>Fieldwork Execution & Program Testing</span>
+          <span className="font-semibold">Fieldwork Execution & Program Testing</span>
           <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
             {auditPrograms[0]?.procedures?.length || 4} Test Procedures
           </span>
@@ -174,7 +174,7 @@ const AuditEngagement = () => {
           title={`Phase 3: Review supervisor quality assurance notes, sign-offs, and corrective action recommendations (${reviewNotes.length} notes logged).`}
         >
           <ShieldCheck size={16} />
-          <span style={{ fontWeight: 600 }}>Supervisor QA & Review Notes</span>
+          <span className="font-semibold">Supervisor QA & Review Notes</span>
           <span className="badge-chip" style={{ background: 'rgba(255, 255, 255, 0.12)', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '12px' }}>
             {reviewNotes.length} Review Notes
           </span>
@@ -185,7 +185,7 @@ const AuditEngagement = () => {
       {activeTab === 'planning' && (
         <div className="app-grid" style={{ padding: 0, gap: '1.5rem' }}>
           <div className="glass-card col-span-6">
-            <h3 className="section-title" style={{ marginBottom: '0.8rem' }}>Engagement Scope & Objectives</h3>
+            <h3 className="section-title" className="mb-[0.8rem]">Engagement Scope & Objectives</h3>
             <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
               To conduct a comprehensive, independent evaluation of the operational effectiveness and regulatory compliance of ZPC's <strong>{selectedPlan.department}</strong>. Specifically assessing whether all client pension contributions swept from employers are reconciled within the statutory 24-hour SLA window mandated by the National Pension Commission (PenCom).
             </p>
@@ -199,7 +199,7 @@ const AuditEngagement = () => {
           </div>
 
           <div className="glass-card col-span-6">
-            <h3 className="section-title" style={{ marginBottom: '0.8rem' }}>Pre-Engagement Risk Assessment & Team Allocation</h3>
+            <h3 className="section-title" className="mb-[0.8rem]">Pre-Engagement Risk Assessment & Team Allocation</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
               <div className="flex-between" style={{ padding: '0.7rem', background: 'rgba(18, 26, 41, 0.65)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
                 <span style={{ fontSize: '0.86rem', fontWeight: 600 }}>Inherent Risk Rating:</span>
@@ -235,19 +235,19 @@ const AuditEngagement = () => {
               <h3 className="section-title">Audit Program Procedures & Testing Checklist</h3>
               <p className="section-subtitle">Executing step-by-step procedures, sampling, and linking working paper evidence</p>
             </div>
-            <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
-              <div style={{ position: 'relative' }}>
-                <Search size={16} style={{ position: 'absolute', left: '12px', top: '10px', color: 'var(--text-muted)' }} />
+            <div className="flex gap-[0.8rem] items-center">
+              <div className="relative">
+                <Search size={16} className="absolute left-3 top-[10px] text-[var(--text-muted)]" />
                 <input type="text" placeholder="Search Procedures..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2.2rem', width: '200px' }} />
               </div>
-              <div style={{ position: 'relative' }}>
-                <button onClick={() => setShowFilter(!showFilter)} className="btn-secondary" style={{ padding: '0.5rem 0.8rem' }}>
+              <div className="relative">
+                <button onClick={() => setShowFilter(!showFilter)} className="btn-secondary px-[0.8rem] py-2">
                   <Filter size={16} /> Filter
                 </button>
                 {showFilter && (
                   <div style={{ position: 'absolute', right: 0, top: '110%', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.8rem', zIndex: 10, minWidth: '180px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.4rem' }}>By Status</label>
-                    <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select" style={{ width: '100%' }}>
+                    <label className="block text-[0.75rem] font-semibold mb-[0.4rem]">By Status</label>
+                    <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select w-full">
                       <option value="All">All Statuses</option>
                       <option value="Pass">Pass</option>
                       <option value="Exception">Exception</option>
@@ -279,7 +279,7 @@ const AuditEngagement = () => {
               <tbody>
                 {filteredProcedures.length === 0 ? (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No matching items found</td>
+                    <td colSpan="6" className="text-center p-8">No matching items found</td>
                   </tr>
                 ) : (
                 filteredProcedures.map(proc => (
@@ -306,12 +306,11 @@ const AuditEngagement = () => {
                       <div style={{ display: 'flex', gap: '0.4rem' }}>
                         <button
                           onClick={() => handleToggleProcedureStatus(auditPrograms[0].id, proc.id)}
-                          className="btn-secondary"
-                          style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}
+                          className="btn-secondary px-[0.65rem] py-[0.3rem] text-[0.75rem]"
                         >
                           Toggle Result ➔
                         </button>
-                        <button onClick={() => navigate('/working-papers')} className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}>
+                        <button onClick={() => navigate('/working-papers')} className="btn-secondary px-[0.65rem] py-[0.3rem] text-[0.75rem]">
                           Evidence
                         </button>
                       </div>
@@ -335,7 +334,7 @@ const AuditEngagement = () => {
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div className="flex flex-col gap-4">
               {reviewNotes.map(note => (
                 <div key={note.id} style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', borderTop: '1px solid var(--border-color)', borderRight: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)', borderLeft: note.status === 'Open' ? '4px solid #F59E0B' : '4px solid #10B981' }}>
                   <div className="flex-between" style={{ marginBottom: '0.4rem' }}>
@@ -354,10 +353,10 @@ const AuditEngagement = () => {
           </div>
 
           <div className="glass-card col-span-5">
-            <h3 className="section-title" style={{ marginBottom: '0.8rem' }}>Log New QA Review Note</h3>
-            <form onSubmit={handleAddReviewNote} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <h3 className="section-title" className="mb-[0.8rem]">Log New QA Review Note</h3>
+            <form onSubmit={handleAddReviewNote} className="flex flex-col gap-4">
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Note Detail / Query for Fieldwork Team</label>
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Note Detail / Query for Fieldwork Team</label>
                 <textarea
                   rows={4}
                   placeholder="Enter supervisory observation, sampling expansion request, or evidence clarification query..."
@@ -389,18 +388,18 @@ const AuditEngagement = () => {
       {/* WP Modal */}
       {isWpModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '520px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Upload Working Paper Evidence</h3>
-              <button onClick={() => setIsWpModalOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+          <div className="modal-content" className="max-w-[520px]">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="m-0 text-xl font-extrabold">Upload Working Paper Evidence</h3>
+              <button onClick={() => setIsWpModalOpen(false)} className="bg-transparent border-none text-[var(--text-muted)] cursor-pointer">✕</button>
             </div>
-            <form onSubmit={handleUploadEngagementWp} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleUploadEngagementWp} className="flex flex-col gap-4">
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Working Paper Title</label>
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Working Paper Title</label>
                 <input type="text" required placeholder="e.g. Q1 Custody Fee Sweep Reconciliation Spreadsheet" value={wpTitle} onChange={e => setWpTitle(e.target.value)} className="form-input" />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Evidence File Type</label>
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Evidence File Type</label>
                 <select value={wpType} onChange={e => setWpType(e.target.value)} className="form-select">
                   <option value="Excel Workbook (.xlsx)">Excel Workbook (.xlsx)</option>
                   <option value="Word Document (.docx)">Word Document (.docx)</option>
@@ -409,7 +408,7 @@ const AuditEngagement = () => {
                   <option value="SWIFT Log Snapshot (.png)">SWIFT Log Snapshot (.png)</option>
                 </select>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
+              <div className="flex justify-end gap-[0.85rem] mt-4">
                 <button type="button" onClick={() => setIsWpModalOpen(false)} className="btn-secondary">Cancel</button>
                 <button type="submit" className="btn-primary">Attach Evidence</button>
               </div>

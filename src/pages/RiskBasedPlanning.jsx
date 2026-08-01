@@ -124,7 +124,7 @@ const RiskBasedPlanning = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginTop: '1.2rem' }}>
           <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
-            <div className="flex-between" style={{ marginBottom: '0.5rem' }}>
+            <div className="flex-between" className="mb-2">
               <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#fda4af' }}>Inherent Risk Factor</span>
               <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.inherentRisk}%</span>
             </div>
@@ -142,7 +142,7 @@ const RiskBasedPlanning = () => {
           </div>
 
           <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
-            <div className="flex-between" style={{ marginBottom: '0.5rem' }}>
+            <div className="flex-between" className="mb-2">
               <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#fcd34d' }}>Financial Exposure</span>
               <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.financialExposure}%</span>
             </div>
@@ -160,7 +160,7 @@ const RiskBasedPlanning = () => {
           </div>
 
           <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
-            <div className="flex-between" style={{ marginBottom: '0.5rem' }}>
+            <div className="flex-between" className="mb-2">
               <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#60a5fa' }}>Regulatory Impact</span>
               <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.regulatoryImpact}%</span>
             </div>
@@ -178,7 +178,7 @@ const RiskBasedPlanning = () => {
           </div>
 
           <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
-            <div className="flex-between" style={{ marginBottom: '0.5rem' }}>
+            <div className="flex-between" className="mb-2">
               <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#34d399' }}>Previous Findings</span>
               <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.previousFindings}%</span>
             </div>
@@ -196,7 +196,7 @@ const RiskBasedPlanning = () => {
           </div>
 
           <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
-            <div className="flex-between" style={{ marginBottom: '0.5rem' }}>
+            <div className="flex-between" className="mb-2">
               <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#a78bfa' }}>Fraud Exposure</span>
               <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.fraudExposure}%</span>
             </div>
@@ -214,7 +214,7 @@ const RiskBasedPlanning = () => {
           </div>
 
           <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
-            <div className="flex-between" style={{ marginBottom: '0.5rem' }}>
+            <div className="flex-between" className="mb-2">
               <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#cbd5e1' }}>IT Dependency</span>
               <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.itDependency}%</span>
             </div>
@@ -234,20 +234,19 @@ const RiskBasedPlanning = () => {
       </div>
 
       {/* Filter / Search Bar */}
-      <div className="filter-bar" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <div style={{ position: 'relative', flex: 1 }}>
-          <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
+      <div className="filter-bar" className="flex gap-4 items-center">
+        <div className="relative flex-1">
+          <Search size={16} className="absolute left-3 top-3 text-[var(--text-muted)]" />
           <input
             type="text"
             placeholder="Search processes..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            className="form-input"
-            style={{ paddingLeft: '2.4rem', width: '100%' }}
+            className="form-input pl-[2.4rem] w-full"
           />
         </div>
 
-        <div style={{ position: 'relative' }}>
+        <div className="relative">
           <button 
             className="btn-secondary" 
             onClick={() => setShowFilterDropdown(!showFilterDropdown)}
@@ -266,7 +265,7 @@ const RiskBasedPlanning = () => {
             }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Priority</label>
-                <select value={filterPriority} onChange={e => setFilterPriority(e.target.value)} className="form-select" style={{ width: '100%' }}>
+                <select value={filterPriority} onChange={e => setFilterPriority(e.target.value)} className="form-select w-full">
                   <option value="All">All Priorities</option>
                   <option value="High">High</option>
                   <option value="Medium">Medium</option>

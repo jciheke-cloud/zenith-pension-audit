@@ -50,7 +50,7 @@ const ReportsAndCommittee = () => {
           title="Compile formal executive audit report packs, rating summaries, and management letters."
         >
           <FileText size={16} />
-          <span style={{ fontWeight: 600 }}>Automated Audit Report Generator</span>
+          <span className="font-semibold">Automated Audit Report Generator</span>
         </button>
         <button
           onClick={() => setActiveTab('portal')}
@@ -59,7 +59,7 @@ const ReportsAndCommittee = () => {
           title="Access high-level Board Audit Committee (BAC) oversight metrics, quarterly packs, and resolution tracking."
         >
           <FileCheck size={16} />
-          <span style={{ fontWeight: 600 }}>Board Audit Committee Portal</span>
+          <span className="font-semibold">Board Audit Committee Portal</span>
         </button>
       </div>
 
@@ -76,7 +76,7 @@ const ReportsAndCommittee = () => {
         <div className="grid-12" style={{ alignItems: 'start' }}>
           {/* Left: Generator Configuration */}
           <div className="glass-card col-span-5">
-            <h3 className="section-title" style={{ marginBottom: '1rem' }}>Configure & Compile Audit Report Pack</h3>
+            <h3 className="section-title" className="mb-4">Configure & Compile Audit Report Pack</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Select Completed Audit Engagement</label>
@@ -243,7 +243,7 @@ const ReportsAndCommittee = () => {
           </div>
 
           <div className="glass-card col-span-4">
-            <h3 className="section-title" style={{ marginBottom: '0.8rem' }}>Committee Governance KPIs</h3>
+            <h3 className="section-title" className="mb-[0.8rem]">Committee Governance KPIs</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
               <div className="flex-between" style={{ padding: '0.85rem', background: 'rgba(18, 26, 41, 0.65)', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
                 <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Statutory Meetings Held (2026)</span>

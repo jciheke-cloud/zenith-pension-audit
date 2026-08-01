@@ -91,7 +91,7 @@ const ComplianceAndRegulatory = () => {
       </div>
 
       {/* Filter Tabs */}
-      <div className="nav-tab-container" style={{ flexWrap: 'wrap' }}>
+      <div className="nav-tab-container flex-wrap">
         {['All', 'PenCom', 'Statutory / External Audit'].map(t => (
           <button
             key={t}
@@ -99,7 +99,7 @@ const ComplianceAndRegulatory = () => {
             className={`nav-tab-btn ${activeTab === t ? 'active' : ''}`}
             title={`Filter regulatory examination findings by authority: ${t === 'All' ? 'All Regulatory Bodies (PenCom, External Audit)' : t}.`}
           >
-            <span style={{ fontWeight: 600 }}>{t === 'All' ? 'All Regulatory Bodies' : t}</span>
+            <span className="font-semibold">{t === 'All' ? 'All Regulatory Bodies' : t}</span>
           </button>
         ))}
       </div>
@@ -113,7 +113,7 @@ const ComplianceAndRegulatory = () => {
               <p className="section-subtitle">Retesting verification status and statutory report tracking</p>
             </div>
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <div style={{ position: 'relative' }}>
+              <div className="relative">
                 <Search size={16} style={{ position: 'absolute', left: '10px', top: '10px', color: 'var(--text-muted)' }} />
                 <input type="text" placeholder="Search reviews..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="form-input" style={{ paddingLeft: '2rem', width: '200px' }} />
               </div>
@@ -124,7 +124,7 @@ const ComplianceAndRegulatory = () => {
           </div>
           {showFilters && (
             <div style={{ display: 'flex', gap: '1rem', background: 'rgba(255,255,255,0.03)', padding: '0.75rem', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div className="flex items-center gap-2">
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Status:</span>
                 <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-select">
                   <option value="All">All Statuses</option>
@@ -154,7 +154,7 @@ const ComplianceAndRegulatory = () => {
             <tbody>
               {filteredReviews.length === 0 ? (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No matching items found</td>
+                  <td colSpan="8" className="text-center p-8 text-[var(--text-muted)]">No matching items found</td>
                 </tr>
               ) : filteredReviews.map(rev => {
                 const issues = rev.findingsCount !== undefined ? rev.findingsCount : rev.totalObservations || 3;
@@ -165,7 +165,7 @@ const ComplianceAndRegulatory = () => {
                     <td>
                       <span className="badge-chip-purple">{rev.regulatoryBody || 'PenCom'}</span>
                     </td>
-                    <td className="tabular-nums" style={{ color: 'var(--text-muted)' }}>{rev.date || rev.inspectionDate || '2026-03-15'}</td>
+                    <td className="tabular-nums" className="text-[var(--text-muted)]">{rev.date || rev.inspectionDate || '2026-03-15'}</td>
                     <td className="tabular-nums" style={{ fontWeight: 800, fontSize: '1.05rem', color: issues > 0 ? '#F59E0B' : '#10B981' }}>
                       {issues} Issues
                     </td>
@@ -194,19 +194,19 @@ const ComplianceAndRegulatory = () => {
       {/* Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '560px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Log External Regulatory Review / Examination</h3>
-              <button onClick={() => setIsModalOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+          <div className="modal-content" className="max-w-[560px]">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="m-0 text-xl font-extrabold">Log External Regulatory Review / Examination</h3>
+              <button onClick={() => setIsModalOpen(false)} className="bg-transparent border-none text-[var(--text-muted)] cursor-pointer">✕</button>
             </div>
-            <form onSubmit={handleAddReview} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleAddReview} className="flex flex-col gap-4">
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Examination Title</label>
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Examination Title</label>
                 <input type="text" required placeholder="e.g. 2026 PenCom Routine Risk-Based Examination" value={title} onChange={e => setTitle(e.target.value)} className="form-input" />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Regulatory Authority</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Regulatory Authority</label>
                   <select value={body} onChange={e => setBody(e.target.value)} className="form-select">
                     <option value="PenCom (National Pension Commission)">PenCom (National Pension Commission)</option>
                     <option value="Statutory / External Audit (PwC/KPMG)">Statutory External Audit</option>
@@ -214,17 +214,17 @@ const ComplianceAndRegulatory = () => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Examination Date</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Examination Date</label>
                   <input type="date" value={date} onChange={e => setDate(e.target.value)} className="form-input" required />
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Issues Raised Count</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Issues Raised Count</label>
                   <input type="number" value={findingsCount} onChange={e => setFindingsCount(e.target.value)} className="form-input" required />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Status</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Status</label>
                   <select value={status} onChange={e => setStatus(e.target.value)} className="form-select">
                     <option value="Remediation Underway">Remediation Underway</option>
                     <option value="Awaiting Internal Validation">Awaiting Internal Validation</option>
@@ -232,7 +232,7 @@ const ComplianceAndRegulatory = () => {
                   </select>
                 </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
+              <div className="flex justify-end gap-[0.85rem] mt-4">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary">Cancel</button>
                 <button type="submit" className="btn-primary">Save Inspection</button>
               </div>

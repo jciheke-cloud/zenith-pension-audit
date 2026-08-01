@@ -116,39 +116,32 @@ const WorkingPapers = () => {
       </div>
 
       {/* Filter / Search Bar */}
-      <div className="filter-bar" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <div style={{ position: 'relative', flex: 1 }}>
-          <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-muted)' }} />
+      <div className="filter-bar flex gap-4 items-center">
+        <div className="relative flex-1">
+          <Search size={16} className="absolute left-3 top-3 text-[var(--text-muted)]" />
           <input
             type="text"
             placeholder="Search working papers by WP Ref, title, linked audit, or uploader..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            className="form-input"
-            style={{ paddingLeft: '2.4rem', width: '100%' }}
+            className="form-input pl-[2.4rem] w-full"
           />
         </div>
 
-        <div style={{ position: 'relative' }}>
+        <div className="relative">
           <button 
-            className="btn-secondary" 
+            className="btn-secondary flex items-center gap-[0.4rem]" 
             onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
           >
             <Filter size={16} />
             <span>Filters</span>
           </button>
           
           {showFilterDropdown && (
-            <div style={{ 
-              position: 'absolute', right: 0, top: '110%', background: 'var(--bg-dark, #1e293b)', 
-              border: '1px solid var(--border-color, rgba(255,255,255,0.1))', padding: '1rem', 
-              borderRadius: '8px', zIndex: 10, width: '220px', display: 'flex', flexDirection: 'column', gap: '1rem',
-              boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
-            }}>
+            <div className="absolute right-0 top-[110%] bg-slate-800 border border-[var(--border-color)] p-4 rounded-lg z-10 w-[220px] flex flex-col gap-4 shadow-xl">
               <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Document Type</label>
-                <select value={filterType} onChange={e => setFilterType(e.target.value)} className="form-select" style={{ width: '100%' }}>
+                <label className="block text-[0.82rem] mb-[0.3rem]">Document Type</label>
+                <select value={filterType} onChange={e => setFilterType(e.target.value)} className="form-select w-full">
                   <option value="All">All Document Types</option>
                   <option value="Excel">Excel Workbooks</option>
                   <option value="PDF">PDF Bank Statements</option>
@@ -186,60 +179,58 @@ const WorkingPapers = () => {
             <tbody>
               {filteredPapers.length === 0 ? (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: 'center', padding: '2rem' }}>
+                  <td colSpan="8" className="text-center p-8">
                     No matching items found
                   </td>
                 </tr>
               ) : filteredPapers.map(wp => (
                 <tr key={wp.id}>
-                  <td className="tabular-nums" style={{ fontWeight: 800, color: '#3B82F6' }}>
+                  <td className="tabular-nums font-extrabold text-[#3B82F6]">
                     <button 
                       onClick={() => setInspectWp(wp)} 
-                      style={{ background: 'none', border: 'none', color: '#60A5FA', cursor: 'pointer', fontWeight: 800, textDecoration: 'underline', padding: 0 }}
+                      className="bg-transparent border-none text-blue-400 cursor-pointer font-extrabold underline p-0"
                     >
                       {wp.id}
                     </button>
                   </td>
-                  <td style={{ fontWeight: 700 }}>{wp.title || wp.fileName || 'Verified Working Paper Evidence'}</td>
+                  <td className="font-bold">{wp.title || wp.fileName || 'Verified Working Paper Evidence'}</td>
                   <td>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                      <span className="badge-chip" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                    <div className="flex flex-col gap-[0.2rem]">
+                      <span className="badge-chip bg-white/[0.06]">
                         📄 {wp.fileType || 'Excel'}
                       </span>
-                      <span style={{ fontSize: '0.68rem', fontFamily: 'monospace', color: 'var(--text-muted)' }}>
+                      <span className="text-[0.68rem] font-mono text-[var(--text-muted)]">
                         SHA: {wp.checksum ? wp.checksum.substring(0, 12) + '...' : 'e3b0c44298fc...'}
                       </span>
                     </div>
                   </td>
-                  <td style={{ maxWidth: '230px', fontSize: '0.86rem', color: '#fda4af' }}>{wp.linkedAudit || wp.auditName || 'FY2026 ERM Core Custody Risk Review'}</td>
-                  <td style={{ fontSize: '0.82rem' }}>
-                    <span className="badge-chip-info" style={{ fontSize: '0.72rem' }}>
+                  <td className="max-w-[230px] text-[0.86rem] text-[#fda4af]">{wp.linkedAudit || wp.auditName || 'FY2026 ERM Core Custody Risk Review'}</td>
+                  <td className="text-[0.82rem]">
+                    <span className="badge-chip-info text-[0.72rem]">
                       {wp.samplingMethod || 'Risk-based'} ({wp.sampleSize || '25'} samples)
                     </span>
                   </td>
-                  <td style={{ fontSize: '0.84rem' }}>{wp.uploadedBy || wp.owner || 'Lead Senior Auditor'}</td>
+                  <td className="text-[0.84rem]">{wp.uploadedBy || wp.owner || 'Lead Senior Auditor'}</td>
                   <td>
                     {(wp.status === 'Approved' || wp.status === 'Supervisor Signed-Off' || wp.status === 'QA Approved') && <span className="badge-success">Approved / Signed-Off</span>}
                     {(wp.status === 'Submitted for Review' || wp.status === 'Under Review' || wp.status === 'In Progress') && <span className="badge-warning">Under Review</span>}
                     {(!wp.status || (wp.status !== 'Approved' && wp.status !== 'Supervisor Signed-Off' && wp.status !== 'QA Approved' && wp.status !== 'Submitted for Review' && wp.status !== 'Under Review' && wp.status !== 'In Progress')) && <span className="badge-info">{wp.status || 'Verified'}</span>}
                   </td>
                   <td>
-                    <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                      <button onClick={() => setInspectWp(wp)} className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem', background: 'rgba(59, 130, 246, 0.18)', color: '#60A5FA' }}>
+                    <div className="flex gap-[0.4rem] items-center">
+                      <button onClick={() => setInspectWp(wp)} className="btn-secondary px-[0.65rem] py-[0.3rem] text-[0.75rem] bg-blue-500/[0.18] text-blue-400">
                         <Eye size={13} /> Inspect WP
                       </button>
                       <button
                         onClick={() => handleStartEdit(wp)}
-                        className="btn-secondary"
-                        style={{ padding: '0.3rem 0.5rem', background: checkRbacPermission('edit', 'workingPapers') ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('edit', 'workingPapers') ? '#60A5FA' : 'var(--text-muted)' }}
+                        className={`btn-secondary px-2 py-[0.3rem] ${checkRbacPermission('edit', 'workingPapers') ? 'bg-blue-500/15 text-blue-400' : 'bg-white/5 text-[var(--text-muted)]'}`}
                         title={checkRbacPermission('edit', 'workingPapers') ? "Edit Working Paper (✏️)" : "🔒 RBAC Restricted"}
                       >
                         <Edit2 size={13} />
                       </button>
                       <button
                         onClick={() => handleDeleteWp(wp.id, wp.title)}
-                        className="btn-secondary"
-                        style={{ padding: '0.3rem 0.5rem', background: checkRbacPermission('delete', 'workingPapers') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.05)', color: checkRbacPermission('delete', 'workingPapers') ? '#F87171' : 'var(--text-muted)' }}
+                        className={`btn-secondary px-2 py-[0.3rem] ${checkRbacPermission('delete', 'workingPapers') ? 'bg-red-500/15 text-red-400' : 'bg-white/5 text-[var(--text-muted)]'}`}
                         title={checkRbacPermission('delete', 'workingPapers') ? "Delete Working Paper (🗑️)" : "🔒 RBAC Restricted"}
                       >
                         <Trash2 size={13} />
@@ -256,55 +247,55 @@ const WorkingPapers = () => {
       {/* Working Paper Inspector Drawer / Modal */}
       {inspectWp && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '850px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.8rem' }}>
+          <div className="modal-content max-w-[850px] max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4 border-b border-white/[0.08] pb-[0.8rem]">
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#3B82F6', background: 'rgba(59, 130, 246, 0.15)', padding: '0.2rem 0.6rem', borderRadius: '4px' }}>
+                <div className="flex items-center gap-[0.6rem]">
+                  <span className="text-[0.85rem] font-extrabold text-blue-400 bg-blue-500/15 px-[0.6rem] py-[0.2rem] rounded">
                     {inspectWp.id}
                   </span>
-                  <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>{inspectWp.title || inspectWp.fileName}</h3>
+                  <h3 className="m-0 text-[1.2rem] font-extrabold">{inspectWp.title || inspectWp.fileName}</h3>
                 </div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.2rem', display: 'block' }}>
-                  Golden Thread Link ➔ Engagement: <strong style={{ color: '#fda4af' }}>{inspectWp.linkedAudit}</strong>
+                <span className="text-[0.8rem] text-[var(--text-muted)] mt-[0.2rem] block">
+                  Golden Thread Link ➔ Engagement: <strong className="text-[#fda4af]">{inspectWp.linkedAudit}</strong>
                 </span>
               </div>
-              <button onClick={() => setInspectWp(null)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
+              <button onClick={() => setInspectWp(null)} className="bg-transparent border-none text-[var(--text-muted)] cursor-pointer text-[1.2rem]">✕</button>
             </div>
 
             {/* Header Metrics */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.8rem', marginBottom: '1.5rem', background: 'rgba(0,0,0,0.25)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="grid grid-cols-4 gap-[0.8rem] mb-6 bg-black/25 p-4 rounded-lg border border-white/[0.06]">
               <div>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block' }}>Auditor (Prepared By)</span>
-                <span style={{ fontSize: '0.88rem', fontWeight: 700 }}>{inspectWp.uploadedBy || 'Lead Senior Auditor'}</span>
+                <span className="text-[0.72rem] text-[var(--text-muted)] block">Auditor (Prepared By)</span>
+                <span className="text-[0.88rem] font-bold">{inspectWp.uploadedBy || 'Lead Senior Auditor'}</span>
               </div>
               <div>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block' }}>Reviewer (Supervisory Sign-Off)</span>
-                <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#F59E0B' }}>Sarah James (Pending Clearance)</span>
+                <span className="text-[0.72rem] text-[var(--text-muted)] block">Reviewer (Supervisory Sign-Off)</span>
+                <span className="text-[0.88rem] font-bold text-[#F59E0B]">Sarah James (Pending Clearance)</span>
               </div>
               <div>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block' }}>Sampling Methodology</span>
-                <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#10B981' }}>{inspectWp.samplingMethod || 'Risk-based'} ({inspectWp.sampleSize || '25'}/{inspectWp.populationSize || '2,450'})</span>
+                <span className="text-[0.72rem] text-[var(--text-muted)] block">Sampling Methodology</span>
+                <span className="text-[0.88rem] font-bold text-[#10B981]">{inspectWp.samplingMethod || 'Risk-based'} ({inspectWp.sampleSize || '25'}/{inspectWp.populationSize || '2,450'})</span>
               </div>
               <div>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block' }}>SHA-256 Checksum Integrity</span>
-                <span style={{ fontSize: '0.72rem', fontFamily: 'monospace', color: '#60A5FA', display: 'block', wordBreak: 'break-all' }}>
+                <span className="text-[0.72rem] text-[var(--text-muted)] block">SHA-256 Checksum Integrity</span>
+                <span className="text-[0.72rem] font-mono text-blue-400 block break-all">
                   {inspectWp.checksum ? inspectWp.checksum.substring(0, 16) + '...' : 'e3b0c44298fc1c14...'}
                 </span>
               </div>
             </div>
 
             {/* Sample Testing Grid */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
-                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-[0.6rem]">
+                <h4 className="m-0 text-[0.95rem] font-bold text-[var(--text-primary)]">
                   📋 Sample Test Execution Matrix ({sampleRows.length} Tested Samples)
                 </h4>
-                <button onClick={() => navigate('/findings')} className="btn-secondary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.74rem' }}>
+                <button onClick={() => navigate('/findings')} className="btn-secondary px-[0.6rem] py-[0.3rem] text-[0.74rem]">
                   <ExternalLink size={12} /> View Linked Findings (FND-2026-004)
                 </button>
               </div>
-              <div className="data-table-container" style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '6px' }}>
+              <div className="data-table-container bg-black/30 rounded-md">
                 <table className="data-table">
                   <thead>
                     <tr>
@@ -318,16 +309,16 @@ const WorkingPapers = () => {
                   <tbody>
                     {sampleRows.length === 0 ? (
                       <tr>
-                        <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                        <td colSpan="5" className="text-center p-8 text-[var(--text-muted)]">
                           No test evidence attached yet.
                         </td>
                       </tr>
                     ) : sampleRows.map(row => (
                       <tr key={row.id}>
-                        <td className="tabular-nums" style={{ fontWeight: 700, color: '#3B82F6' }}>{row.id}</td>
-                        <td style={{ fontSize: '0.82rem' }}>{row.desc}</td>
-                        <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{row.expected}</td>
-                        <td style={{ fontSize: '0.82rem', fontWeight: 600 }}>{row.actual}</td>
+                        <td className="tabular-nums font-bold text-blue-400">{row.id}</td>
+                        <td className="text-[0.82rem]">{row.desc}</td>
+                        <td className="text-[0.8rem] text-[var(--text-muted)]">{row.expected}</td>
+                        <td className="text-[0.82rem] font-semibold">{row.actual}</td>
                         <td>
                           {row.exception === 'Yes' ? (
                             <span className="badge-danger">⚠️ Exception Detected</span>
@@ -342,7 +333,7 @@ const WorkingPapers = () => {
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.8rem', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1rem' }}>
+            <div className="flex justify-end gap-[0.8rem] border-t border-white/[0.08] pt-4">
               <button onClick={() => setInspectWp(null)} className="btn-secondary">Close Inspector</button>
             </div>
           </div>
@@ -352,27 +343,27 @@ const WorkingPapers = () => {
       {/* Upload / Edit Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '540px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{editingWpId ? 'Edit Working Paper Evidence' : 'Upload Working Paper Evidence'}</h3>
-              <button onClick={() => { setIsModalOpen(false); setEditingWpId(null); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+          <div className="modal-content max-w-[540px]">
+            <div className="flex justify-between items-center mb-[1.4rem]">
+              <h3 className="m-0 text-[1.25rem] font-extrabold">{editingWpId ? 'Edit Working Paper Evidence' : 'Upload Working Paper Evidence'}</h3>
+              <button onClick={() => { setIsModalOpen(false); setEditingWpId(null); }} className="bg-transparent border-none text-[var(--text-muted)] cursor-pointer">✕</button>
             </div>
-            <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleUpload} className="flex flex-col gap-4">
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Working Paper Title</label>
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Working Paper Title</label>
                 <input type="text" required placeholder="e.g. Custody Cash Sweep Verification Spreadsheet Q3" value={title} onChange={e => setTitle(e.target.value)} className="form-input" />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Linked Audit Engagement</label>
+                <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Linked Audit Engagement</label>
                 <select value={linkedAudit} onChange={e => setLinkedAudit(e.target.value)} className="form-select">
                   {auditPlans.map(p => (
                     <option key={p.id} value={p.auditName}>{p.auditName}</option>
                   ))}
                 </select>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Sampling Methodology</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Sampling Methodology</label>
                   <select value={samplingMethod} onChange={e => setSamplingMethod(e.target.value)} className="form-select">
                     <option value="Risk-based">Risk-based Sampling</option>
                     <option value="Random">Random Selection</option>
@@ -381,13 +372,13 @@ const WorkingPapers = () => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Sample Size / Population</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Sample Size / Population</label>
                   <input type="text" value={sampleSize} onChange={e => setSampleSize(e.target.value)} className="form-input" placeholder="e.g. 25 / 2,450" />
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>File Format</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">File Format</label>
                   <select value={fileType} onChange={e => setFileType(e.target.value)} className="form-select">
                     <option value="Excel Workbook (.xlsx)">Excel Workbook (.xlsx)</option>
                     <option value="Word Document (.docx)">Word Document (.docx)</option>
@@ -396,11 +387,11 @@ const WorkingPapers = () => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>Uploaded By</label>
+                  <label className="block text-[0.8rem] font-bold mb-[0.4rem] text-[var(--text-secondary)]">Uploaded By</label>
                   <input type="text" value={uploadedBy} onChange={e => setUploadedBy(e.target.value)} className="form-input" />
                 </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '1rem' }}>
+              <div className="flex justify-end gap-[0.85rem] mt-4">
                 <button type="button" onClick={() => { setIsModalOpen(false); setEditingWpId(null); }} className="btn-secondary">Cancel</button>
                 <button type="submit" className="btn-primary">{editingWpId ? 'Save Changes' : 'Upload & Link Evidence'}</button>
               </div>
