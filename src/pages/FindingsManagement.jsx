@@ -122,15 +122,18 @@ const FindingsManagement = () => {
   const repeatCount = findings.filter(f => f.isRepeat).length;
 
   let overallRating = 'Satisfactory';
-  let ratingColor = '#10B981';
+  let ratingColorClass = 'text-emerald-500';
+  let ratingBorderClass = 'border-l-emerald-500';
   let ratingDesc = 'Controls are generally effective with minor procedural enhancements required.';
   if (criticalCount >= 2 || (criticalCount === 1 && highCount >= 3) || repeatCount >= 3) {
     overallRating = 'Unsatisfactory';
-    ratingColor = '#EF4444';
+    ratingColorClass = 'text-red-500';
+    ratingBorderClass = 'border-l-red-500';
     ratingDesc = 'Significant internal control deficiencies, recurring breakdowns, or critical regulatory breaches identified.';
   } else if (criticalCount === 1 || highCount >= 2) {
     overallRating = 'Needs Improvement';
-    ratingColor = '#F59E0B';
+    ratingColorClass = 'text-amber-500';
+    ratingBorderClass = 'border-l-amber-500';
     ratingDesc = 'Controls require strengthening in high-exposure areas to mitigate moderate operational risk.';
   }
 
@@ -141,11 +144,11 @@ const FindingsManagement = () => {
       const cols = [];
       for (let i = 1; i <= 10; i++) {
         const score = l * i;
-        let cellBg = 'rgba(16, 185, 129, 0.18)';
-        let cellColor = '#34d399';
-        if (score >= 80) { cellBg = 'rgba(239, 68, 68, 0.45)'; cellColor = '#fca5a5'; }
-        else if (score >= 60) { cellBg = 'rgba(245, 158, 11, 0.4)'; cellColor = '#fde047'; }
-        else if (score >= 30) { cellBg = 'rgba(59, 130, 246, 0.28)'; cellColor = '#93c5fd'; }
+        let cellBgClass = 'bg-emerald-500/20';
+        let cellColorClass = 'text-emerald-400';
+        if (score >= 80) { cellBgClass = 'bg-red-500/45'; cellColorClass = 'text-red-300'; }
+        else if (score >= 60) { cellBgClass = 'bg-amber-500/40'; cellColorClass = 'text-amber-300'; }
+        else if (score >= 30) { cellBgClass = 'bg-blue-500/30'; cellColorClass = 'text-blue-300'; }
 
         // Find matching findings for this exact likelihood / impact coordinate
         const matched = findings.filter(f => f.likelihood === l && f.impact === i);
@@ -153,13 +156,10 @@ const FindingsManagement = () => {
         cols.push(
           <div
             key={`${l}-${i}`}
-            className={`border border-white/10 h-[38px] flex items-center justify-center relative rounded ${matched.length > 0 ? 'cursor-pointer' : 'cursor-default'}`}
-            style={{
-              background: cellBg,
-            }}
+            className={`border border-white/10 h-[38px] flex items-center justify-center relative rounded ${matched.length > 0 ? 'cursor-pointer' : 'cursor-default'} ${cellBgClass}`}
             title={`Likelihood ${l} × Impact ${i} = Score ${score}${matched.length > 0 ? ` (${matched.length} findings)` : ''}`}
           >
-            <span className={`text-[0.68rem] font-extrabold ${matched.length > 0 ? 'text-white opacity-100' : 'opacity-60'}`} style={{ color: matched.length > 0 ? undefined : cellColor }}>
+            <span className={`text-[0.68rem] font-extrabold ${matched.length > 0 ? 'text-white opacity-100' : `opacity-60 ${cellColorClass}`}`}>
               {score}
             </span>
             {matched.length > 0 && (
@@ -225,15 +225,15 @@ const FindingsManagement = () => {
       </div>
 
       {/* Automated Audit Rating Banner */}
-      <div className="glass-card bg-slate-900/85 mb-7 bg-gradient-to-br from-slate-900/90 to-slate-800/80" style={{ borderLeft: `6px solid ${ratingColor}` }}>
+      <div className={`glass-card bg-slate-900/85 mb-7 bg-gradient-to-br from-slate-900/90 to-slate-800/80 border-l-[6px] ${ratingBorderClass}`}>
         <div className="flex-between flex-wrap gap-4">
           <div className="flex items-center gap-[1.2rem]">
-            <Award size={40} color={ratingColor} />
+            <Award size={40} className={ratingColorClass} />
             <div>
               <span className="text-[0.75rem] font-extrabold text-[var(--text-muted)] uppercase tracking-[0.05em]">
                 System Automated Overall Audit Rating Generator
               </span>
-              <h3 className="my-[0.2rem] text-2xl font-extrabold" style={{ color: ratingColor }}>
+              <h3 className={`my-[0.2rem] text-2xl font-extrabold ${ratingColorClass}`}>
                 {overallRating} Rating
               </h3>
               <p className="m-0 text-[0.86rem] text-[var(--text-secondary)] max-w-[650px]">
@@ -402,7 +402,7 @@ const FindingsManagement = () => {
                     </td>
                     <td>{f.businessUnit || f.department || 'Operations'}</td>
                     <td className="tabular-nums font-extrabold text-[0.95rem]">
-                      L{f.likelihood || 5} × I{f.impact || 6} = <span style={{ color: (f.residualRisk || 50) >= 80 ? '#EF4444' : (f.residualRisk || 50) >= 60 ? '#F59E0B' : '#10B981' }}>{f.residualRisk || (f.likelihood || 5) * (f.impact || 6)}</span>
+                      L{f.likelihood || 5} × I{f.impact || 6} = <span className={(f.residualRisk || 50) >= 80 ? 'text-red-500' : (f.residualRisk || 50) >= 60 ? 'text-amber-500' : 'text-emerald-500'}>{f.residualRisk || (f.likelihood || 5) * (f.impact || 6)}</span>
                     </td>
                     <td>
                       {f.priority === 'Critical' && <span className="badge-danger">🔴 Critical</span>}
@@ -517,7 +517,7 @@ const FindingsManagement = () => {
                 </div>
                 <div className="flex-between mt-[0.8rem] pt-[0.6rem] border-t border-white/10">
                   <span className="text-[0.85rem] font-bold">Calculated Residual Score:</span>
-                  <span className="tabular-nums text-[1.25rem] font-extrabold" style={{ color: calculatedTier === 'Critical' ? '#EF4444' : calculatedTier === 'High' ? '#F59E0B' : '#10B981' }}>
+                  <span className={`tabular-nums text-[1.25rem] font-extrabold ${calculatedTier === 'Critical' ? 'text-red-500' : calculatedTier === 'High' ? 'text-amber-500' : 'text-emerald-500'}`}>
                     {residualCalc}/100 ({calculatedTier} Tier)
                   </span>
                 </div>

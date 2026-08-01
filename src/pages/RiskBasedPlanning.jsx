@@ -89,44 +89,35 @@ const RiskBasedPlanning = () => {
       </div>
 
       {bannerMessage && (
-        <div style={{
-          padding: '1rem 1.25rem',
-          borderRadius: '0.75rem',
-          marginBottom: '1.5rem',
-          background: bannerMessage.type === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(56, 189, 248, 0.15)',
-          border: `1px solid ${bannerMessage.type === 'success' ? '#10b981' : '#38bdf8'}`,
-          color: bannerMessage.type === 'success' ? '#6ee7b7' : '#7dd3fc',
-          fontWeight: 700,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.75rem',
-          fontSize: '0.9rem',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
-        }}>
+        <div className={`px-5 py-4 rounded-xl mb-6 flex items-center gap-3 text-sm font-bold shadow-[0_4px_20px_rgba(0,0,0,0.3)] ${
+          bannerMessage.type === 'success' 
+            ? 'bg-emerald-500/15 border border-emerald-500 text-emerald-300' 
+            : 'bg-sky-400/15 border border-sky-400 text-sky-300'
+        }`}>
           <span>{bannerMessage.text}</span>
         </div>
       )}
 
       {/* Interactive Weight Sliders Panel */}
-      <div className="glass-card" style={{ marginBottom: '2rem' }}>
+      <div className="glass-card bg-slate-900/85 mb-8">
         <div className="section-header-bar">
           <div>
             <h3 className="section-title">Risk Factor Weighting Calibration (Must Sum to 100%)</h3>
             <p className="section-subtitle">Adjusting these weights dynamically recalculates the Overall Audit Priority for every auditable unit across ZPC</p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>Total Weight Sum:</span>
-            <span className={`tabular-nums ${totalWeight === 100 ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: '1rem', padding: '0.35rem 0.85rem' }}>
+          <div className="flex items-center gap-[0.6rem]">
+            <span className="text-[0.85rem] font-bold text-[var(--text-muted)]">Total Weight Sum:</span>
+            <span className={`tabular-nums text-base px-3 py-1 ${totalWeight === 100 ? 'badge-success' : 'badge-danger'}`}>
               {totalWeight}%
             </span>
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginTop: '1.2rem' }}>
-          <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
+        <div className="grid grid-cols-3 gap-6 mt-5">
+          <div className="bg-slate-900/65 p-[1.1rem] rounded-[var(--radius-md)] border border-[var(--border-color)] border-t-slate-400/40">
             <div className="flex-between" className="mb-2">
-              <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#fda4af' }}>Inherent Risk Factor</span>
-              <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.inherentRisk}%</span>
+              <span className="font-bold text-[0.88rem] text-rose-300">Inherent Risk Factor</span>
+              <span className="tabular-nums font-extrabold text-white">{tempWeights.inherentRisk}%</span>
             </div>
             <input
               type="range"
@@ -134,17 +125,17 @@ const RiskBasedPlanning = () => {
               max="50"
               value={tempWeights.inherentRisk}
               onChange={e => handleWeightChange('inherentRisk', e.target.value)}
-              style={{ width: '100%', accentColor: '#C81E1E', cursor: 'pointer' }}
+              className="w-full cursor-pointer accent-[#C81E1E]"
             />
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.3rem' }}>
+            <span className="text-[0.72rem] text-[var(--text-muted)] block mt-[0.3rem]">
               Core operational volatility and complexity of the process
             </span>
           </div>
 
-          <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
+          <div className="bg-slate-900/65 p-[1.1rem] rounded-[var(--radius-md)] border border-[var(--border-color)] border-t-slate-400/40">
             <div className="flex-between" className="mb-2">
-              <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#fcd34d' }}>Financial Exposure</span>
-              <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.financialExposure}%</span>
+              <span className="font-bold text-[0.88rem] text-amber-300">Financial Exposure</span>
+              <span className="tabular-nums font-extrabold text-white">{tempWeights.financialExposure}%</span>
             </div>
             <input
               type="range"
@@ -152,17 +143,17 @@ const RiskBasedPlanning = () => {
               max="50"
               value={tempWeights.financialExposure}
               onChange={e => handleWeightChange('financialExposure', e.target.value)}
-              style={{ width: '100%', accentColor: '#F59E0B', cursor: 'pointer' }}
+              className="w-full cursor-pointer accent-[#F59E0B]"
             />
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.3rem' }}>
+            <span className="text-[0.72rem] text-[var(--text-muted)] block mt-[0.3rem]">
               Direct monetary assets handled or potential SLA penalty loss
             </span>
           </div>
 
-          <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
+          <div className="bg-slate-900/65 p-[1.1rem] rounded-[var(--radius-md)] border border-[var(--border-color)] border-t-slate-400/40">
             <div className="flex-between" className="mb-2">
-              <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#60a5fa' }}>Regulatory Impact</span>
-              <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.regulatoryImpact}%</span>
+              <span className="font-bold text-[0.88rem] text-blue-400">Regulatory Impact</span>
+              <span className="tabular-nums font-extrabold text-white">{tempWeights.regulatoryImpact}%</span>
             </div>
             <input
               type="range"
@@ -170,17 +161,17 @@ const RiskBasedPlanning = () => {
               max="50"
               value={tempWeights.regulatoryImpact}
               onChange={e => handleWeightChange('regulatoryImpact', e.target.value)}
-              style={{ width: '100%', accentColor: '#3B82F6', cursor: 'pointer' }}
+              className="w-full cursor-pointer accent-[#3B82F6]"
             />
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.3rem' }}>
+            <span className="text-[0.72rem] text-[var(--text-muted)] block mt-[0.3rem]">
               PENCOM regulatory examination scrutiny and compliance mandates
             </span>
           </div>
 
-          <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
+          <div className="bg-slate-900/65 p-[1.1rem] rounded-[var(--radius-md)] border border-[var(--border-color)] border-t-slate-400/40">
             <div className="flex-between" className="mb-2">
-              <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#34d399' }}>Previous Findings</span>
-              <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.previousFindings}%</span>
+              <span className="font-bold text-[0.88rem] text-emerald-400">Previous Findings</span>
+              <span className="tabular-nums font-extrabold text-white">{tempWeights.previousFindings}%</span>
             </div>
             <input
               type="range"
@@ -188,17 +179,17 @@ const RiskBasedPlanning = () => {
               max="50"
               value={tempWeights.previousFindings}
               onChange={e => handleWeightChange('previousFindings', e.target.value)}
-              style={{ width: '100%', accentColor: '#10B981', cursor: 'pointer' }}
+              className="w-full cursor-pointer accent-[#10B981]"
             />
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.3rem' }}>
+            <span className="text-[0.72rem] text-[var(--text-muted)] block mt-[0.3rem]">
               Historical audit deficiencies and repeat audit issue frequency
             </span>
           </div>
 
-          <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
+          <div className="bg-slate-900/65 p-[1.1rem] rounded-[var(--radius-md)] border border-[var(--border-color)] border-t-slate-400/40">
             <div className="flex-between" className="mb-2">
-              <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#a78bfa' }}>Fraud Exposure</span>
-              <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.fraudExposure}%</span>
+              <span className="font-bold text-[0.88rem] text-purple-400">Fraud Exposure</span>
+              <span className="tabular-nums font-extrabold text-white">{tempWeights.fraudExposure}%</span>
             </div>
             <input
               type="range"
@@ -206,17 +197,17 @@ const RiskBasedPlanning = () => {
               max="50"
               value={tempWeights.fraudExposure}
               onChange={e => handleWeightChange('fraudExposure', e.target.value)}
-              style={{ width: '100%', accentColor: '#8B5CF6', cursor: 'pointer' }}
+              className="w-full cursor-pointer accent-[#8B5CF6]"
             />
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.3rem' }}>
+            <span className="text-[0.72rem] text-[var(--text-muted)] block mt-[0.3rem]">
               Susceptibility to misappropriation, collusion, or external cyber fraud
             </span>
           </div>
 
-          <div style={{ background: 'rgba(18, 26, 41, 0.65)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderTop: '1px solid rgba(148, 163, 184, 0.38)' }}>
+          <div className="bg-slate-900/65 p-[1.1rem] rounded-[var(--radius-md)] border border-[var(--border-color)] border-t-slate-400/40">
             <div className="flex-between" className="mb-2">
-              <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#cbd5e1' }}>IT Dependency</span>
-              <span className="tabular-nums" style={{ fontWeight: 800, color: 'white' }}>{tempWeights.itDependency}%</span>
+              <span className="font-bold text-[0.88rem] text-slate-300">IT Dependency</span>
+              <span className="tabular-nums font-extrabold text-white">{tempWeights.itDependency}%</span>
             </div>
             <input
               type="range"
@@ -224,9 +215,9 @@ const RiskBasedPlanning = () => {
               max="50"
               value={tempWeights.itDependency}
               onChange={e => handleWeightChange('itDependency', e.target.value)}
-              style={{ width: '100%', accentColor: '#94a3b8', cursor: 'pointer' }}
+              className="w-full cursor-pointer accent-[#94a3b8]"
             />
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.3rem' }}>
+            <span className="text-[0.72rem] text-[var(--text-muted)] block mt-[0.3rem]">
               Reliance on core custody systems, SWIFT gateways, and automated APIs
             </span>
           </div>
@@ -248,23 +239,16 @@ const RiskBasedPlanning = () => {
 
         <div className="relative">
           <button 
-            className="btn-secondary" 
-            onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            className="btn-secondary flex items-center gap-[0.4rem]" 
           >
             <Filter size={16} />
             <span>Filters</span>
           </button>
           
           {showFilterDropdown && (
-            <div style={{ 
-              position: 'absolute', right: 0, top: '110%', background: 'var(--bg-dark, #1e293b)', 
-              border: '1px solid var(--border-color, rgba(255,255,255,0.1))', padding: '1rem', 
-              borderRadius: '8px', zIndex: 10, width: '220px', display: 'flex', flexDirection: 'column', gap: '1rem',
-              boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
-            }}>
+            <div className="absolute right-0 top-[110%] bg-slate-800 border border-[var(--border-color)] p-4 rounded-lg z-10 w-[220px] flex flex-col gap-4 shadow-[0_4px_15px_rgba(0,0,0,0.5)]">
               <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '0.3rem' }}>Priority</label>
+                <label className="block text-[0.82rem] mb-[0.3rem]">Priority</label>
                 <select value={filterPriority} onChange={e => setFilterPriority(e.target.value)} className="form-select w-full">
                   <option value="All">All Priorities</option>
                   <option value="High">High</option>
@@ -278,7 +262,7 @@ const RiskBasedPlanning = () => {
       </div>
 
       {/* Scored Universe Matrix Table */}
-      <div className="glass-card">
+      <div className="glass-card bg-slate-900/85">
         <div className="section-header-bar">
           <div>
             <h3 className="section-title">Weighted Audit Universe Scoring Matrix</h3>
@@ -309,7 +293,7 @@ const RiskBasedPlanning = () => {
             <tbody>
               {filteredUniverse.length === 0 ? (
                 <tr>
-                  <td colSpan="13" style={{textAlign:'center', padding: '2rem'}}>No matching items found</td>
+                  <td colSpan="13" className="text-center p-8">No matching items found</td>
                 </tr>
               ) : filteredUniverse.map((unit, idx) => {
                 const norm = (val, def) => {
@@ -325,17 +309,17 @@ const RiskBasedPlanning = () => {
                 const prio = unit.priority || (unit.calculatedScore >= 7.5 ? 'High' : unit.calculatedScore >= 5.5 ? 'Medium' : 'Low');
                 return (
                   <tr key={unit.id}>
-                    <td className="tabular-nums" style={{ fontWeight: 800, color: 'var(--text-muted)' }}>#{idx + 1}</td>
-                    <td className="tabular-nums" style={{ fontWeight: 800, color: '#3B82F6' }}>{unit.code || unit.id || 'PROC-01'}</td>
-                    <td style={{ fontWeight: 700, maxWidth: '240px' }}>{unit.processName || unit.title || 'Core Auditable Unit Review'}</td>
-                    <td><span className="badge-chip" style={{ background: 'rgba(255,255,255,0.06)' }}>{unit.businessUnit || unit.department || 'Custody & Operations'}</span></td>
-                    <td className="tabular-nums" style={{ color: inh >= 8 ? '#EF4444' : 'white' }}>{inh}/10</td>
-                    <td className="tabular-nums" style={{ color: fin >= 8 ? '#F59E0B' : 'white' }}>{fin}/10</td>
-                    <td className="tabular-nums" style={{ color: reg >= 8 ? '#EF4444' : 'white' }}>{reg}/10</td>
+                    <td className="tabular-nums font-extrabold text-[var(--text-muted)]">#{idx + 1}</td>
+                    <td className="tabular-nums font-extrabold text-blue-500">{unit.code || unit.id || 'PROC-01'}</td>
+                    <td className="font-bold max-w-[240px]">{unit.processName || unit.title || 'Core Auditable Unit Review'}</td>
+                    <td><span className="badge-chip bg-white/[0.06]">{unit.businessUnit || unit.department || 'Custody & Operations'}</span></td>
+                    <td className={`tabular-nums ${inh >= 8 ? 'text-red-500' : 'text-white'}`}>{inh}/10</td>
+                    <td className={`tabular-nums ${fin >= 8 ? 'text-amber-500' : 'text-white'}`}>{fin}/10</td>
+                    <td className={`tabular-nums ${reg >= 8 ? 'text-red-500' : 'text-white'}`}>{reg}/10</td>
                     <td className="tabular-nums">{prv}/10</td>
                     <td className="tabular-nums">{frd}/10</td>
                     <td className="tabular-nums">{itd}/10</td>
-                    <td className="tabular-nums" style={{ fontSize: '1.05rem', fontWeight: 800, color: prio === 'High' ? '#EF4444' : prio === 'Medium' ? '#F59E0B' : '#10B981' }}>
+                    <td className={`tabular-nums text-[1.05rem] font-extrabold ${prio === 'High' ? 'text-red-500' : prio === 'Medium' ? 'text-amber-500' : 'text-emerald-500'}`}>
                       {unit.calculatedScore !== undefined ? unit.calculatedScore : 7.8} / 10
                     </td>
                     <td>
@@ -344,7 +328,7 @@ const RiskBasedPlanning = () => {
                       {(!prio || prio === 'Low') && <span className="badge-success">🟢 {prio || 'LOW'}</span>}
                     </td>
                     <td>
-                      <button onClick={() => navigate('/annual-plan')} className="btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}>
+                      <button onClick={() => navigate('/annual-plan')} className="btn-secondary px-[0.65rem] py-[0.35rem] text-[0.75rem]">
                         Schedule Plan ➔
                       </button>
                     </td>

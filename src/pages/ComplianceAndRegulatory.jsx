@@ -1,10 +1,24 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { AuditContext } from '../context/AuditContext';
+import api from '../services/api';
 import { Scale, ShieldAlert, CheckCircle, Clock, Plus, FileText, ExternalLink, Search, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const ComplianceAndRegulatory = () => {
-  const { regulatoryReviews, addRegulatoryReview, addNotification } = useContext(AuditContext);
+  const { addNotification } = useContext(AuditContext);
+  const [regulatoryReviews, setRegulatoryReviews] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await api.get('/api/audit/regulatory');
+        setRegulatoryReviews(res.data);
+      } catch (err) {
+        console.error('Failed to fetch regulatory reviews:', err);
+      }
+    };
+    fetchData();
+  }, []);
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('All');
@@ -39,10 +53,21 @@ const ComplianceAndRegulatory = () => {
       status,
       leadReviewer: 'Chief Compliance Officer / CAE'
     };
-    addRegulatoryReview(newRev);
+    const prevReviews = [...regulatoryReviews];
+    setRegulatoryReviews([...prevReviews, newRev]);
     addNotification('Regulatory Examination Logged', `${body} review "${title}" logged with ${findingsCount} observations.`, 'warning');
     setIsModalOpen(false);
     setTitle('');
+    
+    const saveReview = async () => {
+      try {
+        await api.post('/api/audit/regulatory', newRev);
+      } catch (err) {
+        setRegulatoryReviews(prevReviews);
+        addNotification('Error', 'Failed to save regulatory review.', 'danger');
+      }
+    };
+    saveReview();
   };
 
   return (

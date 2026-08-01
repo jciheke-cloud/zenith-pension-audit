@@ -1,10 +1,24 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { AuditContext } from '../context/AuditContext';
+import api from '../services/api';
 import { Eye, ShieldAlert, Plus, AlertOctagon, CheckCircle, Clock, RefreshCw, Layers, Search, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const FraudAndContinuous = () => {
-  const { fraudCases, addFraudCase, continuousExceptions, setContinuousExceptions, saveFinding, addNotification } = useContext(AuditContext);
+  const { continuousExceptions, setContinuousExceptions, saveFinding, addNotification } = useContext(AuditContext);
+  const [fraudCases, setFraudCases] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await api.get('/api/audit/fraud-cases');
+        setFraudCases(res.data);
+      } catch (err) {
+        console.error('Failed to fetch fraud cases:', err);
+      }
+    };
+    fetchData();
+  }, []);
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('continuous'); // 'continuous' or 'fraud'
@@ -47,10 +61,21 @@ const FraudAndContinuous = () => {
       status,
       investigator: 'Forensic Audit & Internal Security'
     };
-    addFraudCase(newCase);
+    const prevCases = [...fraudCases];
+    setFraudCases([...prevCases, newCase]);
     addNotification('Fraud Investigation Logged', `Case ${newCase.id} (${newCase.title}) initiated.`, 'danger');
     setIsModalOpen(false);
     setTitle('');
+    
+    const saveCase = async () => {
+      try {
+        await api.post('/api/audit/fraud-cases', newCase);
+      } catch (err) {
+        setFraudCases(prevCases);
+        addNotification('Error', 'Failed to save fraud case.', 'danger');
+      }
+    };
+    saveCase();
   };
 
   const handleClearException = (id) => {
