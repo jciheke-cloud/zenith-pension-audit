@@ -4,7 +4,7 @@ import { Share2, RefreshCw, ShieldCheck, CheckCircle, Database, Layers, ArrowRig
 import AuditDataUpload from '../components/AuditDataUpload';
 
 const ErmSyncPage = () => {
-  const { auditUniverse, findings, clearAllMockData, syncFromErmSuite, bulkUploadRecords, addNotification, getApiBase } = useContext(AuditContext);
+  const { auditUniverse, findings, syncFromErmSuite, bulkUploadRecords, addNotification, getApiBase } = useContext(AuditContext);
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState('2 minutes ago');
   const [syncHistory, setSyncHistory] = useState([]);

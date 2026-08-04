@@ -264,7 +264,7 @@ export const UserManagement = () => {
   };
 
   return (
-    <div style={{ padding: '2rem 2.5rem', minHeight: '100vh', background: 'var(--bg-dark, #0a0f1d)', color: 'white' }}>
+    <div className="page-container" style={{ color: 'white' }}>
       
       {/* Header Banner */}
       <div style={{

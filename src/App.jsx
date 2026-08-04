@@ -106,27 +106,29 @@ const App = () => {
           <Topbar />
           <NotificationDrawer />
           <ToastContainer />
-          <Routes>
-            <Route path="/portal" element={<PortalLanding />} />
-            <Route path="/" element={<ExecutiveDashboard />} />
-            <Route path="/index.html" element={<ExecutiveDashboard />} />
-            <Route path="/master-data" element={<MasterData />} />
-            <Route path="/annual-plan" element={<AnnualAuditPlan />} />
-            <Route path="/risk-scoring" element={<RiskBasedPlanning />} />
-            <Route path="/engagements" element={<AuditEngagement />} />
-            <Route path="/programs" element={<AuditPrograms />} />
-            <Route path="/working-papers" element={<WorkingPapers />} />
-            <Route path="/findings" element={<FindingsManagement />} />
-            <Route path="/action-tracker" element={<ActionTracking />} />
-            <Route path="/controls" element={<InternalControls />} />
-            <Route path="/compliance-regulatory" element={<ComplianceAndRegulatory />} />
-            <Route path="/fraud-continuous" element={<FraudAndContinuous />} />
-            <Route path="/reports-committee" element={<ReportsAndCommittee />} />
-            <Route path="/erm-sync" element={<ErmSyncPage />} />
-            <Route path="/user-guide" element={<UserGuidePage />} />
-            <Route path="/user-management" element={<UserManagement />} />
-            <Route path="*" element={<ExecutiveDashboard />} />
-          </Routes>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <Routes>
+              <Route path="/portal" element={<PortalLanding />} />
+              <Route path="/" element={<ExecutiveDashboard />} />
+              <Route path="/index.html" element={<ExecutiveDashboard />} />
+              <Route path="/master-data" element={<MasterData />} />
+              <Route path="/annual-plan" element={<AnnualAuditPlan />} />
+              <Route path="/risk-scoring" element={<RiskBasedPlanning />} />
+              <Route path="/engagements" element={<AuditEngagement />} />
+              <Route path="/programs" element={<AuditPrograms />} />
+              <Route path="/working-papers" element={<WorkingPapers />} />
+              <Route path="/findings" element={<FindingsManagement />} />
+              <Route path="/action-tracker" element={<ActionTracking />} />
+              <Route path="/controls" element={<InternalControls />} />
+              <Route path="/compliance-regulatory" element={<ComplianceAndRegulatory />} />
+              <Route path="/fraud-continuous" element={<FraudAndContinuous />} />
+              <Route path="/reports-committee" element={<ReportsAndCommittee />} />
+              <Route path="/erm-sync" element={<ErmSyncPage />} />
+              <Route path="/user-guide" element={<UserGuidePage />} />
+              <Route path="/user-management" element={<UserManagement />} />
+              <Route path="*" element={<ExecutiveDashboard />} />
+            </Routes>
+          </div>
           <footer style={{
             textAlign: 'center',
             padding: '1.5rem 1rem 0.5rem',

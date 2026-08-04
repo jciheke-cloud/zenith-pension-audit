@@ -123,38 +123,10 @@ export default function AuditDataUpload({ targetModule = 'findings', buttonText 
     setUploadProgress(5);
 
     try {
-      // Phase 1: Get signed URL
-      setUploadMsg('Requesting secure upload channel...');
-      const signRes = await fetch(`${AUDIT_API_BASE}/api/upload/signed-url`);
-      if (!signRes.ok) throw new Error('Failed to get signed URL from server');
-      const { uploadUrl, s3Key } = await signRes.json();
-
-      // Phase 2: PUT blob to S3 with progress tracking
-      setUploadMsg('Transferring data payload to secure staging...');
-      const blob = new Blob([JSON.stringify(parsedData)], { type: 'application/json' });
-      await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.upload.addEventListener('progress', (evt) => {
-          if (evt.lengthComputable) {
-            const pct = 5 + Math.round((evt.loaded / evt.total) * 75);
-            setUploadProgress(pct);
-          }
-        });
-        xhr.addEventListener('load', () => {
-          if (xhr.status >= 200 && xhr.status < 300) resolve();
-          else reject(new Error(`S3 upload failed with status ${xhr.status}`));
-        });
-        xhr.addEventListener('error', () => reject(new Error('S3 network error')));
-        xhr.open('PUT', uploadUrl, true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(blob);
-      });
-
-      // Phase 3: Validate and commit
       setUploadMsg(`Validating and committing ${parsedData.length.toLocaleString()} records...`);
-      setUploadProgress(85);
+      setUploadProgress(50);
       
-      const inserted = await bulkUploadRecords(targetModule, s3Key);
+      const inserted = await bulkUploadRecords(targetModule, parsedData);
 
       setUploadProgress(100);
       setUploadStatus('success');

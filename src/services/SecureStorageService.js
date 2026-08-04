@@ -1,7 +1,7 @@
 /**
  * 🔒 SecureStorageService.js — RiskINTEGRA™ Enterprise Storage Encryption Engine (Audit Suite)
  *
- * Provides client-side AES-256 encrypted localStorage caching to protect cached
+ * Provides client-side AES-256 encrypted sessionStorage caching to protect cached
  * audit universe data, business unit risk scores, and audit logs.
  * Includes transparent write-through migration for legacy unencrypted keys.
  */
@@ -39,7 +39,7 @@ const deobfuscate = (str) => {
 export const SecureStorageService = {
   getItem: (key, defaultValue = null) => {
     try {
-      const raw = localStorage.getItem(key);
+      const raw = sessionStorage.getItem(key);
       if (!raw) return defaultValue;
 
       const decrypted = deobfuscate(raw);
@@ -58,7 +58,7 @@ export const SecureStorageService = {
     try {
       const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
       const encrypted = obfuscate(stringValue);
-      localStorage.setItem(key, encrypted);
+      sessionStorage.setItem(key, encrypted);
     } catch (err) {
       console.warn(`[SecureStorageService] Error writing key "${key}":`, err);
     }
@@ -66,7 +66,7 @@ export const SecureStorageService = {
 
   removeItem: (key) => {
     try {
-      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
     } catch (err) {
       console.warn(`[SecureStorageService] Error removing key "${key}":`, err);
     }
@@ -74,9 +74,9 @@ export const SecureStorageService = {
 
   clearZpcStorage: () => {
     try {
-      Object.keys(localStorage).forEach(key => {
+      Object.keys(sessionStorage).forEach(key => {
         if (key.startsWith('zpc_') || key.startsWith('ZPC_') || key.startsWith('bowtie_')) {
-          localStorage.removeItem(key);
+          sessionStorage.removeItem(key);
         }
       });
     } catch (err) {

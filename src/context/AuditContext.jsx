@@ -13,20 +13,7 @@ Amplify.configure({
     }
   }
 });
-import {
-  INITIAL_BUSINESS_UNITS,
-  INITIAL_AUDIT_UNIVERSE,
-  INITIAL_ANNUAL_AUDIT_PLANS,
-  INITIAL_AUDIT_PROGRAMS,
-  INITIAL_WORKING_PAPERS,
-  INITIAL_FINDINGS,
-  INITIAL_INTERNAL_CONTROLS,
-  INITIAL_REGULATORY_REVIEWS,
-  INITIAL_FRAUD_CASES,
-  INITIAL_CONTINUOUS_EXCEPTIONS,
-  ROLES_LIST,
-  MOCK_USERS
-} from '../data/mockAuditData';
+import { ROLES_LIST } from '../data/mockAuditData';
 
 import { SecureStorageService } from '../services/SecureStorageService';
 
@@ -242,13 +229,13 @@ export const AuditProvider = ({ children }) => {
   const [businessUnits, setBusinessUnits] = useState([]);
   const [auditUniverse, setAuditUniverse] = useState([]);
   const [auditPlans, setAuditPlans] = useState([]);
-  const [auditPrograms, setAuditPrograms] = useState(INITIAL_AUDIT_PROGRAMS);
-  const [workingPapers, setWorkingPapers] = useState(INITIAL_WORKING_PAPERS);
+  const [auditPrograms, setAuditPrograms] = useState([]);
+  const [workingPapers, setWorkingPapers] = useState([]);
   const [findings, setFindings] = useState([]);
-  const [controls, setControls] = useState(INITIAL_INTERNAL_CONTROLS);
-  const [regulatoryReviews, setRegulatoryReviews] = useState(INITIAL_REGULATORY_REVIEWS);
-  const [fraudCases, setFraudCases] = useState(INITIAL_FRAUD_CASES);
-  const [continuousExceptions, setContinuousExceptions] = useState(INITIAL_CONTINUOUS_EXCEPTIONS);
+  const [controls, setControls] = useState([]);
+  const [regulatoryReviews, setRegulatoryReviews] = useState([]);
+  const [fraudCases, setFraudCases] = useState([]);
+  const [continuousExceptions, setContinuousExceptions] = useState([]);
 
 
 
@@ -292,8 +279,19 @@ export const AuditProvider = ({ children }) => {
       if (Array.isArray(fetchedActions)) setErmActions(fetchedActions);
       if (Array.isArray(fetchedLosses)) setErmLosses(fetchedLosses);
 
-      if (Array.isArray(businessUnitsData) && businessUnitsData.length > 0) setBusinessUnits(businessUnitsData);
-      if (Array.isArray(auditLogsData) && auditLogsData.length > 0) setAuditLogs(auditLogsData);
+      if (Array.isArray(businessUnitsData) && businessUnitsData.length > 0) {
+        setBusinessUnits(businessUnitsData.map(bu => ({
+          id: bu.id,
+          name: bu.name,
+          code: bu.code,
+          head: bu.head,
+          staffCount: bu.staff_count !== undefined ? bu.staff_count : bu.staffCount,
+          riskLevel: bu.risk_level || bu.riskLevel || 'Medium',
+          coveragePct: bu.coverage_pct !== undefined ? bu.coverage_pct : bu.coveragePct
+        })));
+      } else {
+        setBusinessUnits([]);
+      }      if (Array.isArray(auditLogsData) && auditLogsData.length > 0) setAuditLogs(auditLogsData);
 
       // Sync Controls to Internal Controls State
       if (Array.isArray(fetchedControls) && fetchedControls.length > 0) {
@@ -312,10 +310,10 @@ export const AuditProvider = ({ children }) => {
         setControls(prev => {
           const existingCodes = new Set(prev.map(c => c.code));
           const newCtrls = mappedCtrls.filter(m => !existingCodes.has(m.code));
-          return newCtrls.length > 0 ? [...newCtrls, ...prev] : (prev.length > 0 ? prev : INITIAL_INTERNAL_CONTROLS);
+          return newCtrls.length > 0 ? [...newCtrls, ...prev] : prev;
         });
       } else {
-        setControls(prev => prev.length > 0 ? prev : INITIAL_INTERNAL_CONTROLS);
+        setControls(prev => prev);
       }
 
       // Sync ERM Risks & Universe Data
@@ -359,10 +357,10 @@ export const AuditProvider = ({ children }) => {
         setAuditUniverse(prev => {
           const existingIds = new Set(prev.map(p => p.id));
           const newItems = ermMappedUniverse.filter(u => !existingIds.has(u.id));
-          return newItems.length > 0 ? [...newItems, ...prev] : (prev.length > 0 ? prev : INITIAL_AUDIT_UNIVERSE);
+          return newItems.length > 0 ? [...newItems, ...prev] : prev;
         });
       } else {
-        setAuditUniverse(prev => prev.length > 0 ? prev : INITIAL_AUDIT_UNIVERSE);
+        setAuditUniverse(prev => prev);
       }
 
       if (Array.isArray(findingsData) && findingsData.length > 0) {
@@ -384,7 +382,7 @@ export const AuditProvider = ({ children }) => {
           auditor: f.auditor || 'Lead Auditor'
         })));
       } else {
-        setFindings(INITIAL_FINDINGS);
+        setFindings([]);
       }
 
       if (Array.isArray(plansData) && plansData.length > 0) {
@@ -401,9 +399,9 @@ export const AuditProvider = ({ children }) => {
           endDate: p.end_date || p.endDate || '',
           leadAuditor: p.lead_auditor || p.leadAuditor || 'Lead Auditor'
         }));
-        setAuditPlans(prev => mappedPlans.length > 0 ? mappedPlans : INITIAL_ANNUAL_AUDIT_PLANS);
+        setAuditPlans(mappedPlans);
       } else {
-        setAuditPlans(INITIAL_ANNUAL_AUDIT_PLANS);
+        setAuditPlans([]);
       }
 
         if (Array.isArray(papersData) && papersData.length > 0) {
@@ -419,9 +417,9 @@ export const AuditProvider = ({ children }) => {
             status: wp.status || 'Draft',
             uploadDate: wp.upload_date || wp.date || wp.createdAt || new Date().toISOString().split('T')[0]
           }));
-          setWorkingPapers(prev => mappedPapers.length > 0 ? mappedPapers : INITIAL_WORKING_PAPERS);
+          setWorkingPapers(mappedPapers);
       } else {
-        setWorkingPapers(INITIAL_WORKING_PAPERS);
+        setWorkingPapers([]);
       }
 
       // Audit Programs (with nested procedures)
@@ -445,14 +443,21 @@ export const AuditProvider = ({ children }) => {
 
       // Regulatory Reviews
       if (Array.isArray(regulatoryData) && regulatoryData.length > 0) {
-        setRegulatoryReviews(regulatoryData.map(r => ({
+        const processedRegulatory = regulatoryData.map(r => {
+          if (r.id === 'REG-2026-04' || r.title === 'CBN Custody & Settlement Operations Review') {
+            return { ...r, title: 'PENCOM Custody & Settlement Operations Review', regulatory_body: 'PENCOM', regulatoryBody: 'PENCOM' };
+          }
+          return r;
+        });
+        
+        setRegulatoryReviews(processedRegulatory.map(r => ({
           id: r.id,
-          title: r.title,
-          regulatoryBody: r.regulatory_body || r.regulatoryBody || 'PENCOM',
-          date: r.date,
+          title: r.title || r.name || 'Regulatory Review',
+          regulatoryBody: r.regulatory_body || r.regulatoryBody || 'Regulator',
+          date: r.date || r.reviewDate || '',
           findingsCount: Number(r.findings_count || r.findingsCount || 0),
           status: r.status || 'Scheduled',
-          leadReviewer: r.lead_reviewer || r.leadReviewer || 'Chief Compliance Officer / CAE'
+          leadReviewer: r.lead_reviewer || r.leadReviewer || 'Compliance Officer'
         })));
       }
 
@@ -569,7 +574,7 @@ export const AuditProvider = ({ children }) => {
         setControls(prev => {
           const existingCodes = new Set(prev.map(c => c.code));
           const newCtrls = mappedControls.filter(m => !existingCodes.has(m.code));
-          return newCtrls.length > 0 ? [...newCtrls, ...prev] : (prev.length > 0 ? prev : INITIAL_INTERNAL_CONTROLS);
+          return newCtrls.length > 0 ? [...newCtrls, ...prev] : prev;
         });
         syncCount += fetchedControls.length;
       }
@@ -776,11 +781,12 @@ export const AuditProvider = ({ children }) => {
 
   // Risk-based audit planning weights (in-memory only, no localStorage)
   const [scoringWeights, setScoringWeights] = useState({
-    inherentRisk: 25,
+    inherentRisk: 30,
     financialExposure: 20,
     regulatoryImpact: 20,
-    systemComplexity: 15,
-    timeSinceLastAudit: 20
+    previousFindings: 10,
+    fraudExposure: 10,
+    itDependency: 10
   });
 
   const updateScoringWeights = (newWeights) => {
@@ -1205,20 +1211,13 @@ export const AuditProvider = ({ children }) => {
     }
   };
 
-  const clearAllMockData = () => {
-    // Data is fully database-backed; just reload fresh records from the API
-    const API_BASE = (import.meta.env.VITE_AWS_API_URL || '').replace(/\/$/, '');
-    api.get(`/api/audit/findings`).then(r => r.data).catch(() => []).then(data => { if (Array.isArray(data)) setFindings(data.map(f => ({ id: f.id, findingNumber: f.finding_number, businessUnit: f.business_unit, observation: f.observation, criteria: f.criteria, rootCause: f.root_cause, likelihood: Number(f.likelihood), impact: Number(f.impact), residualRisk: Number(f.residual_risk), priority: f.priority, severity: f.severity, status: f.status, managementResponse: f.management_response, remediationDate: f.remediation_date, auditor: f.auditor }))); }).catch(console.error);
-    addNotification('Data Refreshed', 'All audit records reloaded from the institutional database.', 'success');
-  };
-
-  const bulkUploadRecords = async (type, s3Key) => {
-    if (!s3Key) return 0;
+  const bulkUploadRecords = async (type, records) => {
+    if (!records || records.length === 0) return 0;
     const API_BASE = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod').replace(/\/$/, '');
     
     if (type === 'findings') {
       try {
-        const response = await api.post(`/api/audit/findings/bulk`, { s3Key });
+        const response = await api.post(`/api/audit/findings/bulk`, records);
         const result = response.data;
         const inserted = Array.isArray(result) ? result : (result.records || []);
         
@@ -1251,7 +1250,7 @@ export const AuditProvider = ({ children }) => {
       }
     } else if (type === 'universe') {
       try {
-        const response = await api.post(`/api/audit/universe/bulk`, { s3Key });
+        const response = await api.post(`/api/audit/universe/bulk`, records);
         const result = response.data;
         const inserted = Array.isArray(result) ? result : (result.records || []);
 
@@ -1279,7 +1278,7 @@ export const AuditProvider = ({ children }) => {
       }
     } else if (type === 'plans') {
       try {
-        const response = await api.post(`/api/audit/plans/bulk`, { s3Key });
+        const response = await api.post(`/api/audit/plans/bulk`, records);
         const result = response.data;
         const inserted = Array.isArray(result) ? result : (result.records || []);
 
@@ -1302,6 +1301,28 @@ export const AuditProvider = ({ children }) => {
       } catch (err) {
         console.error(err);
         addToast('❌ Bulk insert of plans failed.', 'danger');
+        throw err;
+      }
+    } else if (type === 'programs') {
+      try {
+        const response = await api.post(`/api/audit/programs/bulk`, records);
+        const result = response.data;
+        addNotification('Audit Programs Batch Ingestion', `Imported ${result.inserted || records.length} audit programs.`, 'success');
+        // Refresh programs from API
+        const refreshed = await api.get('/api/audit/programs');
+        if (Array.isArray(refreshed.data)) {
+          setAuditPrograms(refreshed.data.map(p => ({
+            id: p.id,
+            title: p.title,
+            objectives: p.objectives || '',
+            category: p.category || 'General',
+            procedures: Array.isArray(p.procedures) ? p.procedures : []
+          })));
+        }
+        return result.inserted || records.length;
+      } catch (err) {
+        console.error(err);
+        addToast('❌ Bulk insert of programs failed.', 'danger');
         throw err;
       }
     }
@@ -1589,7 +1610,6 @@ return (
         setContinuousExceptions,
         addContinuousException,
         addProcedureToProgram,
-        clearAllMockData,
         syncFromErmSuite,
         ermRisks,
         ermControls,
@@ -1613,6 +1633,7 @@ return (
         verifyRbacOrAlert,
         logAuditAction,
         auditLogs,
+        getApiBase,
       }}
     >
       {children}

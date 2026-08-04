@@ -9,7 +9,7 @@ const AppSwitcherDropdown = () => {
   
   // Dynamic Companion App URL state (AWS Cloud & Enterprise environment)
   const [ermUrl, setErmUrl] = useState(() => {
-    const fromStorage = localStorage.getItem('ZPC_ERM_URL_OVERRIDE');
+    const fromStorage = sessionStorage.getItem('ZPC_ERM_URL_OVERRIDE');
     if (fromStorage) return fromStorage;
     return import.meta.env.VITE_ERM_APP_URL || '/';
   });
@@ -35,16 +35,16 @@ const AppSwitcherDropdown = () => {
     let clean = inputUrl.trim();
     if (clean.endsWith('/')) clean = clean.slice(0, -1);
     setErmUrl(clean);
-    localStorage.setItem('ZPC_ERM_URL_OVERRIDE', clean);
+    sessionStorage.setItem('ZPC_ERM_URL_OVERRIDE', clean);
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 2500);
   };
 
   const handleSwitchToErm = () => {
-    // Clear any stale local storage override that points to audit-portal
-    const stored = localStorage.getItem('ZPC_ERM_URL_OVERRIDE');
+    // Clear any stale session storage override that points to audit-portal
+    const stored = sessionStorage.getItem('ZPC_ERM_URL_OVERRIDE');
     if (stored && stored.includes('audit-portal')) {
-      localStorage.removeItem('ZPC_ERM_URL_OVERRIDE');
+      sessionStorage.removeItem('ZPC_ERM_URL_OVERRIDE');
     }
 
     let targetBase = '/';
@@ -57,7 +57,7 @@ const AppSwitcherDropdown = () => {
     
     let targetRole = 'maker';
     try {
-      const session = JSON.parse(localStorage.getItem('zpc_auth_session') || sessionStorage.getItem('zpc_auth_session') || '{}');
+      const session = JSON.parse(sessionStorage.getItem('zpc_auth_session') || '{}');
       if (session?.user?.role) {
         targetRole = session.user.role;
       } else {

@@ -113,7 +113,7 @@ const AuditPrograms = () => {
           </p>
         </div>
         <div className="header-actions">
-          <AuditDataUpload targetModule="findings" buttonText="Batch Import Findings" />
+          <AuditDataUpload targetModule="programs" buttonText="Batch Import Programs" />
           <button onClick={() => navigate('/engagements')} className="btn-secondary">
             <span>Go to Active Engagements ➔</span>
           </button>

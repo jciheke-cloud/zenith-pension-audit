@@ -1,12 +1,24 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { AuditContext } from '../context/AuditContext';
+import api from '../services/api';
 import { CheckSquare, AlertTriangle, Clock, ShieldCheck, ArrowRight, RefreshCw, Send, Paperclip, CheckCircle2, FileCheck, Eye, Search, Filter } from 'lucide-react';
 import AuditDataUpload from '../components/AuditDataUpload';
 
 const ActionTracking = () => {
-  const { findings: contextFindings, updateFindingStatus, addNotification, setFindings: setContextFindings } = useContext(AuditContext);
-  const findings = contextFindings || [];
-  const setFindings = setContextFindings;
+  const { updateFindingStatus, addNotification } = useContext(AuditContext);
+  const [findings, setFindings] = useState([]);
+  
+  useEffect(() => {
+    const fetchActions = async () => {
+      try {
+        const response = await api.get('/api/audit/actions');
+        setFindings(response.data);
+      } catch (err) {
+        console.error('Failed to fetch actions:', err);
+      }
+    };
+    fetchActions();
+  }, []);
 
   const [activeTab, setActiveTab] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
@@ -40,10 +52,16 @@ const ActionTracking = () => {
   };
 
   const handleUpdateStatus = async (id, newStatus) => {
+    const prevFindings = [...findings];
+    const cap = prevFindings.find(f => (f.findingNumber || f.id) === id);
+    if (!cap) return;
+    const updatedCap = { ...cap, status: newStatus };
+    setFindings(prev => prev.map(f => (f.findingNumber || f.id) === id ? updatedCap : f));
     try {
-      await updateFindingStatus(id, newStatus);
+      await api.post('/api/audit/actions', updatedCap);
       addNotification('Status Updated', `Finding moved to ${newStatus}.`, 'success');
     } catch (err) {
+      setFindings(prevFindings);
       addNotification('Error', 'Failed to update action tracking status.', 'danger');
     }
   };

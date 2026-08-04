@@ -120,14 +120,13 @@ const MasterData = () => {
     if (!newBuName || !newBuCode) return;
     if (editingBuId) {
       if (!verifyRbacOrAlert('edit', 'universe')) return;
-      setBusinessUnits(prev => prev.map(bu => bu.id === editingBuId ? {
-        ...bu,
+      editBusinessUnit(editingBuId, {
         name: newBuName,
         head: newBuHead || 'Unassigned Lead',
         code: newBuCode.toUpperCase(),
         riskLevel: newBuRisk,
         staffCount: parseInt(newBuStaff, 10) || 0
-      } : bu));
+      });
       addNotification('Business Unit Updated', `Business Unit "${newBuName}" updated successfully.`, 'success');
       logAuditAction('EDIT_BUSINESS_UNIT', 'Master Data', `Chief Auditor updated Business Unit: ${newBuName}`);
     } else {

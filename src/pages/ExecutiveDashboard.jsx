@@ -4,7 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend, AreaChart, Area
 } from 'recharts';
 import {
-  CheckCircle, AlertOctagon, Clock, RefreshCw, ShieldAlert, Award, FileSpreadsheet, Layers, ArrowUpRight, CheckSquare, Activity, ShieldCheck, Search, Filter
+  CheckCircle, AlertOctagon, Clock, RefreshCw, ShieldAlert, Award, FileSpreadsheet, Layers, ArrowUpRight, CheckSquare, Activity, ShieldCheck, Search, Filter, FileText
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,6 +14,8 @@ const ExecutiveDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDepartment, setFilterDepartment] = React.useState('All');
   const [showFilters, setShowFilters] = React.useState(false);
+  const [showBoardDeck, setShowBoardDeck] = React.useState(false);
+  const [activeDeckTab, setActiveDeckTab] = React.useState('summary');
 
   // ── 1. Live Data Calculations from Synced ERM & Audit Database ──
   const totalPlans = auditPlans.length;
@@ -160,6 +162,52 @@ const ExecutiveDashboard = () => {
     return searchMatch && deptMatch;
   });
 
+  const generatePDF = () => {
+    import('jspdf').then(({ default: jsPDF }) => {
+      import('jspdf-autotable').then(({ default: autoTable }) => {
+        const doc = new jsPDF();
+        doc.setFontSize(18);
+        doc.text('Zenith Pensions - Audit Board Deck', 14, 22);
+        doc.setFontSize(11);
+        doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+        
+        autoTable(doc, {
+          startY: 40,
+          head: [['Metric', 'Value']],
+          body: [
+            ['Total Audit Plans', totalPlans],
+            ['Completed Plans', completedPlans],
+            ['High Risk Findings', highRiskFindings],
+            ['Overdue Findings', overdueFindings],
+            ['Total Controls Evaluated', totalControlsCount],
+            ['Effective Controls', effectiveControlsCount]
+          ],
+        });
+        doc.save('audit_board_deck.pdf');
+        window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '✅ PDF Board Deck Generated', type: 'success' } }));
+      });
+    });
+  };
+
+  const generateExcel = () => {
+    import('xlsx').then((XLSX) => {
+      const data = [
+        ['Metric', 'Value'],
+        ['Total Audit Plans', totalPlans],
+        ['Completed Plans', completedPlans],
+        ['High Risk Findings', highRiskFindings],
+        ['Overdue Findings', overdueFindings],
+        ['Total Controls Evaluated', totalControlsCount],
+        ['Effective Controls', effectiveControlsCount]
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Board Deck Summary");
+      XLSX.writeFile(wb, "audit_board_deck.xlsx");
+      window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '✅ Excel Board Deck Generated', type: 'success' } }));
+    });
+  };
+
   return (
     <div className="page-container">
       {/* Module Header */}
@@ -171,8 +219,9 @@ const ExecutiveDashboard = () => {
           </p>
         </div>
         <div className="header-actions flex gap-3 items-center">
-          <button onClick={() => navigate('/guide')} className="btn-secondary bg-sky-400/15 text-sky-400 border border-sky-400/30 font-semibold">
-            📖 Quick Start Guide & SOP
+          <button onClick={() => setShowBoardDeck(true)} className="btn-secondary bg-indigo-400/15 text-indigo-400 border border-indigo-400/30 font-semibold">
+            <FileText size={16} />
+            Generate Board Deck
           </button>
           <button onClick={() => navigate('/annual-plan')} className="btn-secondary">
             <FileSpreadsheet size={16} />
@@ -183,21 +232,6 @@ const ExecutiveDashboard = () => {
             <span>Log Finding</span>
           </button>
         </div>
-      </div>
-
-      {/* Interactive Quick Start Tutorial Card */}
-      <div className="glass-card bg-slate-900/85 py-[1.2rem] px-[1.5rem] mb-6 border-l-4 border-[#38bdf8] flex justify-between items-center flex-wrap gap-4">
-        <div>
-          <h3 className="m-0 mb-1 text-[1.05rem] text-[#38bdf8] font-extrabold">
-            🚀 Zenith Pension Custodian Audit Portal
-          </h3>
-          <p className="m-0 text-[0.84rem] text-[color:var(--text-muted)]">
-            Audit Lifecycle: 1. Audit Universe ➔ 2. Annual Planning ➔ 3. Fieldwork & Working Papers ➔ 4. Findings & Remediation ➔ 5. BARC Board Deck.
-          </p>
-        </div>
-        <button onClick={() => navigate('/guide')} className="btn-secondary text-[0.8rem] px-4 py-[0.45rem] bg-[#38bdf8] text-[#0f172a] font-extrabold border-none">
-          Open Full User Guide →
-        </button>
       </div>
 
       {/* Repeat Finding Flag Banner */}
@@ -606,6 +640,95 @@ const ExecutiveDashboard = () => {
 
         </div>
       </div>
+
+      {/* Built-in RMC Board Deck Generator Modal */}
+      {showBoardDeck && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-[1000] p-8">
+          <div className="glass-panel w-full max-w-[850px] max-h-[90vh] flex flex-col bg-slate-900/95 border border-white/10 rounded-xl overflow-hidden shadow-2xl">
+            <div className="flex justify-between items-center p-6 border-b border-white/10 bg-black/20">
+              <div className="flex items-center gap-4">
+                <div className="text-[2.2rem]">📊</div>
+                <div>
+                  <h2 className="text-[1.25rem] font-bold text-white m-0">Audit Board Deck (Q3 FY26)</h2>
+                  <div className="text-sm text-[var(--text-muted)] mt-1">Board Audit Committee Briefing — Zenith Pension Custodian Limited</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <button onClick={generatePDF} className="btn-secondary bg-red-400/15 text-red-400 border border-red-400/30 font-semibold text-xs py-1.5 px-3">
+                  <FileText size={14} /> PDF
+                </button>
+                <button onClick={generateExcel} className="btn-secondary bg-emerald-400/15 text-emerald-400 border border-emerald-400/30 font-semibold text-xs py-1.5 px-3">
+                  <FileSpreadsheet size={14} /> Excel
+                </button>
+                <button onClick={() => setShowBoardDeck(false)} className="bg-transparent border-none text-[var(--text-muted)] text-[1.5rem] cursor-pointer hover:text-white ml-2">×</button>
+              </div>
+            </div>
+
+            <div className="flex-1 p-6 px-7 overflow-y-auto flex flex-col gap-5">
+              <div className="flex gap-2 border-b border-white/10 pb-3">
+                <button onClick={() => setActiveDeckTab('summary')} className={`px-3.5 py-1.5 rounded-lg border-none font-semibold text-xs cursor-pointer ${activeDeckTab === 'summary' ? 'bg-[#C81E1E] text-white' : 'bg-white/5 text-white'}`}>1. Executive Summary</button>
+                <button onClick={() => setActiveDeckTab('findings')} className={`px-3.5 py-1.5 rounded-lg border-none font-semibold text-xs cursor-pointer ${activeDeckTab === 'findings' ? 'bg-[#C81E1E] text-white' : 'bg-white/5 text-white'}`}>2. Audit Findings</button>
+                <button onClick={() => setActiveDeckTab('plans')} className={`px-3.5 py-1.5 rounded-lg border-none font-semibold text-xs cursor-pointer ${activeDeckTab === 'plans' ? 'bg-[#C81E1E] text-white' : 'bg-white/5 text-white'}`}>3. Annual Audit Plan Status</button>
+              </div>
+
+              {activeDeckTab === 'summary' && (
+                <div className="flex flex-col gap-4 text-[0.88rem] text-white">
+                  <div className="bg-white/5 p-4 rounded-lg border border-white/5">
+                    <h4 className="m-0 mb-2 text-rose-300 text-[0.95rem]">Key Takeaways for BAC Review:</h4>
+                    <ul className="m-0 pl-5 flex flex-col gap-1.5 text-[0.84rem]">
+                      <li><strong>Audit Plan Execution:</strong> We have completed <strong>{completedPlans}</strong> out of {totalPlans} planned audits for the fiscal year, representing {planCompletionPct}% completion.</li>
+                      <li><strong>Risk & Control Matrix:</strong> Assessed {totalControlsCount} internal controls. {effectiveControlsCount} were rated as operating effectively ({avgRatingLabel}).</li>
+                      <li><strong>Open Vulnerabilities:</strong> Currently tracking <strong>{totalFindings}</strong> open audit findings across the organization.</li>
+                      <li><strong>Repeat Findings:</strong> {repeatFindingsCount} repeat control failures have been identified, requiring immediate management attention.</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {activeDeckTab === 'findings' && (
+                <div className="flex flex-col gap-4 text-[0.88rem] text-white">
+                  <div className="grid grid-cols-2 gap-4">
+                     <div className="bg-white/5 p-4 rounded-lg border border-white/5 flex flex-col items-center">
+                        <span className="text-[var(--text-muted)] text-xs font-semibold mb-1">Critical & High Risk Issues</span>
+                        <span className="text-2xl text-red-400 font-extrabold">{highRiskFindings}</span>
+                     </div>
+                     <div className="bg-white/5 p-4 rounded-lg border border-white/5 flex flex-col items-center">
+                        <span className="text-[var(--text-muted)] text-xs font-semibold mb-1">Overdue Action Plans</span>
+                        <span className="text-2xl text-amber-400 font-extrabold">{overdueFindings}</span>
+                     </div>
+                  </div>
+                  <div className="bg-white/5 p-4 rounded-lg border border-white/5 mt-2">
+                     <h4 className="m-0 mb-2 text-rose-300 text-[0.95rem]">Findings by Department:</h4>
+                     <ul className="m-0 pl-5 flex flex-col gap-1.5 text-[0.84rem]">
+                       {buFindingsData.map((d, i) => (
+                         <li key={i}><strong>{d.name}:</strong> {d.highRisk} High/Critical | {d.mediumRisk} Med/Low</li>
+                       ))}
+                     </ul>
+                  </div>
+                </div>
+              )}
+
+              {activeDeckTab === 'plans' && (
+                <div className="flex flex-col gap-4 text-[0.88rem] text-white">
+                  <div className="bg-white/5 p-4 rounded-lg border border-white/5">
+                    <h4 className="m-0 mb-2 text-rose-300 text-[0.95rem]">Audit Coverage & Resource Utilization:</h4>
+                    <p className="mb-3 text-[0.84rem]">Current coverage is at {universeCoveragePct}% of the auditable universe. Below is the execution breakdown:</p>
+                    <ul className="m-0 pl-5 flex flex-col gap-2 text-[0.84rem]">
+                       {displayPlanHoursData.map((d, i) => (
+                         <li key={i}>
+                           <strong>{d.name}:</strong> Budgeted <strong>{d.planned}</strong> hrs vs Actual <strong>{d.actual}</strong> hrs.
+                         </li>
+                       ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
