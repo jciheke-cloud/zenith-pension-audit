@@ -1,0 +1,4 @@
+/audit-portal/*    /audit-portal/index.html    200
+/audit-portal      /audit-portal/index.html    200
+/*                 /index.html                 200
+/                  /index.html                 200
