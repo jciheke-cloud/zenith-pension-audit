@@ -1,13 +1,13 @@
 import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { CheckSquare, AlertTriangle, Clock, ShieldCheck, ArrowRight, RefreshCw, Send, Paperclip, CheckCircle2, FileCheck, Eye, Search, Filter } from 'lucide-react';
+import { useFindings } from '../hooks/useFindings';
 import AuditDataUpload from '../components/AuditDataUpload';
 import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const ActionTracking = () => {
-  const { findings: contextFindings, updateFindingStatus, addNotification, setFindings: setContextFindings } = useContext(AuditContext);
-  const findings = contextFindings || [];
-  const setFindings = setContextFindings;
+  const { updateFindingStatus, addNotification } = useContext(AuditContext);
+  const { data: findings = [] } = useFindings();
 
   const [activeTab, setActiveTab] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');

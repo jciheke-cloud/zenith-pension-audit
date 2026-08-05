@@ -6,7 +6,8 @@ import AuditDataUpload from '../components/AuditDataUpload';
 import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const RiskBasedPlanning = () => {
-  const { auditUniverse, scoringWeights, setScoringWeights, updateScoringWeights, calculateOverallScore, getAuditPriorityLabel, addNotification } = useContext(AuditContext);
+  const { scoringWeights, setScoringWeights, updateScoringWeights, calculateOverallScore, getAuditPriorityLabel, addNotification } = useContext(AuditContext);
+  const { data: auditUniverse = [] } = useAuditUniverse();
   const navigate = useNavigate();
 
   const [tempWeights, setTempWeights] = useState({ ...scoringWeights });

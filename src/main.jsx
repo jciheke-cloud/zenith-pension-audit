@@ -6,6 +6,10 @@ import './App.css';
 import App from './App.jsx';
 import { AuditProvider } from './context/AuditContext';
 import LicenseGuard from './components/LicenseGuard';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+const queryClient = new QueryClient();
 
 // Institutional DevTools Security Notice
 if (typeof window !== 'undefined') {
@@ -31,13 +35,16 @@ if (typeof window !== 'undefined') {
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <HashRouter>
-      <LicenseGuard>
-        <AuditProvider>
-          <App />
-        </AuditProvider>
-      </LicenseGuard>
-    </HashRouter>
+    <QueryClientProvider client={queryClient}>
+      <HashRouter>
+        <LicenseGuard>
+          <AuditProvider>
+            <App />
+          </AuditProvider>
+        </LicenseGuard>
+      </HashRouter>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   </StrictMode>
 );
 

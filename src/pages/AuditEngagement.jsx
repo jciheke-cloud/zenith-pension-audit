@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const AuditEngagement = () => {
-  const { auditPlans, auditPrograms, setAuditPrograms, addWorkingPaper, addNotification } = useContext(AuditContext);
+  const { auditPrograms, setAuditPrograms, addWorkingPaper, addNotification } = useContext(AuditContext);
+  const { data: auditPlans = [] } = useEngagements();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('planning'); // 'planning', 'execution', 'qa_review'

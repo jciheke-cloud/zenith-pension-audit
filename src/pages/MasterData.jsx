@@ -6,10 +6,12 @@ import AuditDataUpload from '../components/AuditDataUpload';
 import AuditUserManagementModal from '../components/AuditUserManagementModal';
 import ConfirmModal from '../components/ConfirmModal';
 import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
+import { useAuditUniverse } from '../hooks/useAuditUniverse';
 
 const MasterData = () => {
   const navigate = useNavigate();
-  const { businessUnits, addBusinessUnit, editBusinessUnit, deleteBusinessUnit, setBusinessUnits, auditUniverse, setAuditUniverse, deleteAuditUniverseItem, addNotification, checkRbacPermission, verifyRbacOrAlert, logAuditAction } = useContext(AuditContext);
+  const { businessUnits, addBusinessUnit, editBusinessUnit, deleteBusinessUnit, deleteAuditUniverseItem, addNotification, checkRbacPermission, verifyRbacOrAlert, logAuditAction } = useContext(AuditContext);
+  const { data: auditUniverse = [] } = useAuditUniverse();
   const [activeTab, setActiveTab] = useState('bus'); // 'bus' or 'universe'
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBu, setFilterBu] = useState('All');

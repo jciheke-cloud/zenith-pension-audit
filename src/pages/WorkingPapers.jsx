@@ -7,7 +7,8 @@ import ConfirmModal from '../components/ConfirmModal';
 import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const WorkingPapers = () => {
-  const { workingPapers, addWorkingPaper, deleteWorkingPaper, setWorkingPapers, auditPlans, checkRbacPermission, verifyRbacOrAlert, addNotification, updateWorkingPaper } = useContext(AuditContext);
+  const { workingPapers, addWorkingPaper, deleteWorkingPaper, setWorkingPapers, checkRbacPermission, verifyRbacOrAlert, addNotification, updateWorkingPaper } = useContext(AuditContext);
+  const { data: auditPlans = [] } = useEngagements();
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState('');

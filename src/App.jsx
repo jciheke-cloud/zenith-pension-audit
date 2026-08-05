@@ -41,7 +41,7 @@ const App = () => {
       if (logoutUser) logoutUser();
       setShowIdleModal(true);
     }
-  }, 15 * 60 * 1000);
+  }, 30 * 60 * 1000);
 
   // Disable browser auto scroll restoration
   React.useEffect(() => {
@@ -154,7 +154,7 @@ const App = () => {
             <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>⏱️</div>
             <h3 style={{ color: 'white', fontWeight: 800, fontSize: '1.25rem', marginBottom: '0.5rem' }}>Audit Session Expired (SOC-2 Compliance)</h3>
             <p style={{ color: '#94A3B8', fontSize: '0.875rem', marginBottom: '1.5rem', lineHeight: '1.5' }}>
-              You were logged out after 15 minutes of inactivity in accordance with IIA, ISO 27001, and PENCOM IT Security Policy. Please log in again to continue.
+              You were logged out after 30 minutes of inactivity in accordance with IIA, ISO 27001, and PENCOM IT Security Policy. Please log in again to continue.
             </p>
             <button 
               onClick={() => { setShowIdleModal(false); window.location.reload(); }}

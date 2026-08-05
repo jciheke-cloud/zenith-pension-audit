@@ -1,11 +1,15 @@
 import React, { useContext, useState } from 'react';
+import { useEngagements } from '../hooks/useEngagements';
+import { useFindings } from '../hooks/useFindings';
 import { AuditContext } from '../context/AuditContext';
 import { FileCheck, Download, Award, ShieldCheck, CheckCircle, FileText, Share2, Layers, AlertOctagon } from 'lucide-react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 const ReportsAndCommittee = () => {
-  const { auditPlans, findings, clientProfile, currency, addNotification } = useContext(AuditContext);
+  const { clientProfile, currency, addNotification } = useContext(AuditContext);
+  const { data: auditPlans = [] } = useEngagements();
+  const { data: findings = [] } = useFindings();
   const [activeTab, setActiveTab] = useState('generator'); // 'generator' or 'portal'
   const [selectedAuditId, setSelectedAuditId] = useState(auditPlans[0]?.id || 'PLAN-2026-01');
   const [reportType, setReportType] = useState('Final Audit Report & Management Letter');

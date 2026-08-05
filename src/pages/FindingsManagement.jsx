@@ -7,7 +7,8 @@ import ConfirmModal from '../components/ConfirmModal';
 import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const FindingsManagement = () => {
-  const { findings, saveFinding, deleteFinding, setFindings, businessUnits, addNotification, checkRbacPermission, verifyRbacOrAlert } = useContext(AuditContext);
+  const { saveFinding, deleteFinding, setFindings, businessUnits, addNotification, checkRbacPermission, verifyRbacOrAlert } = useContext(AuditContext);
+  const { data: findings = [] } = useFindings();
   const navigate = useNavigate();
 
   const [activeView, setActiveView] = useState('matrix'); // 'matrix' or 'list'
@@ -390,13 +391,22 @@ const FindingsManagement = () => {
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                {filteredFindings.length === 0 ? (
-                  <tr>
-                    <td colSpan="11" className="text-center p-8 text-[var(--text-muted)]">No matching items found</td>
-                  </tr>
-                ) : filteredFindings.map(f => (
-                  <tr key={f.findingNumber || f.id}>
+              
+<tbody style={{ height: '600px', display: 'block' }}>
+  <AutoSizer disableWidth>
+    {({ height }) => (
+      <List
+        height={height || 600}
+        itemCount={filteredFindings.length}
+        itemSize={80}
+        width="100%"
+        innerElementType="tbody"
+      >
+        {({ index, style }) => {
+          const f = filteredFindings[index];
+          return (
+            
+                  <tr style={style} key={f.findingNumber || f.id}>
                     <td className="tabular-nums font-extrabold text-[#fda4af]">{f.findingNumber || f.id || 'FND-001'}</td>
                     <td className="max-w-[340px]">
                       <div className="font-bold text-white mb-[0.2rem]">{f.observation || f.title || 'Control Observation'}</div>
@@ -454,8 +464,14 @@ const FindingsManagement = () => {
                       </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
+                
+          );
+        }}
+      </List>
+    )}
+  </AutoSizer>
+</tbody>
+
             </table>
 </TopScrollTableWrapper>
           </div>

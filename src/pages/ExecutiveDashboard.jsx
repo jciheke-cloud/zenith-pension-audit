@@ -10,7 +10,11 @@ import { useNavigate } from 'react-router-dom';
 import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const ExecutiveDashboard = () => {
-  const { auditPlans = [], findings = [], auditUniverse = [], controls = [], currency, continuousExceptions = [] } = useContext(AuditContext);
+  const { currency, continuousExceptions = [] } = useContext(AuditContext);
+  const { data: auditUniverse = [] } = useAuditUniverse();
+  const { data: auditPlans = [] } = useEngagements();
+  const { data: findings = [] } = useFindings();
+  const { data: controls = [] } = useControls();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDepartment, setFilterDepartment] = React.useState('All');

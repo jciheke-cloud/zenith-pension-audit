@@ -6,7 +6,8 @@ import AuditDataUpload from '../components/AuditDataUpload';
 import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const AnnualAuditPlan = () => {
-  const { auditPlans, saveAuditPlan, businessUnits, currency, addNotification } = useContext(AuditContext);
+  const { saveAuditPlan, businessUnits, currency, addNotification } = useContext(AuditContext);
+  const { data: auditPlans = [] } = useEngagements();
   const navigate = useNavigate();
 
   const [filterDept, setFilterDept] = useState('All');

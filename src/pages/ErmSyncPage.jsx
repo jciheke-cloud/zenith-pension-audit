@@ -5,7 +5,9 @@ import AuditDataUpload from '../components/AuditDataUpload';
 import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const ErmSyncPage = () => {
-  const { auditUniverse, findings, syncFromErmSuite, bulkUploadRecords, addNotification, getApiBase } = useContext(AuditContext);
+  const { syncFromErmSuite, bulkUploadRecords, addNotification, getApiBase } = useContext(AuditContext);
+  const { data: auditUniverse = [] } = useAuditUniverse();
+  const { data: findings = [] } = useFindings();
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState('2 minutes ago');
   const [syncHistory, setSyncHistory] = useState([]);

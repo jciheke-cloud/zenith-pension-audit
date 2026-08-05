@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import obfuscator from 'vite-plugin-javascript-obfuscator'
 
 const legalBanner = `/*!
  * © 2026 RiskINTEGRA Internal Audit™ - Zenith Pension Custodian Limited.
@@ -13,7 +14,28 @@ const legalBanner = `/*!
 // https://vite.dev/config/
 export default defineConfig({
   base: '/audit-portal/',
-  plugins: [react()],
+  plugins: [
+    react(),
+    obfuscator({
+      include: ['src/**/*.js', 'src/**/*.jsx'],
+      exclude: [/node_modules/],
+      apply: 'build',
+      options: {
+        compact: true,
+        controlFlowFlattening: true,
+        controlFlowFlatteningThreshold: 0.6,
+        deadCodeInjection: true,
+        deadCodeInjectionThreshold: 0.3,
+        debugProtection: true,
+        disableConsoleOutput: true,
+        identifierNamesGenerator: 'hexadecimal',
+        selfDefending: true,
+        stringArray: true,
+        stringArrayEncoding: ['base64'],
+        stringArrayThreshold: 0.75,
+      }
+    })
+  ],
   server: {
     port: 5174,
     proxy: {

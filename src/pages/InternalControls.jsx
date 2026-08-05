@@ -5,7 +5,8 @@ import AuditDataUpload from '../components/AuditDataUpload';
 import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const InternalControls = () => {
-  const { controls, setControls, addControl, addNotification } = useContext(AuditContext);
+  const { setControls, addControl, addNotification } = useContext(AuditContext);
+  const { data: controls = [] } = useControls();
   const [filterType, setFilterType] = useState('All');
   const [filterAutomated, setFilterAutomated] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
