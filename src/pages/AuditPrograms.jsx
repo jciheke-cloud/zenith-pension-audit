@@ -6,7 +6,7 @@ import ConfirmModal from '../components/ConfirmModal';
 import { useNavigate } from 'react-router-dom';
 
 const AuditPrograms = () => {
-  const { auditPrograms, setAuditPrograms, addNotification, checkRbacPermission, verifyRbacOrAlert, addProcedureToProgram } = useContext(AuditContext);
+  const { auditPrograms, setAuditPrograms, addNotification, checkRbacPermission, verifyRbacOrAlert, addProcedureToProgram, deleteProcedure } = useContext(AuditContext);
   const navigate = useNavigate();
 
   const [selectedProgramId, setSelectedProgramId] = useState(auditPrograms[0]?.id || 'AP-01');
@@ -47,16 +47,8 @@ const AuditPrograms = () => {
       isOpen: true,
       title: 'Delete Procedure',
       message: `Are you sure you want to delete testing procedure ${procRefCode}?`,
-      onConfirm: () => {
-        setAuditPrograms(prev => prev.map(prog => {
-          if (prog.id === selectedProgramId) {
-            return {
-              ...prog,
-              procedures: prog.procedures.filter(p => p.id !== procId)
-            };
-          }
-          return prog;
-        }));
+      onConfirm: async () => {
+        await deleteProcedure(selectedProgramId, procId);
         addNotification('Procedure Deleted', `Procedure ${procRefCode} has been removed from "${selectedProgram.title || selectedProgram.name || 'this program'}".`, 'info');
       }
     });

@@ -4,9 +4,10 @@ import { AlertOctagon, Plus, ShieldAlert, RefreshCw, CheckCircle, Search, Filter
 import { useNavigate } from 'react-router-dom';
 import AuditDataUpload from '../components/AuditDataUpload';
 import ConfirmModal from '../components/ConfirmModal';
+import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const FindingsManagement = () => {
-  const { findings, saveFinding, setFindings, businessUnits, addNotification, checkRbacPermission, verifyRbacOrAlert } = useContext(AuditContext);
+  const { findings, saveFinding, deleteFinding, setFindings, businessUnits, addNotification, checkRbacPermission, verifyRbacOrAlert } = useContext(AuditContext);
   const navigate = useNavigate();
 
   const [activeView, setActiveView] = useState('matrix'); // 'matrix' or 'list'
@@ -58,8 +59,8 @@ const FindingsManagement = () => {
       isOpen: true,
       title: 'Delete Finding',
       message: `Are you sure you want to delete finding "${fNum}"?`,
-      onConfirm: () => {
-        setFindings(prev => prev.filter(item => item.id !== fId));
+      onConfirm: async () => {
+        await deleteFinding(fId);
         addNotification('Finding Deleted', `Finding "${fNum}" removed successfully.`, 'info');
       }
     });
@@ -372,8 +373,9 @@ const FindingsManagement = () => {
           </div>
 
           <div className="data-table-container">
-            <table className="data-table">
-              <thead>
+            <TopScrollTableWrapper>
+              <table className="data-table">
+                <thead>
                 <tr>
                   <th>Finding Ref #</th>
                   <th>Observation & Root Cause Detail</th>
@@ -455,6 +457,7 @@ const FindingsManagement = () => {
                 ))}
               </tbody>
             </table>
+          </TopScrollTableWrapper>
           </div>
         </div>
       )}

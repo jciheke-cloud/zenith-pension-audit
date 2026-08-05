@@ -236,8 +236,7 @@ export const AuditProvider = ({ children }) => {
   const [regulatoryReviews, setRegulatoryReviews] = useState([]);
   const [fraudCases, setFraudCases] = useState([]);
   const [continuousExceptions, setContinuousExceptions] = useState([]);
-
-
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // ── Real-time sync state ──────────────────────────────────────────
   const [isSyncing, setIsSyncing] = useState(false);
@@ -1559,6 +1558,71 @@ export const AuditProvider = ({ children }) => {
         setBusinessUnits(previous);
       }
     };
+
+    const deleteFinding = async (id) => {
+      const previous = [...findings];
+      setFindings(prev => prev.filter(f => f.id !== id));
+      try {
+        await api.delete(`/api/audit/findings/${id}`);
+      } catch (err) {
+        console.warn('Optimistic delete failed', err);
+        window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '🚨 Database sync failed. Local changes were reverted.', type: 'danger' } }));
+        setFindings(previous);
+      }
+    };
+
+    const deleteAuditPlan = async (id) => {
+      const previous = [...auditPlans];
+      setAuditPlans(prev => prev.filter(p => p.id !== id));
+      try {
+        await api.delete(`/api/audit/plans/${id}`);
+      } catch (err) {
+        console.warn('Optimistic delete failed', err);
+        window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '🚨 Database sync failed. Local changes were reverted.', type: 'danger' } }));
+        setAuditPlans(previous);
+      }
+    };
+
+    const deleteProcedure = async (programId, procId) => {
+      const previous = [...auditPrograms];
+      setAuditPrograms(prev => prev.map(prog => {
+        if (prog.id === programId) {
+          return { ...prog, procedures: prog.procedures.filter(p => p.id !== procId) };
+        }
+        return prog;
+      }));
+      try {
+        await api.delete(`/api/audit/programs/${programId}/procedures/${procId}`);
+      } catch (err) {
+        console.warn('Optimistic delete failed', err);
+        window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '🚨 Database sync failed. Local changes were reverted.', type: 'danger' } }));
+        setAuditPrograms(previous);
+      }
+    };
+
+    const deleteAuditUniverseItem = async (id) => {
+      const previous = [...auditUniverse];
+      setAuditUniverse(prev => prev.filter(p => p.id !== id));
+      try {
+        await api.delete(`/api/audit/universe/${id}`);
+      } catch (err) {
+        console.warn('Optimistic delete failed', err);
+        window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '🚨 Database sync failed. Local changes were reverted.', type: 'danger' } }));
+        setAuditUniverse(previous);
+      }
+    };
+
+    const deleteWorkingPaper = async (id) => {
+      const previous = [...workingPapers];
+      setWorkingPapers(prev => prev.filter(w => w.id !== id));
+      try {
+        await api.delete(`/api/audit/working-papers/${id}`);
+      } catch (err) {
+        console.warn('Optimistic delete failed', err);
+        window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '🚨 Database sync failed. Local changes were reverted.', type: 'danger' } }));
+        setWorkingPapers(previous);
+      }
+    };
 return (
     <AuditContext.Provider
       value={{
@@ -1586,15 +1650,20 @@ return (
           setBusinessUnits,
         auditUniverse,
         setAuditUniverse,
+        deleteAuditUniverseItem,
         auditPlans,
         saveAuditPlan,
+        deleteAuditPlan,
         auditPrograms,
         setAuditPrograms,
+        deleteProcedure,
         workingPapers,
         addWorkingPaper,
         setWorkingPapers,
+        deleteWorkingPaper,
         findings,
         saveFinding,
+        deleteFinding,
         setFindings,
         updateFindingStatus,
         controls,
@@ -1628,6 +1697,8 @@ return (
         removeToast,
         drawerOpen,
         setDrawerOpen,
+        isSidebarCollapsed,
+        setIsSidebarCollapsed,
         markAllRead,
         checkRbacPermission,
         verifyRbacOrAlert,

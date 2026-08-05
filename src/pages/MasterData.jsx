@@ -5,10 +5,11 @@ import { Database, Plus, Search, Layers, ShieldCheck, Filter, Edit2, Trash2, Use
 import AuditDataUpload from '../components/AuditDataUpload';
 import AuditUserManagementModal from '../components/AuditUserManagementModal';
 import ConfirmModal from '../components/ConfirmModal';
+import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const MasterData = () => {
   const navigate = useNavigate();
-  const { businessUnits, addBusinessUnit, editBusinessUnit, deleteBusinessUnit, setBusinessUnits, auditUniverse, setAuditUniverse, addNotification, checkRbacPermission, verifyRbacOrAlert, logAuditAction } = useContext(AuditContext);
+  const { businessUnits, addBusinessUnit, editBusinessUnit, deleteBusinessUnit, setBusinessUnits, auditUniverse, setAuditUniverse, deleteAuditUniverseItem, addNotification, checkRbacPermission, verifyRbacOrAlert, logAuditAction } = useContext(AuditContext);
   const [activeTab, setActiveTab] = useState('bus'); // 'bus' or 'universe'
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBu, setFilterBu] = useState('All');
@@ -79,8 +80,8 @@ const MasterData = () => {
       isOpen: true,
       title: 'Delete Process',
       message: `Are you sure you want to delete auditable process "${procCodeVal}"?`,
-      onConfirm: () => {
-        setAuditUniverse(prev => prev.filter(p => p.id !== procId));
+      onConfirm: async () => {
+        await deleteAuditUniverseItem(procId);
         addNotification('Process Deleted', `Auditable process "${procCodeVal}" removed from Master Universe.`, 'info');
       }
     });
@@ -335,8 +336,9 @@ const MasterData = () => {
           </div>
 
           <div className="data-table-container">
-            <table className="data-table">
-              <thead>
+            <TopScrollTableWrapper>
+              <table className="data-table">
+                <thead>
                 <tr>
                   <th>Code</th>
                   <th>Department / BU Name</th>
@@ -416,8 +418,9 @@ const MasterData = () => {
           </div>
 
           <div className="data-table-container">
-            <table className="data-table">
-              <thead>
+            <TopScrollTableWrapper>
+              <table className="data-table">
+                <thead>
                 <tr>
                   <th>Process Code</th>
                   <th>Auditable Process / Area</th>

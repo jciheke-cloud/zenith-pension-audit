@@ -6,7 +6,7 @@ import AuditDataUpload from '../components/AuditDataUpload';
 import ConfirmModal from '../components/ConfirmModal';
 
 const WorkingPapers = () => {
-  const { workingPapers, addWorkingPaper, setWorkingPapers, auditPlans, checkRbacPermission, verifyRbacOrAlert, addNotification, updateWorkingPaper } = useContext(AuditContext);
+  const { workingPapers, addWorkingPaper, deleteWorkingPaper, setWorkingPapers, auditPlans, checkRbacPermission, verifyRbacOrAlert, addNotification, updateWorkingPaper } = useContext(AuditContext);
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -76,8 +76,8 @@ const WorkingPapers = () => {
       isOpen: true,
       title: 'Delete Working Paper',
       message: `Are you sure you want to delete working paper "${wpTitle}"?`,
-      onConfirm: () => {
-        setWorkingPapers(prev => prev.filter(w => w.id !== wpId));
+      onConfirm: async () => {
+        await deleteWorkingPaper(wpId);
         addNotification('Working Paper Deleted', `Working paper "${wpTitle}" has been removed.`, 'info');
       }
     });

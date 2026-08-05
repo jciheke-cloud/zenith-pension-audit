@@ -50,6 +50,17 @@ const TEMPLATE_CONFIGS = {
       { plan_id:'PLAN-2026-02', audit_name:'RMAS Cybersecurity Penetration Test', department:'IT & Cybersecurity', planned_hours:240, actual_hours:0, status:'Approved', start_date:'2026-04-10', end_date:'2026-05-20', lead_auditor:'Lead IT Auditor' },
     ],
   },
+  programs: {
+    filename: 'ZPC_Audit_Programs_Template.xlsx',
+    sheetName: 'AuditPrograms',
+    headers: ['program_id', 'title', 'objective', 'department', 'status', 'start_date', 'lead_auditor'],
+    label: 'Audit Programs',
+    accent: '236,72,153',
+    data: [
+      { program_id: 'PRG-2026-01', title: 'Q3 Custody Operations Review', objective: 'Assess settlement and reconciliation controls.', department: 'Pension Operations', status: 'Active', start_date: '2026-07-01', lead_auditor: 'Chief Senior Auditor' },
+      { program_id: 'PRG-2026-02', title: 'Data Privacy & GDPR Audit', objective: 'Verify compliance with data protection regulations.', department: 'IT & Cybersecurity', status: 'Planned', start_date: '2026-08-15', lead_auditor: 'Lead IT Auditor' }
+    ]
+  }
 };
 
 export default function AuditDataUpload({ targetModule = 'findings', buttonText = 'Batch Data Ingestion' }) {
