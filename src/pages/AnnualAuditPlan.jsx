@@ -3,6 +3,7 @@ import { AuditContext } from '../context/AuditContext';
 import { Calendar, Plus, CheckCircle, Clock, AlertTriangle, FileText, Download, Sliders, Search, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AuditDataUpload from '../components/AuditDataUpload';
+import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const AnnualAuditPlan = () => {
   const { auditPlans, saveAuditPlan, businessUnits, currency, addNotification } = useContext(AuditContext);
@@ -247,7 +248,8 @@ const AnnualAuditPlan = () => {
         </div>
 
         <div className="data-table-container">
-          <table className="data-table">
+          <TopScrollTableWrapper>
+<table className="data-table">
             <thead>
               <tr>
                 <th>Audit ID</th>
@@ -331,6 +333,7 @@ const AnnualAuditPlan = () => {
               }))}
             </tbody>
           </table>
+</TopScrollTableWrapper>
         </div>
       </div>
 

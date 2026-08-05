@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuditContext } from './context/AuditContext';
+import GlobalTooltip from './components/GlobalTooltip';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 import NotificationDrawer from './components/NotificationDrawer';

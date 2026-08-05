@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { CheckSquare, AlertTriangle, Clock, ShieldCheck, ArrowRight, RefreshCw, Send, Paperclip, CheckCircle2, FileCheck, Eye, Search, Filter } from 'lucide-react';
 import AuditDataUpload from '../components/AuditDataUpload';
+import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const ActionTracking = () => {
   const { findings: contextFindings, updateFindingStatus, addNotification, setFindings: setContextFindings } = useContext(AuditContext);
@@ -167,7 +168,8 @@ const ActionTracking = () => {
         </div>
 
         <div className="data-table-container">
-          <table className="data-table">
+          <TopScrollTableWrapper>
+<table className="data-table">
             <thead>
               <tr>
                 <th>Finding Ref</th>
@@ -252,6 +254,7 @@ const ActionTracking = () => {
               }))}
             </tbody>
           </table>
+</TopScrollTableWrapper>
         </div>
       </div>
 

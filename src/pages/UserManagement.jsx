@@ -1,6 +1,7 @@
 import React, { useContext, useState, useMemo, useEffect } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { Shield, UserPlus, Search, Filter, Lock, CheckCircle, XCircle, AlertTriangle, Key, Award, UserCheck, RefreshCw, FileText, ChevronRight } from 'lucide-react';
+import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const API_BASE_URL = (import.meta.env.VITE_AWS_API_URL || 'https://uhzosq0g0i.execute-api.eu-west-1.amazonaws.com/prod/').replace(/\/$/, '');
 
@@ -773,7 +774,8 @@ export const UserManagement = () => {
             <h3 className="m-0 text-xl font-extrabold">Audit Logs</h3>
           </div>
 
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
+          <TopScrollTableWrapper>
+<table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
             <thead>
               <tr style={{ background: 'rgba(255, 255, 255, 0.03)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', color: '#94a3b8' }}>
                 <th style={{ padding: '0.85rem 1.2rem' }}>Timestamp</th>
@@ -811,6 +813,7 @@ export const UserManagement = () => {
               })()}
             </tbody>
           </table>
+</TopScrollTableWrapper>
         </div>
       )}
 

@@ -3,6 +3,7 @@ import { AuditContext } from '../context/AuditContext';
 import api from '../services/api';
 import { Scale, ShieldAlert, CheckCircle, Clock, Plus, FileText, ExternalLink, Search, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const ComplianceAndRegulatory = () => {
   const { addNotification, regulatoryReviews, addRegulatoryReview } = useContext(AuditContext);
@@ -146,7 +147,8 @@ const ComplianceAndRegulatory = () => {
         </div>
 
         <div className="data-table-container">
-          <table className="data-table">
+          <TopScrollTableWrapper>
+<table className="data-table">
             <thead>
               <tr>
                 <th>Review ID</th>
@@ -196,6 +198,7 @@ const ComplianceAndRegulatory = () => {
               })}
             </tbody>
           </table>
+</TopScrollTableWrapper>
         </div>
       </div>
 

@@ -3,6 +3,7 @@ import { AuditContext } from '../context/AuditContext';
 import { Sliders, RefreshCw, CheckCircle, ShieldAlert, AlertTriangle, Layers, ArrowRight, Search, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AuditDataUpload from '../components/AuditDataUpload';
+import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const RiskBasedPlanning = () => {
   const { auditUniverse, scoringWeights, setScoringWeights, updateScoringWeights, calculateOverallScore, getAuditPriorityLabel, addNotification } = useContext(AuditContext);
@@ -272,7 +273,8 @@ const RiskBasedPlanning = () => {
         </div>
 
         <div className="data-table-container">
-          <table className="data-table">
+          <TopScrollTableWrapper>
+<table className="data-table">
             <thead>
               <tr>
                 <th>Rank</th>
@@ -337,6 +339,7 @@ const RiskBasedPlanning = () => {
               })}
             </tbody>
           </table>
+</TopScrollTableWrapper>
         </div>
       </div>
     </div>

@@ -69,13 +69,14 @@ const Sidebar = () => {
           onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           style={{
             position: 'absolute',
-            right: isSidebarCollapsed ? '10px' : '-12px',
+            right: isSidebarCollapsed ? '10px' : '-14px',
             top: '20px',
             background: 'var(--bg-card)',
-            border: '1px solid var(--border-color)',
-            color: 'var(--text-main)',
-            width: '24px',
-            height: '24px',
+            border: '1.5px solid var(--accent-primary)',
+            color: 'white',
+            width: '28px',
+            height: '28px',
+            boxShadow: '0 0 10px rgba(200, 30, 30, 0.4)',
             borderRadius: '50%',
             display: 'flex',
             alignItems: 'center',
@@ -84,7 +85,8 @@ const Sidebar = () => {
             zIndex: 100,
             padding: 0
           }}
-          title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+          data-tooltip={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            className="sidebar-toggle-btn"
         >
           {isSidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
@@ -96,7 +98,7 @@ const Sidebar = () => {
             EXECUTIVE DASHBOARD
           </div>
         )}
-        <NavLink to="/" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end title="Executive Dashboard">
+        <NavLink data-tooltip="Executive Dashboard" to="/" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end>
           <LayoutDashboard />
           {!isSidebarCollapsed && <span>Executive Dashboard</span>}
         </NavLink>
@@ -110,19 +112,19 @@ const Sidebar = () => {
               </div>
             )}
             {(isExecutive || isSenior) && (
-              <NavLink to="/master-data" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Master Data Foundation">
+              <NavLink data-tooltip="Master Data Foundation" to="/master-data" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                 <Database />
                 {!isSidebarCollapsed && <span>Master Data Foundation</span>}
               </NavLink>
             )}
             {(isExecutive || isSenior || isBoard || isErm) && (
-              <NavLink to="/annual-plan" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Annual Audit Planning">
+              <NavLink data-tooltip="Annual Audit Planning" to="/annual-plan" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                 <Calendar />
                 {!isSidebarCollapsed && <span>Annual Audit Planning</span>}
               </NavLink>
             )}
             {(isExecutive || isErm || isSenior) && (
-              <NavLink to="/risk-scoring" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Risk-Based Planning Engine">
+              <NavLink data-tooltip="Risk-Based Planning Engine" to="/risk-scoring" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                 <Sliders />
                 {!isSidebarCollapsed && <span>Risk-Based Planning Engine</span>}
               </NavLink>
@@ -138,17 +140,17 @@ const Sidebar = () => {
                 ENGAGEMENT EXECUTION
               </div>
             )}
-            <NavLink to="/engagements" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Audit Engagements">
+            <NavLink data-tooltip="Audit Engagements" to="/engagements" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
               <Briefcase />
               {!isSidebarCollapsed && <span>Audit Engagements</span>}
             </NavLink>
             {(isExecutive || isSenior) && (
-              <NavLink to="/programs" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Audit Programs Library">
+              <NavLink data-tooltip="Audit Programs Library" to="/programs" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                 <FileText />
                 {!isSidebarCollapsed && <span>Audit Programs Library</span>}
               </NavLink>
             )}
-            <NavLink to="/working-papers" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Working Papers & Evidence">
+            <NavLink data-tooltip="Working Papers & Evidence" to="/working-papers" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
               <FolderOpen />
               {!isSidebarCollapsed && <span>Working Papers & Evidence</span>}
             </NavLink>
@@ -161,18 +163,18 @@ const Sidebar = () => {
             FINDINGS & REMEDIATION
           </div>
         )}
-        <NavLink to="/findings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Findings & 10x10 Matrix">
+        <NavLink data-tooltip="Findings & 10×10 Matrix" to="/findings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <AlertOctagon />
           {!isSidebarCollapsed && <span>Findings & 10×10 Matrix</span>}
         </NavLink>
         {(isExecutive || isSenior || isOwner || isQa) && (
-          <NavLink to="/action-tracker" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Action Tracker (CAPs)">
+          <NavLink data-tooltip="Action Tracker (CAPs)" to="/action-tracker" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
             <CheckSquare />
             {!isSidebarCollapsed && <span>Action Tracker (CAPs)</span>}
           </NavLink>
         )}
         {(isExecutive || isSenior || isQa || isOwner) && (
-          <NavLink to="/controls" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Internal Controls Assessment">
+          <NavLink data-tooltip="Internal Controls Assessment" to="/controls" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
             <ShieldCheck />
             {!isSidebarCollapsed && <span>Internal Controls Assessment</span>}
           </NavLink>
@@ -187,19 +189,19 @@ const Sidebar = () => {
               </div>
             )}
             {(isExecutive || isErm || isSenior) && (
-              <NavLink to="/compliance-regulatory" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Compliance & Regulatory">
+              <NavLink data-tooltip="Compliance & Regulatory" to="/compliance-regulatory" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                 <Scale />
                 {!isSidebarCollapsed && <span>Compliance & Regulatory</span>}
               </NavLink>
             )}
             {(isExecutive || isSenior || isErm || isQa) && (
-              <NavLink to="/fraud-continuous" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Fraud & Continuous Auditing">
+              <NavLink data-tooltip="Fraud & Continuous Auditing" to="/fraud-continuous" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                 <Eye />
                 {!isSidebarCollapsed && <span>Fraud & Continuous Auditing</span>}
               </NavLink>
             )}
             {(isExecutive || isQa || isBoard) && (
-              <NavLink to="/reports-committee" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Reports & Committee Portal">
+              <NavLink data-tooltip="Reports & Committee Portal" to="/reports-committee" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                 <FileCheck />
                 {!isSidebarCollapsed && <span>Reports & Committee Portal</span>}
               </NavLink>
@@ -214,16 +216,16 @@ const Sidebar = () => {
           </div>
         )}
         {(isExecutive || isErm || isBoard || isSenior) && (
-          <NavLink to="/erm-sync" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Data Ingestion & Import">
+          <NavLink data-tooltip="Data Ingestion & Import" to="/erm-sync" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
             <Share2 />
             {!isSidebarCollapsed && <span style={{ color: '#fda4af', fontWeight: 800 }}>Data Ingestion & Import</span>}
           </NavLink>
         )}
-        <NavLink to="/user-management" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="User Management">
+        <NavLink data-tooltip="User Management" to="/user-management" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <Users />
           {!isSidebarCollapsed && <span style={{ color: '#f472b6', fontWeight: 700 }}>User Management</span>}
         </NavLink>
-        <NavLink to="/user-guide" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="User Guide & Manual">
+        <NavLink data-tooltip="User Guide & Manual" to="/user-guide" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <BookOpen />
           {!isSidebarCollapsed && <span style={{ color: '#38BDF8', fontWeight: 700 }}>User Guide & Manual</span>}
         </NavLink>

@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { ShieldCheck, Plus, CheckCircle, AlertOctagon, Sliders, Layers, Search, Filter } from 'lucide-react';
 import AuditDataUpload from '../components/AuditDataUpload';
+import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const InternalControls = () => {
   const { controls, setControls, addControl, addNotification } = useContext(AuditContext);
@@ -161,7 +162,8 @@ const InternalControls = () => {
         </div>
 
         <div className="data-table-container">
-          <table className="data-table">
+          <TopScrollTableWrapper>
+<table className="data-table">
             <thead>
               <tr>
                 <th>Control Code</th>
@@ -218,6 +220,7 @@ const InternalControls = () => {
               })}
             </tbody>
           </table>
+</TopScrollTableWrapper>
         </div>
       </div>
 

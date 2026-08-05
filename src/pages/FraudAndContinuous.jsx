@@ -3,6 +3,7 @@ import { AuditContext } from '../context/AuditContext';
 import api from '../services/api';
 import { Eye, ShieldAlert, Plus, AlertOctagon, CheckCircle, Clock, RefreshCw, Layers, Search, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const FraudAndContinuous = () => {
   const { continuousExceptions, setContinuousExceptions, saveFinding, addNotification } = useContext(AuditContext);
@@ -221,7 +222,8 @@ const FraudAndContinuous = () => {
           </div>
 
           <div className="data-table-container">
-            <table className="data-table">
+            <TopScrollTableWrapper>
+<table className="data-table">
               <thead>
                 <tr>
                   <th>Alert Ref</th>
@@ -278,6 +280,7 @@ const FraudAndContinuous = () => {
                 ))}
               </tbody>
             </table>
+</TopScrollTableWrapper>
           </div>
         </div>
       ) : (
@@ -316,7 +319,8 @@ const FraudAndContinuous = () => {
           </div>
 
           <div className="data-table-container">
-            <table className="data-table">
+            <TopScrollTableWrapper>
+<table className="data-table">
               <thead>
                 <tr>
                   <th>Case ID</th>
@@ -353,6 +357,7 @@ const FraudAndContinuous = () => {
                 ))}
               </tbody>
             </table>
+</TopScrollTableWrapper>
           </div>
         </div>
       )}

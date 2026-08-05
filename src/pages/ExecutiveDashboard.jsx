@@ -7,6 +7,7 @@ import {
   CheckCircle, AlertOctagon, Clock, RefreshCw, ShieldAlert, Award, FileSpreadsheet, Layers, ArrowUpRight, CheckSquare, Activity, ShieldCheck, Search, Filter, FileText
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const ExecutiveDashboard = () => {
   const { auditPlans = [], findings = [], auditUniverse = [], controls = [], currency, continuousExceptions = [] } = useContext(AuditContext);
@@ -594,7 +595,8 @@ const ExecutiveDashboard = () => {
               No Live Data — Awaiting Backend Sync
             </div>
           ) : (
-            <table className="data-table">
+            <TopScrollTableWrapper>
+<table className="data-table">
               <thead>
                 <tr>
                   <th>Process Code</th>
@@ -636,6 +638,7 @@ const ExecutiveDashboard = () => {
                 ))}
               </tbody>
             </table>
+</TopScrollTableWrapper>
           )}
 
         </div>

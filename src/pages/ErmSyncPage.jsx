@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { Share2, RefreshCw, ShieldCheck, CheckCircle, Database, Layers, ArrowRight, AlertOctagon, Search, Filter } from 'lucide-react';
 import AuditDataUpload from '../components/AuditDataUpload';
+import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const ErmSyncPage = () => {
   const { auditUniverse, findings, syncFromErmSuite, bulkUploadRecords, addNotification, getApiBase } = useContext(AuditContext);
@@ -257,7 +258,8 @@ const ErmSyncPage = () => {
         </div>
 
         <div className="data-table-container">
-          <table className="data-table">
+          <TopScrollTableWrapper>
+<table className="data-table">
             <thead>
               <tr>
                 <th>Sync Event Ref</th>
@@ -285,6 +287,7 @@ const ErmSyncPage = () => {
               ))}
             </tbody>
           </table>
+</TopScrollTableWrapper>
         </div>
       </div>
 

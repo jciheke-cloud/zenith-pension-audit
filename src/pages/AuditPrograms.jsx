@@ -4,6 +4,7 @@ import { FileText, Plus, CheckSquare, Shield, Layers, Search, Filter, Edit2, Tra
 import AuditDataUpload from '../components/AuditDataUpload';
 import ConfirmModal from '../components/ConfirmModal';
 import { useNavigate } from 'react-router-dom';
+import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const AuditPrograms = () => {
   const { auditPrograms, setAuditPrograms, addNotification, checkRbacPermission, verifyRbacOrAlert, addProcedureToProgram, deleteProcedure } = useContext(AuditContext);
@@ -219,7 +220,8 @@ const AuditPrograms = () => {
         </div>
 
         <div className="data-table-container">
-          <table className="data-table">
+          <TopScrollTableWrapper>
+<table className="data-table">
             <thead>
               <tr>
                 <th>Procedure Ref #</th>
@@ -275,6 +277,7 @@ const AuditPrograms = () => {
               )))}
             </tbody>
           </table>
+</TopScrollTableWrapper>
         </div>
       </div>
 

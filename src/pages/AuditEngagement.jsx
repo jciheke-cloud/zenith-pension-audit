@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { AuditContext } from '../context/AuditContext';
 import { Briefcase, CheckCircle, AlertOctagon, FileText, Users, Clock, ShieldCheck, Plus, CheckSquare, MessageSquare, Search, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const AuditEngagement = () => {
   const { auditPlans, auditPrograms, setAuditPrograms, addWorkingPaper, addNotification } = useContext(AuditContext);
@@ -265,7 +266,8 @@ const AuditEngagement = () => {
           </div>
 
           <div className="data-table-container">
-            <table className="data-table">
+            <TopScrollTableWrapper>
+<table className="data-table">
               <thead>
                 <tr>
                   <th>Ref #</th>
@@ -319,6 +321,7 @@ const AuditEngagement = () => {
                 )))}
               </tbody>
             </table>
+</TopScrollTableWrapper>
           </div>
         </div>
       )}

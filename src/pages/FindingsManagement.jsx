@@ -374,7 +374,7 @@ const FindingsManagement = () => {
 
           <div className="data-table-container">
             <TopScrollTableWrapper>
-              <table className="data-table">
+<table className="data-table">
                 <thead>
                 <tr>
                   <th>Finding Ref #</th>
@@ -457,7 +457,7 @@ const FindingsManagement = () => {
                 ))}
               </tbody>
             </table>
-          </TopScrollTableWrapper>
+</TopScrollTableWrapper>
           </div>
         </div>
       )}

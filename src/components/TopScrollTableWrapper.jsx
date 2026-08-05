@@ -13,11 +13,17 @@ const TopScrollTableWrapper = ({ children }) => {
     if (!topScroll || !bottomScroll || !content) return;
 
     const updateWidths = () => {
-      if (content.scrollWidth > bottomScroll.clientWidth) {
-        topScroll.style.display = 'block';
-        topScroll.firstChild.style.width = `${content.scrollWidth}px`;
-      } else {
-        topScroll.style.display = 'none';
+      try {
+        if (content && bottomScroll && topScroll && content.scrollWidth > bottomScroll.clientWidth) {
+          topScroll.style.display = 'block';
+          if (topScroll.firstChild) {
+            topScroll.firstChild.style.width = `${content.scrollWidth}px`;
+          }
+        } else if (topScroll) {
+          topScroll.style.display = 'none';
+        }
+      } catch (err) {
+        console.error('Resize observer error in TopScrollTableWrapper', err);
       }
     };
 

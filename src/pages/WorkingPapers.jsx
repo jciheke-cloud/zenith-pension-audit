@@ -4,6 +4,7 @@ import { FolderOpen, Plus, FileText, Download, Eye, CheckCircle, Search, Filter,
 import { useNavigate } from 'react-router-dom';
 import AuditDataUpload from '../components/AuditDataUpload';
 import ConfirmModal from '../components/ConfirmModal';
+import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const WorkingPapers = () => {
   const { workingPapers, addWorkingPaper, deleteWorkingPaper, setWorkingPapers, auditPlans, checkRbacPermission, verifyRbacOrAlert, addNotification, updateWorkingPaper } = useContext(AuditContext);
@@ -192,7 +193,8 @@ const WorkingPapers = () => {
         </div>
 
         <div className="data-table-container">
-          <table className="data-table">
+          <TopScrollTableWrapper>
+<table className="data-table">
             <thead>
               <tr>
                 <th>Paper Ref #</th>
@@ -270,6 +272,7 @@ const WorkingPapers = () => {
               ))}
             </tbody>
           </table>
+</TopScrollTableWrapper>
         </div>
       </div>
 
@@ -325,7 +328,8 @@ const WorkingPapers = () => {
                 </button>
               </div>
               <div className="data-table-container bg-black/30 rounded-md">
-                <table className="data-table">
+                <TopScrollTableWrapper>
+<table className="data-table">
                   <thead>
                     <tr>
                       <th>Sample #</th>
@@ -377,6 +381,7 @@ const WorkingPapers = () => {
                     ))}
                   </tbody>
                 </table>
+</TopScrollTableWrapper>
               </div>
             </div>
 

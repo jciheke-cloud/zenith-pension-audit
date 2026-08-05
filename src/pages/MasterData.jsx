@@ -337,7 +337,7 @@ const MasterData = () => {
 
           <div className="data-table-container">
             <TopScrollTableWrapper>
-              <table className="data-table">
+<table className="data-table">
                 <thead>
                 <tr>
                   <th>Code</th>
@@ -406,7 +406,7 @@ const MasterData = () => {
                 })}
               </tbody>
             </table>
-            </TopScrollTableWrapper>
+</TopScrollTableWrapper>
           </div>
         </div>
       ) : (
@@ -420,7 +420,7 @@ const MasterData = () => {
 
           <div className="data-table-container">
             <TopScrollTableWrapper>
-              <table className="data-table">
+<table className="data-table">
                 <thead>
                 <tr>
                   <th>Process Code</th>
@@ -471,7 +471,7 @@ const MasterData = () => {
                 ))}
               </tbody>
             </table>
-            </TopScrollTableWrapper>
+</TopScrollTableWrapper>
           </div>
         </div>
       )}
