@@ -406,6 +406,7 @@ const MasterData = () => {
                 })}
               </tbody>
             </table>
+            </TopScrollTableWrapper>
           </div>
         </div>
       ) : (
@@ -470,6 +471,7 @@ const MasterData = () => {
                 ))}
               </tbody>
             </table>
+            </TopScrollTableWrapper>
           </div>
         </div>
       )}
