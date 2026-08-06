@@ -10,12 +10,22 @@ const api = axios.create({
   }
 });
 
-// Request interceptor to attach Cognito JWT token
+// Token caching to prevent fetchAuthSession bottleneck during concurrent requests
+let cachedToken = null;
+let tokenExpiry = null;
+
 api.interceptors.request.use(async (config) => {
   try {
+    if (cachedToken && tokenExpiry && Date.now() < tokenExpiry) {
+      config.headers.Authorization = `Bearer ${cachedToken}`;
+      return config;
+    }
+    
     const session = await fetchAuthSession();
     const token = session?.tokens?.idToken?.toString();
     if (token) {
+      cachedToken = token;
+      tokenExpiry = Date.now() + 5 * 60 * 1000; // Cache for 5 minutes
       config.headers.Authorization = `Bearer ${token}`;
     }
   } catch (err) {

@@ -253,24 +253,33 @@ export const AuditProvider = ({ children }) => {
   };
   const AUDIT_API = getApiBase();
 
+  // Normalise any API response shape to a plain array
+  const toArr = (data) => {
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.records)) return data.records;
+    if (data && Array.isArray(data.items)) return data.items;
+    if (data && Array.isArray(data.data)) return data.data;
+    return [];
+  };
+
   const fetchAuditData = async (silent = false) => {
     if (!silent) setIsSyncing(true);
     try {
       const [universeData, findingsData, plansData, fetchedRisks, fetchedControls, fetchedActions, fetchedLosses, papersData, programsData, regulatoryData, fraudData, continuousData, businessUnitsData, auditLogsData] = await Promise.all([
-        api.get(`/api/audit/universe`).then(r => r.data).catch(() => []),
-        api.get(`/api/audit/findings`).then(r => r.data).catch(() => []),
-        api.get(`/api/audit/plans`).then(r => r.data).catch(() => []),
-        api.get(`/api/risks`).then(r => r.data).catch(() => []),
-        api.get(`/api/controls`).then(r => r.data).catch(() => []),
-        api.get(`/api/actions`).then(r => r.data).catch(() => []),
-        api.get(`/api/losses`).then(r => r.data).catch(() => []),
-        api.get(`/api/audit/working-papers`).then(r => r.data).catch(() => []),
-        api.get(`/api/audit/programs`).then(r => r.data).catch(() => []),
-        api.get(`/api/audit/regulatory`).then(r => r.data).catch(() => []),
-        api.get(`/api/audit/fraud-cases`).then(r => r.data).catch(() => []),
-        api.get(`/api/audit/continuous-exceptions`).then(r => r.data).catch(() => []),
-        api.get(`/api/business-units`).then(r => r.data).catch(() => []),
-        api.get(`/api/audit-logs`).then(r => r.data).catch(() => []),
+        api.get(`/api/audit/universe`).then(r => toArr(r.data)).catch(() => []),
+        api.get(`/api/audit/findings`).then(r => toArr(r.data)).catch(() => []),
+        api.get(`/api/audit/plans`).then(r => toArr(r.data)).catch(() => []),
+        api.get(`/api/risks`).then(r => toArr(r.data)).catch(() => []),
+        api.get(`/api/controls`).then(r => toArr(r.data)).catch(() => []),
+        api.get(`/api/actions`).then(r => toArr(r.data)).catch(() => []),
+        api.get(`/api/losses`).then(r => toArr(r.data)).catch(() => []),
+        api.get(`/api/audit/working-papers`).then(r => toArr(r.data)).catch(() => []),
+        api.get(`/api/audit/programs`).then(r => toArr(r.data)).catch(() => []),
+        api.get(`/api/audit/regulatory`).then(r => toArr(r.data)).catch(() => []),
+        api.get(`/api/audit/fraud-cases`).then(r => toArr(r.data)).catch(() => []),
+        api.get(`/api/audit/continuous-exceptions`).then(r => toArr(r.data)).catch(() => []),
+        api.get(`/api/business-units`).then(r => toArr(r.data)).catch(() => []),
+        api.get(`/api/audit-logs`).then(r => toArr(r.data)).catch(() => []),
       ]);
 
       if (Array.isArray(fetchedRisks)) setErmRisks(fetchedRisks);
@@ -1623,6 +1632,19 @@ export const AuditProvider = ({ children }) => {
         setWorkingPapers(previous);
       }
     };
+
+  const updateWorkingPaper = async (id, updates) => {
+    const previous = [...workingPapers];
+    setWorkingPapers(prev => prev.map(wp => wp.id === id ? { ...wp, ...updates } : wp));
+    try {
+      await api.put(`/api/audit/working-papers/${id}`, updates);
+    } catch (err) {
+      console.warn('Optimistic update failed', err);
+      window.dispatchEvent(new CustomEvent('zpc_add_toast', { detail: { message: '🚨 Database sync failed. Local changes were reverted.', type: 'danger' } }));
+      setWorkingPapers(previous);
+    }
+  };
+
 return (
     <AuditContext.Provider
       value={{
@@ -1659,6 +1681,7 @@ return (
         deleteProcedure,
         workingPapers,
         addWorkingPaper,
+        updateWorkingPaper,
         setWorkingPapers,
         deleteWorkingPaper,
         findings,

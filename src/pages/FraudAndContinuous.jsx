@@ -13,7 +13,13 @@ const FraudAndContinuous = () => {
     const fetchData = async () => {
       try {
         const res = await api.get('/api/audit/fraud-cases');
-        setFraudCases(res.data);
+        const raw = res.data;
+        const arr = Array.isArray(raw) ? raw
+          : Array.isArray(raw?.records) ? raw.records
+          : Array.isArray(raw?.items) ? raw.items
+          : Array.isArray(raw?.data) ? raw.data
+          : [];
+        setFraudCases(arr);
       } catch (err) {
         console.error('Failed to fetch fraud cases:', err);
       }

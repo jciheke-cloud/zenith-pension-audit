@@ -3,6 +3,7 @@ import { AuditContext } from '../context/AuditContext';
 import { ShieldCheck, Plus, CheckCircle, AlertOctagon, Sliders, Layers, Search, Filter } from 'lucide-react';
 import AuditDataUpload from '../components/AuditDataUpload';
 import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
+import { useControls } from '../hooks/useControls';
 
 const InternalControls = () => {
   const { setControls, addControl, addNotification } = useContext(AuditContext);

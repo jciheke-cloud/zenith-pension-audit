@@ -3,6 +3,7 @@ import { AuditContext } from '../context/AuditContext';
 import { Briefcase, CheckCircle, AlertOctagon, FileText, Users, Clock, ShieldCheck, Plus, CheckSquare, MessageSquare, Search, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
+import { useEngagements } from '../hooks/useEngagements';
 
 const AuditEngagement = () => {
   const { auditPrograms, setAuditPrograms, addWorkingPaper, addNotification } = useContext(AuditContext);

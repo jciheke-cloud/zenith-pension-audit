@@ -4,11 +4,9 @@ import { FolderOpen, Plus, FileText, Download, Eye, CheckCircle, Search, Filter,
 import { useNavigate } from 'react-router-dom';
 import AuditDataUpload from '../components/AuditDataUpload';
 import ConfirmModal from '../components/ConfirmModal';
-import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
 
 const WorkingPapers = () => {
-  const { workingPapers, addWorkingPaper, deleteWorkingPaper, setWorkingPapers, checkRbacPermission, verifyRbacOrAlert, addNotification, updateWorkingPaper } = useContext(AuditContext);
-  const { data: auditPlans = [] } = useEngagements();
+  const { workingPapers, addWorkingPaper, setWorkingPapers, auditPlans, checkRbacPermission, verifyRbacOrAlert, addNotification, updateWorkingPaper } = useContext(AuditContext);
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -78,18 +76,23 @@ const WorkingPapers = () => {
       isOpen: true,
       title: 'Delete Working Paper',
       message: `Are you sure you want to delete working paper "${wpTitle}"?`,
-      onConfirm: async () => {
-        await deleteWorkingPaper(wpId);
+      onConfirm: () => {
+        setWorkingPapers(prev => prev.filter(w => w.id !== wpId));
         addNotification('Working Paper Deleted', `Working paper "${wpTitle}" has been removed.`, 'info');
       }
     });
   };
 
   const filteredPapers = workingPapers.filter(wp => {
-    const matchesSearch = (wp.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          (wp.id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          (wp.linkedAudit || '').toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = filterType === 'All' || (wp.fileType || '').includes(filterType);
+    if (!wp) return false;
+    const title = String(wp.title || wp.fileName || '');
+    const id = String(wp.id || '');
+    const linked = String(wp.linkedAudit || wp.auditName || '');
+    
+    const matchesSearch = title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          linked.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = filterType === 'All' || String(wp.fileType || '').includes(filterType);
     return matchesSearch && matchesType;
   });
 
@@ -194,8 +197,7 @@ const WorkingPapers = () => {
         </div>
 
         <div className="data-table-container">
-          <TopScrollTableWrapper>
-<table className="data-table">
+          <table className="data-table">
             <thead>
               <tr>
                 <th>Paper Ref #</th>
@@ -232,7 +234,7 @@ const WorkingPapers = () => {
                         📄 {wp.fileType || 'Excel'}
                       </span>
                       <span className="text-[0.68rem] font-mono text-[var(--text-muted)]">
-                        SHA: {wp.checksum ? wp.checksum.substring(0, 12) + '...' : 'e3b0c44298fc...'}
+                        SHA: {wp.checksum ? String(wp.checksum).substring(0, 12) + '...' : 'e3b0c44298fc...'}
                       </span>
                     </div>
                   </td>
@@ -273,7 +275,6 @@ const WorkingPapers = () => {
               ))}
             </tbody>
           </table>
-</TopScrollTableWrapper>
         </div>
       </div>
 
@@ -313,7 +314,7 @@ const WorkingPapers = () => {
               <div>
                 <span className="text-[0.72rem] text-[var(--text-muted)] block">SHA-256 Checksum Integrity</span>
                 <span className="text-[0.72rem] font-mono text-blue-400 block break-all">
-                  {inspectWp.checksum ? inspectWp.checksum.substring(0, 16) + '...' : 'e3b0c44298fc1c14...'}
+                  {inspectWp.checksum ? String(inspectWp.checksum).substring(0, 16) + '...' : 'e3b0c44298fc1c14...'}
                 </span>
               </div>
             </div>
@@ -329,8 +330,7 @@ const WorkingPapers = () => {
                 </button>
               </div>
               <div className="data-table-container bg-black/30 rounded-md">
-                <TopScrollTableWrapper>
-<table className="data-table">
+                <table className="data-table">
                   <thead>
                     <tr>
                       <th>Sample #</th>
@@ -382,7 +382,6 @@ const WorkingPapers = () => {
                     ))}
                   </tbody>
                 </table>
-</TopScrollTableWrapper>
               </div>
             </div>
 

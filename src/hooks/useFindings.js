@@ -1,13 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import api from '../services/api';
+import { useContext } from 'react';
+import { AuditContext } from '../context/AuditContext';
 
 export const useFindings = () => {
-  return useQuery({
-    queryKey: ['findings'],
-    queryFn: async () => {
-      const { data } = await api.get('/api/audit/findings');
-      return data;
-    },
-    initialData: []
-  });
+  const { findings } = useContext(AuditContext);
+  return { data: Array.isArray(findings) ? findings : [] };
 };

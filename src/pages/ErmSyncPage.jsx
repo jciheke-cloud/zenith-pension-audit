@@ -3,6 +3,8 @@ import { AuditContext } from '../context/AuditContext';
 import { Share2, RefreshCw, ShieldCheck, CheckCircle, Database, Layers, ArrowRight, AlertOctagon, Search, Filter } from 'lucide-react';
 import AuditDataUpload from '../components/AuditDataUpload';
 import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
+import { useAuditUniverse } from '../hooks/useAuditUniverse';
+import { useFindings } from '../hooks/useFindings';
 
 const ErmSyncPage = () => {
   const { syncFromErmSuite, bulkUploadRecords, addNotification, getApiBase } = useContext(AuditContext);

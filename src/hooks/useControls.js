@@ -1,13 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import api from '../services/api';
+import { useContext } from 'react';
+import { AuditContext } from '../context/AuditContext';
 
 export const useControls = () => {
-  return useQuery({
-    queryKey: ['controls'],
-    queryFn: async () => {
-      const { data } = await api.get('/api/controls');
-      return data;
-    },
-    initialData: []
-  });
+  const { controls } = useContext(AuditContext);
+  return { data: Array.isArray(controls) ? controls : [] };
 };

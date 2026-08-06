@@ -8,6 +8,10 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
+import { useAuditUniverse } from '../hooks/useAuditUniverse';
+import { useEngagements } from '../hooks/useEngagements';
+import { useFindings } from '../hooks/useFindings';
+import { useControls } from '../hooks/useControls';
 
 const ExecutiveDashboard = () => {
   const { currency, continuousExceptions = [] } = useContext(AuditContext);

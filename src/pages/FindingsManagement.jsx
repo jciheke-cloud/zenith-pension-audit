@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import AuditDataUpload from '../components/AuditDataUpload';
 import ConfirmModal from '../components/ConfirmModal';
 import TopScrollTableWrapper from '../components/TopScrollTableWrapper';
+import { useFindings } from '../hooks/useFindings';
+import { FixedSizeList as List } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 const FindingsManagement = () => {
   const { saveFinding, deleteFinding, setFindings, businessUnits, addNotification, checkRbacPermission, verifyRbacOrAlert } = useContext(AuditContext);
@@ -68,9 +71,14 @@ const FindingsManagement = () => {
   };
 
   const filteredFindings = findings.filter(f => {
-    const matchesSearch = f.observation?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          f.findingNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          f.actionOwner?.toLowerCase().includes(searchTerm.toLowerCase());
+    if (!f) return false;
+    const obs = String(f.observation || '');
+    const num = String(f.findingNumber || '');
+    const owner = String(f.actionOwner || '');
+    
+    const matchesSearch = obs.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          num.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          owner.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesBu = filterBu === 'All' || f.businessUnit === filterBu;
     const matchesPriority = filterPriority === 'All' || f.priority === filterPriority;
     return matchesSearch && matchesBu && matchesPriority;
