@@ -1,4 +1,5 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -39,6 +40,28 @@ const Sidebar = () => {
 
   const roleId = getNormalizedRole(currentRole?.id || 'cae');
 
+  const [tooltip, setTooltip] = useState({ text: '', top: 0, left: 0, visible: false });
+
+  const handleMouseOver = (e) => {
+    if (!isSidebarCollapsed) return;
+    const target = e.target.closest('[data-tooltip]');
+    if (!target) {
+      if (tooltip.visible) setTooltip({ ...tooltip, visible: false });
+      return;
+    }
+    const rect = target.getBoundingClientRect();
+    setTooltip({
+      text: target.getAttribute('data-tooltip'),
+      top: rect.top + rect.height / 2,
+      left: rect.right + 14,
+      visible: true
+    });
+  };
+
+  const handleMouseOut = (e) => {
+    if (tooltip.visible) setTooltip({ ...tooltip, visible: false });
+  };
+
   // Role categorization flags
   const isExecutive = roleId === 'cae' || roleId === 'manager';
   const isBoard = roleId === 'committee';
@@ -48,7 +71,11 @@ const Sidebar = () => {
   const isErm = roleId === 'erm';
 
   return (
-    <aside className={`sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+    <aside 
+      className={`sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}
+      onMouseOver={handleMouseOver} 
+      onMouseOut={handleMouseOut}
+    >
       <div className="sidebar-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', paddingBottom: '1.2rem', position: 'relative' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
           <img src="/logo.png" alt="Zenith Pensions Logo" style={{ height: '32px' }} />
@@ -246,6 +273,29 @@ const Sidebar = () => {
         RiskINTEGRA Internal Audit™<br />
         <span style={{ fontSize: '0.7rem', fontWeight: '600', color: '#94a3b8' }}>© 2026 Nay&JoeRiskAndTechConsulting</span>
       </div>
+      )}
+
+      {tooltip.visible && createPortal(
+        <div style={{
+          position: 'fixed',
+          top: tooltip.top,
+          left: tooltip.left,
+          transform: 'translateY(-50%)',
+          background: 'var(--bg-header)',
+          color: 'var(--text-main)',
+          padding: '6px 12px',
+          borderRadius: 'var(--radius-sm)',
+          fontSize: '0.75rem',
+          fontWeight: '600',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none',
+          zIndex: 99999,
+          border: '1px solid var(--border-color)',
+          boxShadow: 'var(--shadow-card)',
+        }}>
+          {tooltip.text}
+        </div>,
+        document.body
       )}
     </aside>
   );
